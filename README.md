@@ -1,7 +1,7 @@
 # Mutey
 Windows utility for muting conferencing applications with a hardware button
 
-### This is still a work in progress
+## This is still a work in progress
 
 ## Project aims
 Overall the aim is to provide a software interface for Windows that can listen on a COM port for physical button presses and toggle the mute on conferencing software like Microsoft Teams and Discord
@@ -11,3 +11,6 @@ Overall the aim is to provide a software interface for Windows that can listen o
 - Auto detect conferencing software startup
 - Toggle mute without switching active application
 - Display current state of mute
+
+## TODO
+- Attribute icon in app about: <div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
