@@ -24,10 +24,6 @@ namespace Mutey.ViewModels
         private void SetImage()
         {
             return;
-
-            Assembly assembly = GetType().Assembly;
-            string? resourceName = assembly.GetManifestResourceNames()
-                .FirstOrDefault(n => n.Contains("mic.svg", StringComparison.OrdinalIgnoreCase));
         }
     }
 

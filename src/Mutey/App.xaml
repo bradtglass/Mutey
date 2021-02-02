@@ -4,11 +4,14 @@
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:tb="http://www.hardcodet.net/taskbar"
                          xmlns:dryIoc="http://prismlibrary.com/"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         mc:Ignorable="d"
                          xmlns:vm="clr-namespace:Mutey.ViewModels"
                          ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <tb:TaskbarIcon x:Key="TaskbarIcon"
-                        d:DataContext="{d:DesignInstance vm:AppViewModel}"
-                        IconSource="{Binding IconImage}" />
+                        d:DataContext="{d:DesignInstance vm:AppViewModel}" 
+                        IconSource="Icons/microphone-blue.ico">
+        </tb:TaskbarIcon>
     </Application.Resources>
 </dryIoc:PrismApplication>

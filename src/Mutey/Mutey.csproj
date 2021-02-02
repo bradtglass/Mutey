@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
@@ -23,11 +23,16 @@
 
     <ItemGroup>
       <None Remove="Resources\mic.svg" />
-      <EmbeddedResource Include="Resources\mic.svg" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Output" />
       <Folder Include="Views" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Icons\*" />
+      <Resource Include="Icons\*" />
     </ItemGroup>
 
 </Project>
