@@ -8,8 +8,13 @@ namespace Mutey.Input
     public interface IMuteHardware
     {
         /// <summary>
+        /// The item that generated this hardware.
+        /// </summary>
+        PossibleMuteHardware Source { get; }
+        
+        /// <summary>
         ///     Occurs when the hardware mute button or switch registers an input.
         /// </summary>
-        public event EventHandler<HardwareMessageReceivedEventArgs>? MessageReceived;
+        event EventHandler<HardwareMessageReceivedEventArgs>? MessageReceived;
     }
 }

@@ -24,9 +24,11 @@ namespace Mutey.Input
         private readonly SerialPort port;
         private readonly Thread portWatcherThread;
 
-        public SerialMuteHardware(SerialMuteButtonSettings settings)
+        public SerialMuteHardware(PossibleSerialMuteHardware possibleHardware)
         {
-            port = new SerialPort(settings.Port, settings.BaudRate);
+            Source = possibleHardware;
+            
+            port = new SerialPort(possibleHardware.Port, possibleHardware.BaudRate);
 
             logger.Info("Opening connection on serial port {Name}", port.PortName);
             port.Open();
@@ -45,6 +47,7 @@ namespace Mutey.Input
             port.Dispose();
         }
 
+        public PossibleMuteHardware Source { get; }
         public event EventHandler<HardwareMessageReceivedEventArgs>? MessageReceived;
 
         private async void WatchPort()
