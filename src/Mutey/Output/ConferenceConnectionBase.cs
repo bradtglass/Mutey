@@ -10,9 +10,12 @@ namespace Mutey.Output
         private ConferenceConnection(Process process)
         {
             this.process = process;
-            process.Exited += (_, _) => Closed?.Invoke(this, EventArgs.Empty);
+            process.Exited += OnProcessOnExited;
             process.EnableRaisingEvents = true;
         }
+
+        private void OnProcessOnExited(object o, EventArgs eventArgs)
+            => Closed?.Invoke(this, EventArgs.Empty);
 
         public ConferenceConnection(Process process, ICall defaultCall) : this(process)
         {
@@ -26,7 +29,14 @@ namespace Mutey.Output
         public event EventHandler<ICall>? CallStarted;
         public event EventHandler? Closed;
 
+        public void Close()
+        {
+            process.EnableRaisingEvents = false;
+        }
+
         protected void BeginCall(ICall call)
             => CallStarted?.Invoke(this, call);
+
+        public virtual void Dispose() { }
     }
 }

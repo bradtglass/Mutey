@@ -6,7 +6,7 @@ namespace Mutey.Output
     /// <summary>
     /// A connection to an active conferencing app.
     /// </summary>
-    public interface IConferenceConnection
+    public interface IConferenceConnection : IDisposable
     {
         /// <summary>
         /// Determines if this app will raise the <see cref="CallStarted"/> event, if this is <see langword="false"/> then use <see cref="DefaultCall"/> to access mute control for the entire app.
@@ -28,5 +28,7 @@ namespace Mutey.Output
         /// Raised when the connection is closed.
         /// </summary>
         event EventHandler? Closed;
+
+        void Close();
     }
 }
