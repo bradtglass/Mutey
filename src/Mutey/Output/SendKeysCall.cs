@@ -6,6 +6,12 @@ namespace Mutey.Output
 {
     public class SendKeysCall : ICall
     {
+        // ReSharper disable InconsistentNaming
+        public const int LEFT_ALT = 0xA4;
+        public const int LEFT_CTRL = 0xA2;
+        public const int M = 0x4D;
+        // ReSharper restore InconsistentNaming
+        
         private readonly int[] keys;
 
         private readonly Process process;

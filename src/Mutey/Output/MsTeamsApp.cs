@@ -12,8 +12,8 @@ namespace Mutey.Output
         public override IConferenceConnection Connect(Process process)
             => new ConferenceConnection(process,
                 new SendKeysCall("Teams", process,
-                    0xA4 /*LEFT ALT*/,
-                    0xA2 /*LEFT CTRL*/,
-                    0x4D /*M*/));
+                    SendKeysCall.LEFT_ALT,
+                    SendKeysCall.LEFT_CTRL,
+                    SendKeysCall.M));
     }
 }
