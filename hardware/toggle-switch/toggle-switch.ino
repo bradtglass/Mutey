@@ -1,5 +1,5 @@
 // Serial configuration
-const int baudRate = 57600;
+const long baudRate = 57600;
 
 // First 6 bytes indicate the type of button (toggle), last byte(s) indicate the message type
 const byte toggleButtonIdentifier[6] = {210, 196, 183, 121, 141, 28};
@@ -23,7 +23,7 @@ void setup() {
   lastInputState = defaultState;
 
   // Start the serial connection
-  Serial.begin(baudRate);
+  Serial.begin(baudRate);  
 }
 
 void loop() {
