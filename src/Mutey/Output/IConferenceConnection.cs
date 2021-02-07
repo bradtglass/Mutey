@@ -11,7 +11,7 @@ namespace Mutey.Output
         /// <summary>
         /// Determines if this app will raise the <see cref="CallStarted"/> event, if this is <see langword="false"/> then use <see cref="DefaultCall"/> to access mute control for the entire app.
         /// </summary>
-        // TODO This should work? [MemberNotNullWhen(false, nameof(DefaultCall))]
+        [MemberNotNullWhen(false, nameof(DefaultCall))]
         bool CanDetectNewCalls { get; }
         
         /// <summary>

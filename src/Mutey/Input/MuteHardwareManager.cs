@@ -30,7 +30,7 @@ namespace Mutey.Input
 
         public void RegisterHardwareDetector(IMuteHardwareDetector detector)
         {
-            detector.HardwareChanged += (sender, _) => RegisterChangedDevices((IMuteHardwareDetector) sender);
+            detector.HardwareChanged += (sender, _) => RegisterChangedDevices((IMuteHardwareDetector) sender!);
             RegisterChangedDevices(detector);
         }
 

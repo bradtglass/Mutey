@@ -31,12 +31,12 @@ namespace Mutey.Input
                 .OfType<ManagementObject>())
             {
                 object guid = instance.GetPropertyValue("ClassGuid");
-                if (guid == null || guid.ToString().ToUpper() != "{4D36E978-E325-11CE-BFC1-08002BE10318}")
+                if (guid == null || guid.ToString()?.ToUpper() != "{4D36E978-E325-11CE-BFC1-08002BE10318}")
                     continue; // Skip all devices except device class "PORTS"
 
-                string description = instance.GetPropertyValue("Caption").ToString();
-                string manufacturer = instance.GetPropertyValue("Manufacturer").ToString();
-                string deviceId = instance.GetPropertyValue("PnpDeviceID").ToString();
+                string? description = instance.GetPropertyValue("Caption").ToString();
+                string? manufacturer = instance.GetPropertyValue("Manufacturer").ToString();
+                string? deviceId = instance.GetPropertyValue("PnpDeviceID").ToString();
                 // ReSharper disable once StringLiteralTypo
                 string registryPath = "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Enum\\" + deviceId +
                                       "\\Device Parameters";

@@ -15,7 +15,7 @@ namespace Mutey.Output
             process.EnableRaisingEvents = true;
         }
 
-        private void OnProcessOnExited(object o, EventArgs eventArgs)
+        private void OnProcessOnExited(object? o, EventArgs eventArgs)
             => Closed?.Invoke(this, EventArgs.Empty);
 
         public ConferenceConnection(Process process, ICall defaultCall) : this(process)

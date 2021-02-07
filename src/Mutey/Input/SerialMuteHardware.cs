@@ -22,7 +22,6 @@ namespace Mutey.Input
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly SerialPort port;
-        private readonly Thread portWatcherThread;
 
         public SerialMuteHardware(PossibleSerialMuteHardware possibleHardware)
         {
@@ -33,7 +32,7 @@ namespace Mutey.Input
             logger.Info("Opening connection on serial port {Name}", port.PortName);
             port.Open();
 
-            portWatcherThread = new Thread(WatchPort)
+            Thread portWatcherThread = new Thread(WatchPort)
             {
                 Priority = ThreadPriority.BelowNormal
             };
@@ -43,7 +42,6 @@ namespace Mutey.Input
 
         public void Dispose()
         {
-            portWatcherThread.Abort();
             port.Dispose();
         }
 
