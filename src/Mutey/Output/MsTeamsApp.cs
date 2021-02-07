@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Mutey.Output
 {
@@ -10,10 +11,6 @@ namespace Mutey.Output
         public override string Name { get; } = "Microsoft Teams";
 
         public override IConferenceConnection Connect(Process process)
-            => new ConferenceConnection(process,
-                new SendKeysCall("Teams", process,
-                    SendKeysCall.LEFT_ALT,
-                    SendKeysCall.LEFT_CTRL,
-                    SendKeysCall.M));
+            => throw new NotImplementedException();
     }
 }
