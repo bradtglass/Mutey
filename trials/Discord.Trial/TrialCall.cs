@@ -9,7 +9,7 @@ namespace Discord.Trial
         public TrialCall(string name, IntPtr window) : base(name, window) { }
         protected override void ToggleInternal(AutomationElement muteButton)
         {
-            TogglePattern pattern = (TogglePattern) muteButton.GetCurrentPattern(TogglePattern.Pattern);
+            TogglePattern pattern = (TogglePattern) muteButton.GetCachedPattern(TogglePattern.Pattern);
             pattern.Toggle();
         }
 

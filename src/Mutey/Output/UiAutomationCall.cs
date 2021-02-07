@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Automation;
 using NLog;
 
@@ -17,12 +18,14 @@ namespace Mutey.Output
         private static extern IntPtr SetForegroundWindow(IntPtr hWnd);
         
         private readonly IntPtr window;
-        private AutomationElement? cachedMuteButton;
+        private readonly Task<AutomationElement> cachedMuteButtonElement;
 
         protected UiAutomationCall(string name, IntPtr window)
         {
             if (window == IntPtr.Zero)
                 throw new ArgumentException("Window cannot be default", nameof(window));
+
+            cachedMuteButtonElement = Task.Run(GetMuteButton);
             
             this.window = window;
             Name = name;
@@ -34,7 +37,7 @@ namespace Mutey.Output
 
         public void Toggle()
         {
-            AutomationElement muteButtonElement = CheckCachedGetMuteButton();
+            AutomationElement muteButtonElement = cachedMuteButtonElement.GetAwaiter().GetResult();
             IntPtr activeWindow = GetForegroundWindow();
             try
             {
@@ -60,15 +63,19 @@ namespace Mutey.Output
             }
         }
 
-        private AutomationElement CheckCachedGetMuteButton()
+        private AutomationElement GetMuteButton()
         {
-            if (cachedMuteButton != null)
-                return cachedMuteButton;
-            
             AutomationElement windowElement = GetWindowElement();
-            AutomationElement muteButtonElement = GetMuteButton(windowElement);
 
-            cachedMuteButton = muteButtonElement;
+            CacheRequest cacheRequest = new();
+            cacheRequest.Add(TogglePattern.Pattern);
+            cacheRequest.Add(TogglePattern.ToggleStateProperty);
+
+            AutomationElement muteButtonElement;
+            using (cacheRequest.Activate())
+            {
+                muteButtonElement = GetMuteButton(windowElement);
+            }
 
             return muteButtonElement;
         }
