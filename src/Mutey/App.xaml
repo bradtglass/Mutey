@@ -11,7 +11,15 @@
     <Application.Resources>
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}" 
-                        IconSource="Icons/microphone-blue.ico">
+                        IconSource="Icons/microphone-blue.ico"
+                        DoubleClickCommand="{Binding OpenCommand}">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open" Command="{Binding OpenCommand}" />
+                    <Separator/>
+                    <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
     </Application.Resources>
 </dryIoc:PrismApplication>

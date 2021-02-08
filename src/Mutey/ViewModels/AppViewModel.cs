@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Xaml.Behaviors.Core;
+using Mutey.Views;
 using Prism.Mvvm;
 
 namespace Mutey.ViewModels
@@ -10,8 +14,11 @@ namespace Mutey.ViewModels
     {
         private ImageSource? iconImage;
 
-        public AppViewModel()
+        public AppViewModel(MuteyViewModel mutey)
         {
+            Mutey = mutey;
+            QuitCommand = new ActionCommand(() => Application.Current.Shutdown());
+            OpenCommand = new ActionCommand(() => new CompactView().Show());
             SetImage();
         }
 
@@ -25,7 +32,10 @@ namespace Mutey.ViewModels
         {
             return;
         }
+        
+        public MuteyViewModel Mutey { get; }
+        
+        public ICommand QuitCommand { get; }
+        public ICommand OpenCommand { get; }
     }
-
-    internal class ConferenceSoftwareViewModel : BindableBase { }
 }

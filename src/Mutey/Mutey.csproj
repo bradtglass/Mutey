@@ -26,10 +26,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Views" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="Icons\*" />
       <Resource Include="Icons\*" />
     </ItemGroup>
