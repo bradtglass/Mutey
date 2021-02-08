@@ -29,7 +29,7 @@ namespace Discord.Trial
 
             Process process = discordProcesses[0];
 
-            UiAutomationCall call = new TrialCall("Discord", process.MainWindowHandle);
+            UiAutomationCall call = new DiscordAppWideCall(process);
 
             Console.WriteLine("Call created, press enter to send toggle command...");
 
@@ -42,13 +42,27 @@ namespace Discord.Trial
                     Console.WriteLine("Sending toggle...");
                     call.Toggle();
                     Console.WriteLine("Toggle sent");
-                    Console.WriteLine();
+                }
+                else if(line.Equals("M", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Sending mute...");
+                    call.Mute();
+                    Console.WriteLine("Mute sent");
+                }
+                else if(line.Equals("U", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Sending unmute...");
+                    call.Unmute();
+                    Console.WriteLine("Unmute sent");
                 }
                 else
                 {
                     Console.WriteLine("Exitting trial...");
                     return;
                 }
+                
+                Console.WriteLine($"State is now: {call.GetState()}");
+                Console.WriteLine();
             }
         }
     }

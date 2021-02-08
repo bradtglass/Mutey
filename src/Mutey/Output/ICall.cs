@@ -21,6 +21,11 @@ namespace Mutey.Output
         /// Indicates if mute control can be set explicitly.
         /// </summary>
         bool CanMuteUnmute { get; }
+        
+        /// <summary>
+        /// Indicates if this call can detect changes to the mute state.
+        /// </summary>
+        bool CanRaiseMuteStateChanged { get; }
 
         /// <summary>
         /// Toggle the mute state.
@@ -37,6 +42,16 @@ namespace Mutey.Output
         /// </summary>
         void Unmute();
 
+        /// <summary>
+        /// Gets the current mute state.
+        /// </summary>
+        MuteState GetState();
+        
+        /// <summary>
+        /// Raised when the mute state of the call changes, only raised if <see cref="CanRaiseMuteStateChanged"/> is <see langword="true"/>.
+        /// </summary>
+        event EventHandler? MuteStateChanged; 
+        
         /// <summary>
         /// Raised when the call ends.
         /// </summary>
