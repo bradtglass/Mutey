@@ -5,6 +5,7 @@
                          xmlns:tb="http://www.hardcodet.net/taskbar"
                          xmlns:p="http://prismlibrary.com/"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:mutey="clr-namespace:Mutey"
                          mc:Ignorable="d"
                          xmlns:vm="clr-namespace:Mutey.ViewModels"
                          ShutdownMode="OnExplicitShutdown">
@@ -12,6 +13,7 @@
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}" 
                         ToolTipText="Mutey"
+                        LeftClickCommand="{Binding Mutey.PrimaryCall.ToggleCommand}"
                         DoubleClickCommand="{Binding OpenCommand}">
             <tb:TaskbarIcon.Style>
                 <Style TargetType="{x:Type tb:TaskbarIcon}">
@@ -20,10 +22,10 @@
                         <DataTrigger Binding="{Binding Mutey.ActiveConnections.Count}" Value="0">
                             <Setter Property="IconSource" Value="Icons/microphone-black.ico" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Mutey.PrimaryCall.IsMuted}" Value="true">
+                        <DataTrigger Binding="{Binding Mutey.PrimaryCall.MuteState}" Value="{x:Static mutey:MuteState.Muted}">
                             <Setter Property="IconSource" Value="Icons/microphone-red.ico" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Mutey.PrimaryCall.IsMuted}" Value="false">
+                        <DataTrigger Binding="{Binding Mutey.PrimaryCall.MuteState}" Value="{x:Static mutey:MuteState.Unmuted}">
                             <Setter Property="IconSource" Value="Icons/microphone-green.ico" />
                         </DataTrigger>
                     </Style.Triggers>

@@ -87,6 +87,8 @@ namespace Mutey.Output
             }
         }
 
+        #pragma warning disable CS0067
         public override event EventHandler? MuteStateChanged;
+        #pragma warning restore CS0067
     }
 }

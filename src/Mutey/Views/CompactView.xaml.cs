@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Windows;
 
 namespace Mutey.Views
 {
-    public partial class CompactView : Window
+    public partial class CompactView
     {
         public CompactView()
         {

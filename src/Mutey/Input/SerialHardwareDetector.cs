@@ -34,13 +34,14 @@ namespace Mutey.Input
                 if (guid == null || guid.ToString()?.ToUpper() != "{4D36E978-E325-11CE-BFC1-08002BE10318}")
                     continue; // Skip all devices except device class "PORTS"
 
-                string? description = instance.GetPropertyValue("Caption").ToString();
-                string? manufacturer = instance.GetPropertyValue("Manufacturer").ToString();
-                string? deviceId = instance.GetPropertyValue("PnpDeviceID").ToString();
+                string description = (string) instance.GetPropertyValue("Caption");
+                string manufacturer = (string) instance.GetPropertyValue("Manufacturer");
+                string deviceId = (string) instance.GetPropertyValue("PnpDeviceID");
                 // ReSharper disable once StringLiteralTypo
                 string registryPath = "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Enum\\" + deviceId +
                                       "\\Device Parameters";
-                string portName = Registry.GetValue(registryPath, "PortName", "").ToString();
+                string portName = (string) (Registry.GetValue(registryPath, "PortName", "")
+                                            ?? throw new InvalidOperationException("Port name cannot be null"));
 
                 int comPosition = description.IndexOf(" (COM", StringComparison.OrdinalIgnoreCase);
                 if (comPosition > 0) // remove COM port from description

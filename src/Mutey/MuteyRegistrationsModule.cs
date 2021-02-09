@@ -1,11 +1,11 @@
-﻿using Mutey.Output;
-using Mutey.ViewModels;
+﻿using Mutey.Input;
+using Mutey.Output;
 using Prism.Ioc;
 using Prism.Modularity;
 
 namespace Mutey
 {
-    public class OutputRegistrationsModule : IModule
+    public class MuteyRegistrationsModule : IModule
     {
         public void RegisterTypes(IContainerRegistry containerRegistry) { }
 
@@ -13,6 +13,7 @@ namespace Mutey
         {
             IMutey mutey = containerProvider.Resolve<IMutey>();
             mutey.RegisterApp(new DiscordApp());
+            mutey.RegisterHardware(new SerialHardwareDetector());
             mutey.FullRefresh();
         }
     }

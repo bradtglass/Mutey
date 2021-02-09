@@ -5,10 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using Mutey.Input;
 using Mutey.Output;
+using Prism.Mvvm;
 
 namespace Mutey.ViewModels
 {
-    public class MuteyViewModel : IMutey
+    internal class MuteyViewModel :BindableBase, IMutey
     {
         private readonly List<IConferencingAppRegistration> appRegistrations = new();
 
@@ -58,14 +59,8 @@ namespace Mutey.ViewModels
         private readonly ObservableCollection<IConferenceConnection> connections = new();
         public ReadOnlyObservableCollection<IConferenceConnection> ActiveConnections { get; }
         
-        private readonly List<ICall> calls = new();
-        public IEnumerable<ICall> ActiveCalls => calls;
-    
-
-        private void AttachToActiveHardware(IMuteHardware hardware)
-        {
-            
-        }
+        private readonly List<CallViewModel> calls = new();
+        public IEnumerable<CallViewModel> ActiveCalls => calls;
 
         private void AddConnection(IConferenceConnection connection)
         {
@@ -80,20 +75,27 @@ namespace Mutey.ViewModels
 
         private void AddActiveCall(ICall call)
         {
-            calls.Add(call);
+            CallViewModel viewModel = new(call);
+            
+            calls.Add(viewModel);
             call.Ended += (_, _) =>
             {
-                calls.Remove(call);
+                calls.Remove(viewModel);
 
-                if (ReferenceEquals(PrimaryCall, call))
+                if (ReferenceEquals(PrimaryCall, viewModel))
                     PrimaryCall = null;
             };
 
-            PrimaryCall = call;
+            PrimaryCall = viewModel;
         }
-        
-        public ICall? PrimaryCall { get; private set; }
 
+        private CallViewModel? primaryCall;
+
+        public CallViewModel? PrimaryCall
+        {
+            get => primaryCall;
+            private set => SetProperty(ref primaryCall, value);
+        }
         private IConferenceConnection? CheckProcess(Process process)
             => appRegistrations
                 .Where(appRegistration => appRegistration.IsMatch(process))
