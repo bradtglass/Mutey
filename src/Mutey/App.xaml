@@ -1,9 +1,9 @@
-﻿<dryIoc:PrismApplication x:Class="Mutey.App"
+﻿<p:PrismApplication x:Class="Mutey.App"
                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:tb="http://www.hardcodet.net/taskbar"
-                         xmlns:dryIoc="http://prismlibrary.com/"
+                         xmlns:p="http://prismlibrary.com/"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          mc:Ignorable="d"
                          xmlns:vm="clr-namespace:Mutey.ViewModels"
@@ -11,16 +11,32 @@
     <Application.Resources>
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}" 
-                        IconSource="{Binding IconImage}"
                         ToolTipText="Mutey"
                         DoubleClickCommand="{Binding OpenCommand}">
+            <tb:TaskbarIcon.Style>
+                <Style TargetType="{x:Type tb:TaskbarIcon}">
+                    <Setter Property="IconSource" Value="Icons/microphone-blue.ico" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Mutey.ActiveConnections.Count}" Value="0">
+                            <Setter Property="IconSource" Value="Icons/microphone-black.ico" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Mutey.PrimaryCall.IsMuted}" Value="true">
+                            <Setter Property="IconSource" Value="Icons/microphone-red.ico" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Mutey.PrimaryCall.IsMuted}" Value="false">
+                            <Setter Property="IconSource" Value="Icons/microphone-green.ico" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </tb:TaskbarIcon.Style>
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Open" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="About" Command="{Binding AboutCommand}" />
                     <Separator/>
                     <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
     </Application.Resources>
-</dryIoc:PrismApplication>
+</p:PrismApplication>

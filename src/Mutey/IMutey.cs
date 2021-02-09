@@ -1,7 +1,7 @@
 ﻿using Mutey.Input;
 using Mutey.Output;
 
-namespace Mutey.ViewModels
+namespace Mutey
 {
     public interface IMutey
     {

@@ -34,6 +34,7 @@ namespace Mutey
             containerRegistry.RegisterSingleton<AppViewModel>();
             containerRegistry.RegisterManySingleton<MuteyViewModel>(typeof(MuteyViewModel), typeof(IMutey));
             containerRegistry.RegisterSingleton<CompactView>();
+            containerRegistry.RegisterSingleton<AboutWindow>();
         }
 
         protected override Window? CreateShell()

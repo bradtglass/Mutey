@@ -11,6 +11,3 @@ Overall the aim is to provide a software interface for Windows that can listen o
 - Auto detect conferencing software startup
 - Toggle mute without switching active application
 - Display current state of mute
-
-## TODO
-- Attribute icon in app about: <div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
