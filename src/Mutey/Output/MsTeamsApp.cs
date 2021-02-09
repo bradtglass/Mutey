@@ -5,7 +5,7 @@ namespace Mutey.Output
 {
     public class MsTeamsApp : ConferencingAppRegistration
     {
-        protected override string ProcessName { get; } = "teams.exe";
+        protected override string ModuleName { get; } = "teams.exe";
         protected override string IconName { get; } = "teams.jpg";
         
         public override string Name { get; } = "Microsoft Teams";

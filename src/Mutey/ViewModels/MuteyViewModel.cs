@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using Mutey.Input;
@@ -7,7 +8,7 @@ using Mutey.Output;
 
 namespace Mutey.ViewModels
 {
-    public class MuteyViewModel
+    public class MuteyViewModel : IMutey
     {
         private readonly List<IConferencingAppRegistration> appRegistrations = new();
 
@@ -26,6 +27,8 @@ namespace Mutey.ViewModels
         public MuteyViewModel(IMuteHardwareManager hardwareManager)
         {
             this.hardwareManager = hardwareManager;
+
+            ActiveConnections = new ReadOnlyObservableCollection<IConferenceConnection>(connections);
         }
 
         /// <summary>
@@ -52,8 +55,8 @@ namespace Mutey.ViewModels
             }
         }
 
-        private readonly List<IConferenceConnection> connections = new();
-        public IEnumerable<IConferenceConnection> ActiveConnections => connections;
+        private readonly ObservableCollection<IConferenceConnection> connections = new();
+        public ReadOnlyObservableCollection<IConferenceConnection> ActiveConnections { get; }
         
         private readonly List<ICall> calls = new();
         public IEnumerable<ICall> ActiveCalls => calls;

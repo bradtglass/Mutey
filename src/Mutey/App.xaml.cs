@@ -19,7 +19,11 @@ namespace Mutey
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         protected override IModuleCatalog CreateModuleCatalog()
-            => new ModuleCatalog(new[] {new ModuleInfo(typeof(TaskBarModule))});
+            => new ModuleCatalog(new[]
+            {
+                new ModuleInfo(typeof(TaskBarModule)),
+                new ModuleInfo(typeof(OutputRegistrationsModule))
+            });
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
@@ -27,6 +31,9 @@ namespace Mutey
             ViewModelLocationProvider.Register<CompactView, AppViewModel>();
 
             containerRegistry.RegisterSingleton<IMuteHardwareManager, MuteHardwareManager>();
+            containerRegistry.RegisterSingleton<AppViewModel>();
+            containerRegistry.RegisterManySingleton<MuteyViewModel>(typeof(MuteyViewModel), typeof(IMutey));
+            containerRegistry.RegisterSingleton<CompactView>();
         }
 
         protected override Window? CreateShell()

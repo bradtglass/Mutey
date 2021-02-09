@@ -7,14 +7,15 @@ namespace Mutey.Output
 {
     public abstract class ConferencingAppRegistration : IConferencingAppRegistration
     {
-        protected abstract string ProcessName { get; }
+        protected abstract string ModuleName { get; }
 
         protected abstract string IconName { get; }
 
         public abstract string Name { get; }
 
         public bool IsMatch(Process process)
-            => process.ProcessName.Equals(ProcessName, StringComparison.OrdinalIgnoreCase);
+            => process.MainWindowHandle != IntPtr.Zero &&
+               string.Equals(process.MainModule?.ModuleName, ModuleName, StringComparison.OrdinalIgnoreCase);
 
         public ImageSource LoadIcon()
         {

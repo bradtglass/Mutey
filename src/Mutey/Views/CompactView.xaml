@@ -3,16 +3,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:Mutey.Views"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:vm="clr-namespace:Mutey.ViewModels"
         mc:Ignorable="d"
         Title="CompactView" 
         Height="450" Width="300"
         d:DataContext="{d:DesignInstance vm:AppViewModel}">
-    <Grid>
-        <Menu>
-            <MenuItem Header="Apps">
-            </MenuItem>
-        </Menu>
-    </Grid>
+    <StackPanel>
+        <GroupBox Header="Hardware">
+            
+        </GroupBox>
+        <GroupBox Header="Output">
+            <ListBox ItemsSource="{Binding Mutey.ActiveConnections}" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DefaultCall.Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+    </StackPanel>
 </Window>

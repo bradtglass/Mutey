@@ -11,7 +11,8 @@
     <Application.Resources>
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}" 
-                        IconSource="Icons/microphone-blue.ico"
+                        IconSource="{Binding IconImage}"
+                        ToolTipText="Mutey"
                         DoubleClickCommand="{Binding OpenCommand}">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>

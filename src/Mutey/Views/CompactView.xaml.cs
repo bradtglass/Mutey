@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace Mutey.Views
 {
@@ -6,7 +7,15 @@ namespace Mutey.Views
     {
         public CompactView()
         {
+            Closing += OnClosing;
+
             InitializeComponent();
+        }
+
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            Hide();
         }
     }
 }
