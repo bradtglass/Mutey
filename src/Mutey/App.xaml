@@ -11,6 +11,7 @@
                          ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <tb:TaskbarIcon x:Key="TaskbarIcon"
+                        Name="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}" 
                         ToolTipText="Mutey"
                         LeftClickCommand="{Binding Mutey.ToggleCommand}"
@@ -32,7 +33,7 @@
                 <ContextMenu>
                     <MenuItem Header="Open" Command="{Binding OpenCommand}" />
                     <MenuItem Header="About" Command="{Binding AboutCommand}" />
-                    <Separator/>
+                    <Separator />
                     <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

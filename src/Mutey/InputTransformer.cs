@@ -24,7 +24,7 @@ namespace Mutey
 
         public bool SmartPtt { get; set; } = true;
 
-        public TimeSpan SmartPttActivationDuration { get; set; } = TimeSpan.FromSeconds(1.5);
+        public TimeSpan SmartPttActivationDuration { get; set; } = TimeSpan.FromSeconds(0.5);
         public event EventHandler<MuteAction>? ActionRequired;
 
         public void Transform(HardwareType hardwareType, HardwareMessageType messageType)
@@ -37,7 +37,7 @@ namespace Mutey
             }
             else
             {
-                TimeSpan duration = validLastInput.Timestamp - now;
+                TimeSpan duration = now - validLastInput.Timestamp;
 
                 if (duration < inputCooldown)
                     return;

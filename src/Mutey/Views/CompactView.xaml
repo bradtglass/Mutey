@@ -5,25 +5,93 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:vm="clr-namespace:Mutey.ViewModels"
         mc:Ignorable="d"
         Title="CompactView" 
         Height="450" Width="300"
         d:DataContext="{d:DesignInstance vm:AppViewModel}">
     <StackPanel>
-        <GroupBox Header="Hardware">
-            
-        </GroupBox>
-        <GroupBox Header="Output">
-            <ListBox ItemsSource="{Binding Mutey.ActiveConnections}" >
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding DefaultCall.Name}" />
-                        </StackPanel>
+        <GroupBox Header="Input Hardware">
+            <ItemsControl ItemsSource="{Binding Mutey.PossibleHardware}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:PossibleHardwareViewModel}">
+                        <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.Mutey.ActivateHardwareCommand}"
+                                CommandParameter="{Binding}">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border CornerRadius="3" Padding="4">
+                                        <Border.Style>
+                                            <Style TargetType="{x:Type Border}">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="LightSteelBlue" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid Height="30">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="300" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBlock Grid.Column="0"
+                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                   Text="{Binding Name}" >
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsActive}">
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        
+                                        <iconPacks:PackIconFontAwesome Grid.Column="1" Kind="CheckSolid" Foreground="DarkGreen">
+                                            <iconPacks:PackIconFontAwesome.Style>
+                                                <Style TargetType="{x:Type iconPacks:PackIconFontAwesome}">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsActive}" Value="false">
+                                                            <Setter Property="Visibility" Value="Hidden" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </iconPacks:PackIconFontAwesome.Style>
+                                        </iconPacks:PackIconFontAwesome>
+                                    </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </GroupBox>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- <MenuItem Header="Input Hardware" ItemsSource="{Binding Mutey.PossibleHardware}"> -->
+            <!--     <MenuItem.ItemTemplate> -->
+            <!--         <DataTemplate> -->
+            <!--             <MenuItem Header="{Binding Name}" /> -->
+            <!--         </DataTemplate> -->
+            <!--     </MenuItem.ItemTemplate> -->
+            <!--     <MenuItem.ItemContainerStyle> -->
+            <!--         <Style TargetType="{x:Type MenuItem}" -->
+            <!--                d:DataContext="{d:DesignInstance vm:PossibleHardwareViewModel}"> -->
+            <!--             <Setter Property="Command" Value="{Binding ActivateCommand}" /> -->
+            <!--             <Style.Triggers> -->
+            <!--                 <DataTrigger Binding="{Binding IsActive}" Value="true"> -->
+            <!--                     <Setter Property="Icon" Value="{iconPacks:FontAwesome CheckSolid}" /> -->
+            <!--                 </DataTrigger> -->
+            <!--             </Style.Triggers> -->
+            <!--         </Style> -->
+            <!--     </MenuItem.ItemContainerStyle> -->
+            <!-- </MenuItem> -->
+            <!-- <MenuItem Header="Refresh" Command="{Binding Mutey.RefreshHardwareCommand}"  -->
+            <!--           Icon="{iconPacks:FontAwesome SyncSolid}"/> -->
+            <!-- <Separator /> -->
+            </GroupBox>
     </StackPanel>
 </Window>

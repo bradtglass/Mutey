@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Input;
@@ -16,7 +17,7 @@ namespace Mutey.ViewModels
 
         private readonly IMuteHardwareManager hardwareManager;
         private readonly ISystemMuteControl systemMuteControl;
-
+        private readonly SynchronizationContext synchronizationContext;
         private readonly InputTransformer transformer = new(InputTransformer.DefaultInputCooldown);
 
         private MuteState muteState;
@@ -25,6 +26,9 @@ namespace Mutey.ViewModels
         {
             this.hardwareManager = hardwareManager;
             this.systemMuteControl = systemMuteControl;
+
+            synchronizationContext = SynchronizationContext.Current ??
+                                     throw new InvalidOperationException("Failed to get synchronization context");
 
             transformer.ActionRequired += OnTransformedActionRequired;
 
@@ -108,7 +112,7 @@ namespace Mutey.ViewModels
         }
 
         private void InputDeviceOnMessageReceived(object? sender, HardwareMessageReceivedEventArgs e)
-            => transformer.Transform(e.Hardware, e.Message);
+            => synchronizationContext.Send(state => transformer.Transform(e.Hardware, e.Message), e);
 
         private void ToggleMute()
         {
@@ -132,16 +136,16 @@ namespace Mutey.ViewModels
             MuteState = e.NewState;
         }
 
-        public void ActivateHardware(object value)
+        public void ActivateHardware(object parameter)
         {
-            PossibleHardwareViewModel? viewModel = value as PossibleHardwareViewModel;
+            PossibleHardwareViewModel? viewModel = parameter as PossibleHardwareViewModel;
 
             if (viewModel == null)
             {
-                logger.Error("Value passed to method ({Value}) is not a view model", value);
+                logger.Error("Invalid parameter type to activate hardware: {Parameter}", parameter);
                 return;
             }
-
+            
             PossibleMuteHardware? hardware =
                 hardwareManager.AvailableDevices.FirstOrDefault(d => d.Name == viewModel.Name);
 
@@ -152,6 +156,9 @@ namespace Mutey.ViewModels
             }
 
             hardwareManager.ChangeDevice(hardware);
+
+            foreach (PossibleHardwareViewModel hardwareViewModel in PossibleHardware)
+                hardwareViewModel.IsActive = ReferenceEquals(hardwareViewModel, viewModel);
         }
     }
 }
