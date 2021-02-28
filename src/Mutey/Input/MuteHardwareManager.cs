@@ -21,6 +21,8 @@ namespace Mutey.Input
                 return;
 
             IMuteHardware? oldHardware = CurrentDevice;
+            if (oldHardware is IDisposable disposable) 
+                disposable.Dispose();
             IMuteHardware? newHardware = newDevice?.Connect();
 
             CurrentDevice = newHardware;

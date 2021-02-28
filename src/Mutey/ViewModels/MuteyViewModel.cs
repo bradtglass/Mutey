@@ -112,7 +112,9 @@ namespace Mutey.ViewModels
         }
 
         private void InputDeviceOnMessageReceived(object? sender, HardwareMessageReceivedEventArgs e)
-            => synchronizationContext.Send(state => transformer.Transform(e.Hardware, e.Message), e);
+            => synchronizationContext.Send(
+                state => transformer.Transform(((HardwareMessageReceivedEventArgs) state)!.Hardware,
+                    ((HardwareMessageReceivedEventArgs) state).Message), e);
 
         private void ToggleMute()
         {
@@ -136,11 +138,9 @@ namespace Mutey.ViewModels
             MuteState = e.NewState;
         }
 
-        public void ActivateHardware(object parameter)
+        private void ActivateHardware(object parameter)
         {
-            PossibleHardwareViewModel? viewModel = parameter as PossibleHardwareViewModel;
-
-            if (viewModel == null)
+            if (parameter is not PossibleHardwareViewModel viewModel)
             {
                 logger.Error("Invalid parameter type to activate hardware: {Parameter}", parameter);
                 return;
@@ -158,7 +158,9 @@ namespace Mutey.ViewModels
             hardwareManager.ChangeDevice(hardware);
 
             foreach (PossibleHardwareViewModel hardwareViewModel in PossibleHardware)
-                hardwareViewModel.IsActive = ReferenceEquals(hardwareViewModel, viewModel);
+                hardwareViewModel.IsActive = false;
+
+            viewModel.IsActive = true;
         }
     }
 }

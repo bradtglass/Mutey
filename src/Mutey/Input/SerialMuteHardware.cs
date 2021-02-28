@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using NLog;
 
@@ -22,6 +23,7 @@ namespace Mutey.Input
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly SerialPort port;
+        private readonly CancellationTokenSource cancellationTokenSource = new();
 
         public SerialMuteHardware(PossibleSerialMuteHardware possibleHardware)
         {
@@ -32,7 +34,7 @@ namespace Mutey.Input
             logger.Info("Opening connection on serial port {Name}", port.PortName);
             port.Open();
 
-            Thread portWatcherThread = new Thread(WatchPort)
+            Thread portWatcherThread = new(WatchPort)
             {
                 Priority = ThreadPriority.BelowNormal
             };
@@ -42,16 +44,20 @@ namespace Mutey.Input
 
         public void Dispose()
         {
+            cancellationTokenSource.Cancel();
             port.Dispose();
         }
 
         public PossibleMuteHardware Source { get; }
+        
         public event EventHandler<HardwareMessageReceivedEventArgs>? MessageReceived;
 
         private async void WatchPort()
         {
-            await foreach (byte[] message in ReadMessagesAsync(port.BaseStream))
+            await foreach (byte[] message in ReadMessagesAsync(port.BaseStream, cancellationTokenSource.Token))
             {
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                
                 if (MessageReceived == null)
                     continue;
 
@@ -134,14 +140,15 @@ namespace Mutey.Input
         }
 
         [SuppressMessage("ReSharper", "IteratorNeverReturns")]
-        private static async IAsyncEnumerable<byte[]> ReadMessagesAsync(Stream stream)
+        private static async IAsyncEnumerable<byte[]> ReadMessagesAsync(Stream stream,
+           [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             List<byte> data = new(7);
             byte[] buffer = new byte[8];
 
             while (true)
             {
-                int byteCount = await stream.ReadAsync(buffer, 0, 8);
+                int byteCount = await stream.ReadAsync(buffer.AsMemory(0, 8), cancellationToken);
 
                 for (int i = 0; i < byteCount; i++)
                 {
