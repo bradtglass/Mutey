@@ -1,5 +1,4 @@
 ﻿using Mutey.Input;
-using Mutey.Output;
 using Prism.Ioc;
 using Prism.Modularity;
 
@@ -12,9 +11,8 @@ namespace Mutey
         public void OnInitialized(IContainerProvider containerProvider)
         {
             IMutey mutey = containerProvider.Resolve<IMutey>();
-            mutey.RegisterApp(new DiscordApp());
             mutey.RegisterHardware(new SerialHardwareDetector());
-            mutey.FullRefresh();
+            mutey.RefreshHardware();
         }
     }
 }

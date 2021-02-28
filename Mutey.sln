@@ -9,10 +9,6 @@ ProjectSection(SolutionItems) = preProject
 	README.md = README.md
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trials", "trials", "{BAA498D1-1019-401A-86E8-F9657172C2D4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Trial", "trials\Discord.Trial\Discord.Trial.csproj", "{FFCCC25E-F35F-4203-AF18-ED8082ADE26F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,16 +16,11 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049} = {BFD0C49B-6EDC-4A53-A6E9-583A71720FEC}
-		{FFCCC25E-F35F-4203-AF18-ED8082ADE26F} = {BAA498D1-1019-401A-86E8-F9657172C2D4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FFCCC25E-F35F-4203-AF18-ED8082ADE26F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FFCCC25E-F35F-4203-AF18-ED8082ADE26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FFCCC25E-F35F-4203-AF18-ED8082ADE26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FFCCC25E-F35F-4203-AF18-ED8082ADE26F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
