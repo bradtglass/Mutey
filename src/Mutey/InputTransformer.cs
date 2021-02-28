@@ -25,7 +25,7 @@ namespace Mutey
         public bool SmartPtt { get; set; } = true;
 
         public TimeSpan SmartPttActivationDuration { get; set; } = TimeSpan.FromSeconds(1.5);
-        private event EventHandler<MuteAction>? ActionRequired;
+        public event EventHandler<MuteAction>? ActionRequired;
 
         public void Transform(HardwareType hardwareType, HardwareMessageType messageType)
         {
