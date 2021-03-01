@@ -38,9 +38,9 @@ namespace Mutey.ViewModels
             hardwareManager.AvailableDevicesChanged += (_, _) => RefreshHardware();
             hardwareManager.CurrentDeviceChanged += CurrentInputDeviceChanged;
 
-            ToggleCommand = new ActionCommand(ToggleMute);
-            RefreshHardwareCommand = new ActionCommand(RefreshHardware);
-            ActivateHardwareCommand = new ActionCommand(ActivateHardware);
+            ToggleCommand = new ActionCommand(ToggleMuteByCommand);
+            RefreshHardwareCommand = new ActionCommand(RefreshHardwareByCommand);
+            ActivateHardwareCommand = new ActionCommand(ActivateHardwareByCommand);
         }
 
         public ICommand ActivateHardwareCommand { get; }
@@ -62,6 +62,12 @@ namespace Mutey.ViewModels
             hardwareManager.RegisterHardwareDetector(detector);
         }
 
+        private void RefreshHardwareByCommand()
+        {
+            logger.Debug("User began a manual hardware refresh");
+            RefreshHardware();
+        }
+
         /// <summary>
         ///     Checks all available hardware.
         /// </summary>
@@ -80,7 +86,7 @@ namespace Mutey.ViewModels
                 PossibleHardwareViewModel?
                     viewModel = PossibleHardware.FirstOrDefault(h => h.Name == previousSelection);
                 if (viewModel != null)
-                    ActivateHardware(viewModel);
+                    ActivateHardwareByCommand(viewModel);
             }
         }
 
@@ -133,18 +139,32 @@ namespace Mutey.ViewModels
             }
         }
 
+        private void ToggleMuteByCommand()
+        {
+            logger.Debug("User invoked manual mute toggle command");
+            ToggleMute();
+        }
+
         private void MuteStateChanged(object? sender, MuteChangedEventArgs e)
         {
             MuteState = e.NewState;
         }
 
-        private void ActivateHardware(object parameter)
+        private void ActivateHardwareByCommand(object parameter)
         {
+            logger.Debug("User activated a new input hardware");
+            
             if (parameter is not PossibleHardwareViewModel viewModel)
             {
                 logger.Error("Invalid parameter type to activate hardware: {Parameter}", parameter);
                 return;
             }
+            
+            ActivateHardware(viewModel);
+        }
+        
+        private void ActivateHardware(PossibleHardwareViewModel viewModel)
+        {
             
             PossibleMuteHardware? hardware =
                 hardwareManager.AvailableDevices.FirstOrDefault(d => d.Name == viewModel.Name);

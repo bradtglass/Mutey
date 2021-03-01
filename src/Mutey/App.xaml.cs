@@ -1,10 +1,13 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using Mutey.Input;
 using Mutey.Mute;
 using Mutey.ViewModels;
 using Mutey.Views;
 using NLog;
+using NLog.Config;
+using NLog.Targets;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
@@ -16,6 +19,31 @@ namespace Mutey
     /// </summary>
     public partial class App
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            LoggingConfiguration current = LogManager.Configuration??
+                                           new LoggingConfiguration();
+            
+            ConfigureSentinelLogging(current);
+
+            LogManager.Configuration = current;
+            
+            logger.Info("Beginning startup");
+            
+            base.OnStartup(e);
+        }
+
+        [Conditional("DEBUG")]
+        private static void ConfigureSentinelLogging(LoggingConfiguration configuration)
+        {
+            NLogViewerTarget target = new("Sentinel")
+            {
+                Address = "udp://127.0.0.1:9999"
+            };
+
+            configuration.AddRule(LogLevel.Trace,LogLevel.Fatal, target);
+        }
+        
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         protected override IModuleCatalog CreateModuleCatalog()

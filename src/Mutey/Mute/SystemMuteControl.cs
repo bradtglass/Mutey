@@ -1,10 +1,15 @@
 ﻿using System;
+using JetBrains.Annotations;
 using NAudio.CoreAudioApi;
+using NLog;
 
 namespace Mutey.Mute
 {
+    [UsedImplicitly]
     public class SystemMuteControl : ISystemMuteControl, IDisposable
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+        
         private MMDevice? current;
 
         public void Dispose()
@@ -13,27 +18,33 @@ namespace Mutey.Mute
         }
 
         public void Mute()
-        {
-            using   MMDevice? activeMicrophone = GetActiveMicrophone();
-
-            if (activeMicrophone == null)
-                return;
-
-            activeMicrophone.AudioEndpointVolume.Mute = true;
-
-           InvokeStateChanged(MuteState.Muted);
-        }
+            => SetMuteState(MuteState.Muted);
 
         public void Unmute()
+            => SetMuteState(MuteState.Unmuted);
+
+        private void SetMuteState(MuteState state)
         {
-           using MMDevice? activeMicrophone = GetActiveMicrophone();
+            using MMDevice? activeMicrophone = GetActiveMicrophone();
 
             if (activeMicrophone == null)
+            {
+                logger.Warn("Cannot set state, active mic not found");
                 return;
+            }
 
-            activeMicrophone.AudioEndpointVolume.Mute = false;
+            bool newMuteValue = state == MuteState.Muted;
 
-           InvokeStateChanged(MuteState.Unmuted);
+            if (activeMicrophone.AudioEndpointVolume.Mute == newMuteValue)
+            {
+                logger.Trace("Skipping setting mute state, mic is already in correct state");
+                return;
+            }
+            
+            logger.Trace("Setting mute state of active mic ({Mic}) to {State}", activeMicrophone.FriendlyName, newMuteValue);
+            activeMicrophone.AudioEndpointVolume.Mute = newMuteValue;
+
+            InvokeStateChanged(state);
         }
 
         public MuteState GetState()
@@ -89,7 +100,7 @@ namespace Mutey.Mute
                     {
                         current.AudioEndpointVolume.OnVolumeNotification -= CurrentVolumeChanged;
                         current.Dispose();
-                        
+
                         current = defaultMic;
                         defaultMic.AudioEndpointVolume.OnVolumeNotification += CurrentVolumeChanged;
                         suppressDispose = true;
@@ -98,7 +109,7 @@ namespace Mutey.Mute
             }
             finally
             {
-                if(!suppressDispose)
+                if (!suppressDispose)
                     defaultMic.Dispose();
             }
         }
