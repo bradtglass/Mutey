@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Mutey.Input;
 using NLog;
 
@@ -15,8 +16,10 @@ namespace Mutey
 
         private readonly TimeSpan inputCooldown;
 
-        private Input? lastInput;
         private readonly object transformLock = new();
+        private DateTime? lastInput;
+        private Timer? pttActivationTimer;
+        private bool isInPttState = false;
 
         public InputTransformer(TimeSpan inputCooldown)
         {
@@ -38,11 +41,11 @@ namespace Mutey
                 logger.Trace("Received input '{Input}' at '{Timetamp}'", messageType, now);
                 if (lastInput is not { } validLastInput)
                 {
-                    ProcessFirstInput(hardwareType, messageType);
+                    DefaultProcessInput(hardwareType, messageType, now);
                 }
                 else
                 {
-                    TimeSpan duration = now - validLastInput.Timestamp;
+                    TimeSpan duration = now - validLastInput;
 
                     if (duration < inputCooldown)
                     {
@@ -50,27 +53,51 @@ namespace Mutey
                         return;
                     }
 
-                    if (validLastInput.HardwareType == HardwareType.Toggle &&
-                        hardwareType == HardwareType.Toggle &&
-                        validLastInput.MessageType == HardwareMessageType.StartToggle &&
-                        messageType == HardwareMessageType.EndToggle &&
-                        duration > SmartPttActivationDuration)
+                    if (isInPttState &&
+                        messageType == HardwareMessageType.EndToggle)
                     {
                         logger.Trace("End of PTT detected, raising mute action");
+                        isInPttState = false;
                         RaiseAction(MuteAction.Mute);
                     }
                     else
-                        ProcessFirstInput(hardwareType, messageType);
+                        DefaultProcessInput(hardwareType, messageType, now);
                 }
 
-                lastInput = new Input(hardwareType, messageType, now);
+                lastInput = now;
+            }
+        }
+
+        private void BeginPttActivationTimer(DateTime inputTime)
+        {
+            pttActivationTimer?.Dispose();
+
+            pttActivationTimer = new Timer(TryInitiatePtt, inputTime, SmartPttActivationDuration,
+                Timeout.InfiniteTimeSpan);
+        }
+
+        private void TryInitiatePtt(object? state)
+        {
+            DateTime inputTime = (DateTime) state!;
+
+            lock (transformLock)
+            {
+                if (lastInput == null || inputTime != lastInput.Value)
+                {
+                    logger.Trace("Not activating PTT, last input does not match expected");
+                    return;
+                }
+
+                logger.Trace("Activating PTT");
+                isInPttState = true;
+                RaiseAction(MuteAction.Unmute);
             }
         }
 
         private void RaiseAction(MuteAction action)
             => ActionRequired?.Invoke(this, action);
 
-        private void ProcessFirstInput(HardwareType hardwareType, HardwareMessageType messageType)
+        private void DefaultProcessInput(HardwareType hardwareType, HardwareMessageType messageType, DateTime inputTime)
         {
             if (hardwareType == HardwareType.Unknown)
             {
@@ -83,7 +110,8 @@ namespace Mutey
                 logger.Warn("Cannot process input for unknown message type");
                 return;
             }
-            
+
+            isInPttState = false;
             switch (hardwareType)
             {
                 case HardwareType.Toggle:
@@ -91,9 +119,12 @@ namespace Mutey
                     {
                         case HardwareMessageType.StartToggle:
                             logger.Trace("Raising toggle action");
+                            BeginPttActivationTimer(inputTime);
                             RaiseAction(MuteAction.Toggle);
                             return;
                         case HardwareMessageType.EndToggle:
+                            pttActivationTimer?.Dispose();
+                            pttActivationTimer = null;
                             logger.Trace("Message of end toggle requires no action");
                             return;
                         default:
@@ -102,20 +133,6 @@ namespace Mutey
                 default:
                     throw new ArgumentOutOfRangeException(nameof(hardwareType), hardwareType, null);
             }
-        }
-
-        private readonly struct Input
-        {
-            public Input(HardwareType hardwareType, HardwareMessageType messageType, DateTime timestamp)
-            {
-                HardwareType = hardwareType;
-                MessageType = messageType;
-                Timestamp = timestamp;
-            }
-
-            public HardwareType HardwareType { get; }
-            public HardwareMessageType MessageType { get; }
-            public DateTime Timestamp { get; }
         }
     }
 }

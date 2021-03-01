@@ -95,13 +95,13 @@ namespace Mutey.ViewModels
             switch (e)
             {
                 case MuteAction.Mute:
-                    systemMuteControl.Mute();
+                    synchronizationContext.Send(_ => systemMuteControl.Mute(), null);
                     break;
                 case MuteAction.Unmute:
-                    systemMuteControl.Unmute();
+                    synchronizationContext.Send(_ => systemMuteControl.Unmute(), null);
                     break;
                 case MuteAction.Toggle:
-                    ToggleMute();
+                    synchronizationContext.Send(_ => ToggleMute(), null);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(e), e, null);
@@ -118,9 +118,7 @@ namespace Mutey.ViewModels
         }
 
         private void InputDeviceOnMessageReceived(object? sender, HardwareMessageReceivedEventArgs e)
-            => synchronizationContext.Send(
-                state => transformer.Transform(((HardwareMessageReceivedEventArgs) state)!.Hardware,
-                    ((HardwareMessageReceivedEventArgs) state).Message), e);
+            => transformer.Transform(e.Hardware, e.Message);
 
         private void ToggleMute()
         {
