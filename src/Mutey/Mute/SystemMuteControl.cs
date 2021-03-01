@@ -50,10 +50,22 @@ namespace Mutey.Mute
         public MuteState GetState()
         {
             using MMDevice? device = GetActiveMicrophone();
-            if (device == null || device.State != DeviceState.Active)
+            if (device == null)
+            {
+                logger.Debug("Cannot get state, no active mic");
                 return MuteState.Unknown;
+            }
 
-            return device.AudioEndpointVolume.Mute ? MuteState.Muted : MuteState.Unmuted;
+            if (device.State != DeviceState.Active)
+            {
+                logger.Debug("Cannot get state, the default mic is not active");
+                return MuteState.Unknown;
+            }
+
+            MuteState muteState = device.AudioEndpointVolume.Mute ? MuteState.Muted : MuteState.Unmuted;
+            logger.Trace("Retrieved current state of {Mic}: {State}", device.FriendlyName, muteState);
+            
+            return muteState;
         }
 
         public event EventHandler<MuteChangedEventArgs>? StateChanged;
@@ -61,6 +73,7 @@ namespace Mutey.Mute
         private void CurrentVolumeChanged(AudioVolumeNotificationData data)
         {
             MuteState state = data.Muted ? MuteState.Muted : MuteState.Unmuted;
+            logger.Trace("Receieved a notification that the default mic state had changed, new state is {State}", state);
 
             InvokeStateChanged(state);
         }
