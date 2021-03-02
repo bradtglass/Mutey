@@ -11,9 +11,10 @@ namespace Mutey.ViewModels
     [UsedImplicitly]
     internal class AppViewModel : BindableBase
     {
-        public AppViewModel(MuteyViewModel mutey, Lazy<CompactView> lazyCompactView, Lazy<AboutWindow> lazyAboutView)
+        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings, Lazy<CompactView> lazyCompactView, Lazy<AboutWindow> lazyAboutView)
         {
             Mutey = mutey;
+            Settings = settings;
             QuitCommand = new ActionCommand(() => Application.Current.Shutdown());
             AboutCommand = new ActionCommand(() => lazyAboutView.Value.Show());
             OpenCommand = new ActionCommand(() => lazyCompactView.Value.Show());
@@ -25,5 +26,7 @@ namespace Mutey.ViewModels
         
         public ICommand AboutCommand { get; }
         public ICommand OpenCommand { get; }
+
+        public SettingsViewModel Settings { get; }
     }
 }

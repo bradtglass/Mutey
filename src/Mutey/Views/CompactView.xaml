@@ -12,14 +12,40 @@
         Title="Mutey"
         Height="450" Width="300"
         d:DataContext="{d:DesignInstance vm:AppViewModel}">
-    <StackPanel>
-        <Button Command="{Binding Mutey.RefreshHardwareCommand}"
+    <DockPanel>
+        <Button DockPanel.Dock="Top"
+                Command="{Binding Mutey.RefreshHardwareCommand}"
                 HorizontalAlignment="Right" Margin="5">
             <iconPacks:PackIconFontAwesome Kind="SyncSolid"
                                            Width="16" Height="16"
                                            Margin="2"
-                                           Foreground="#262626"/>
+                                           Foreground="#262626" />
         </Button>
+
+        <GroupBox DockPanel.Dock="Bottom" Header="Settings"
+                  DataContext="{Binding Settings}">
+            <StackPanel>
+                <TextBlock FontWeight="Bold">Transform Mode</TextBlock>
+                <CheckBox IsChecked="{Binding IsPttEnabled}" Margin="5">Push-To-Talk</CheckBox>
+                <CheckBox IsChecked="{Binding IsToggleEnabled}" Margin="5">Toggle</CheckBox>
+
+                <Expander Header="Advanced">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="10">Smart PTT Activation (ms)</TextBlock>
+                            <TextBox Text="{Binding SmartPttActivationMilliSeconds}" Width="50" Margin="10" />
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+                
+                <Button HorizontalAlignment="Right"
+                        Width="50"
+                        Command="{Binding SaveCommand}">
+                    Save
+                </Button>
+            </StackPanel>
+        </GroupBox>
+
         <GroupBox Header="Input Hardware">
             <StackPanel Orientation="Vertical">
                 <TextBlock Margin="5">
@@ -56,7 +82,7 @@
                                                     <Run Text="{Binding Name, Mode=OneWay}" />
                                                     <Run Text="{Binding Type, Mode=OneWay, StringFormat={} ({0}) }"
                                                          FontWeight="Light"
-                                                         FontSize="10"/>
+                                                         FontSize="10" />
                                                 </TextBlock>
                                             </Grid>
                                         </Border>
@@ -79,5 +105,5 @@
                 </ItemsControl>
             </StackPanel>
         </GroupBox>
-    </StackPanel>
+    </DockPanel>
 </Window>

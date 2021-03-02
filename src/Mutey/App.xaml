@@ -14,8 +14,7 @@
                         Name="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}" 
                         ToolTipText="Mutey"
-                        LeftClickCommand="{Binding Mutey.ToggleCommand}"
-                        DoubleClickCommand="{Binding OpenCommand}">
+                        LeftClickCommand="{Binding Mutey.ToggleCommand}">
             <tb:TaskbarIcon.Style>
                 <Style TargetType="{x:Type tb:TaskbarIcon}">
                     <Setter Property="IconSource" Value="Icons/microphone-blue.ico" />
