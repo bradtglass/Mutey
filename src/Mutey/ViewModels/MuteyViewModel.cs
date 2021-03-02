@@ -164,6 +164,8 @@ namespace Mutey.ViewModels
         
         private void ActivateHardware(PossibleHardwareViewModel viewModel)
         {
+            if(viewModel.IsActive)
+                return;
             
             PossibleMuteHardware? hardware =
                 hardwareManager.AvailableDevices.FirstOrDefault(d => d.Name == viewModel.Name);
