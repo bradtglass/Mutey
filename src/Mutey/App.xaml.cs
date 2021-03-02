@@ -55,6 +55,8 @@ namespace Mutey
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            
+            
             logger.Info("Registering types with Prism");
             
             ViewModelLocationProvider.Register<TaskbarIcon, AppViewModel>();

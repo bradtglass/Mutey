@@ -35,7 +35,8 @@ namespace Mutey.ViewModels
             systemMuteControl.StateChanged += MuteStateChanged;
             MuteState = systemMuteControl.GetState();
 
-            hardwareManager.AvailableDevicesChanged += (_, _) => RefreshHardware();
+            hardwareManager.AvailableDevicesChanged +=
+                (_, _) => synchronizationContext.Post(_ => RefreshHardware(), null);
             hardwareManager.CurrentDeviceChanged += CurrentInputDeviceChanged;
 
             ToggleCommand = new ActionCommand(ToggleMuteByCommand);
