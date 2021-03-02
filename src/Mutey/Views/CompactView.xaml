@@ -8,52 +8,76 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:vm="clr-namespace:Mutey.ViewModels"
         mc:Ignorable="d"
-        Title="CompactView"
+        ResizeMode="NoResize"
+        Title="Mutey"
         Height="450" Width="300"
         d:DataContext="{d:DesignInstance vm:AppViewModel}">
     <StackPanel>
+        <Button Command="{Binding Mutey.RefreshHardwareCommand}"
+                HorizontalAlignment="Right" Margin="5">
+            <iconPacks:PackIconFontAwesome Kind="SyncSolid"
+                                           Width="16" Height="16"
+                                           Margin="2"
+                                           Foreground="#262626"/>
+        </Button>
         <GroupBox Header="Input Hardware">
-            <ItemsControl ItemsSource="{Binding Mutey.PossibleHardware}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type vm:PossibleHardwareViewModel}">
-                        <Button
-                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.Mutey.ActivateHardwareCommand}"
-                            CommandParameter="{Binding}">
-                            <Button.Template>
-                                <ControlTemplate>
-                                    <Border Name="Border" CornerRadius="2" Padding="4" Background="Transparent">
-                                        <Grid Height="30">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="30" />
-                                                <ColumnDefinition Width="300" />
-                                            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Vertical">
+                <TextBlock Margin="5">
+                    <Run Text="{Binding Mutey.PossibleHardware.Count, Mode=OneWay}" />
+                    <Run>Available Device(s)</Run>
+                </TextBlock>
 
-                                            <iconPacks:PackIconFontAwesome x:Name="Icon" Grid.Column="0" Kind="CheckSolid"
-                                                                           Width="16" Height="16" 
-                                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                           Foreground="DarkGreen" Visibility="Hidden" />
-                                            
-                                            <TextBlock Name="Text" Grid.Column="1"
-                                                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                       Text="{Binding Name}" />
-                                        </Grid>
-                                    </Border>
-                                    
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="LightSteelBlue" />
-                                        </Trigger>
-                                        <DataTrigger Binding="{Binding IsActive}" Value="true">
-                                            <Setter TargetName="Text" Property="FontWeight" Value="Bold" />
-                                            <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Mutey.PossibleHardware}" Margin="0 10">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:PossibleHardwareViewModel}">
+                            <Button
+                                Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.Mutey.ActivateHardwareCommand}"
+                                CommandParameter="{Binding}">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Border Name="Border" CornerRadius="2" Padding="4" Background="Transparent"
+                                                BorderThickness="1" BorderBrush="#050505">
+                                            <Grid Height="24" ToolTip="{Binding Id}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30" />
+                                                    <ColumnDefinition Width="300" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <iconPacks:PackIconFontAwesome x:Name="Icon" Grid.Column="0"
+                                                                               Kind="CheckSolid"
+                                                                               Width="16" Height="16"
+                                                                               HorizontalAlignment="Center"
+                                                                               VerticalAlignment="Center"
+                                                                               Foreground="DarkGreen"
+                                                                               Visibility="Hidden" />
+
+                                                <TextBlock Name="Text" Grid.Column="1"
+                                                           HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <Run Text="{Binding Name, Mode=OneWay}" />
+                                                    <Run Text="{Binding Type, Mode=OneWay, StringFormat={} ({0}) }"
+                                                         FontWeight="Light"
+                                                         FontSize="10"/>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Border" Property="Background"
+                                                        Value="LightSteelBlue" />
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding IsActive}" Value="true">
+                                                <Setter TargetName="Text" Property="FontWeight" Value="Bold" />
+                                                <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </GroupBox>
     </StackPanel>
 </Window>

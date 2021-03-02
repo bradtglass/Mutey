@@ -6,6 +6,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using NLog;
 
 namespace Mutey.Input
@@ -54,15 +55,27 @@ namespace Mutey.Input
 
         private async void WatchPort()
         {
-            await foreach (byte[] message in ReadMessagesAsync(port.BaseStream, cancellationTokenSource.Token))
+            try
             {
-                cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                
-                if (MessageReceived == null)
-                    continue;
+                await foreach (byte[] message in ReadMessagesAsync(port.BaseStream, cancellationTokenSource.Token))
+                {
+                    cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                (HardwareType hardwareType, HardwareMessageType messageType) = ProcessMessage(message);
-                MessageReceived(this, new HardwareMessageReceivedEventArgs(messageType, hardwareType));
+                    if (MessageReceived == null)
+                        continue;
+
+                    (HardwareType hardwareType, HardwareMessageType messageType) = ProcessMessage(message);
+                    MessageReceived(this, new HardwareMessageReceivedEventArgs(messageType, hardwareType));
+                }
+            }
+            catch (IOException e)
+            {
+                logger.Warn(e, "Exception captured, this can occur due to disposing of the port whilst awaiting it");
+            }
+            catch (TaskCanceledException) { }
+            catch (Exception e)
+            {
+                logger.Error(e, "Unknown exception on port watcher thread");
             }
         }
 
@@ -148,7 +161,7 @@ namespace Mutey.Input
 
             while (true)
             {
-                int byteCount = await stream.ReadAsync(buffer.AsMemory(0, 8), cancellationToken);
+                int byteCount = await stream.ReadAsync(buffer, 0, 8, cancellationToken);
 
                 for (int i = 0; i < byteCount; i++)
                 {

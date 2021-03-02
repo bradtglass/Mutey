@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net5.0-Windows</TargetFramework>
+        <TargetFramework>net472</TargetFramework>
         <UseWPF>true</UseWPF>
         <Nullable>enable</Nullable>
         <LangVersion>9</LangVersion>
+        <ApplicationIcon>Icons\microphone-blue.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

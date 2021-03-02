@@ -76,18 +76,20 @@ namespace Mutey.ViewModels
         {
             hardwareManager.ChangeDevice(null);
 
-            string? previousSelection = PossibleHardware.FirstOrDefault(h => h.IsActive)?.Name;
+            string? previousSelection = PossibleHardware.FirstOrDefault(h => h.IsActive)?.Id ??
+                                        Settings.Default.LastDeviceId;
 
             PossibleHardware.Clear();
             foreach (PossibleMuteHardware device in hardwareManager.AvailableDevices)
-                PossibleHardware.Add(new PossibleHardwareViewModel(device.FriendlyName, device.Type));
+                PossibleHardware.Add(new PossibleHardwareViewModel(device.FriendlyName, device.Type, device.LocalIdentifier));
 
             if (previousSelection != null)
             {
                 PossibleHardwareViewModel?
-                    viewModel = PossibleHardware.FirstOrDefault(h => h.Name == previousSelection);
+                    viewModel = PossibleHardware.FirstOrDefault(h => h.Id == previousSelection);
+                
                 if (viewModel != null)
-                    ActivateHardwareByCommand(viewModel);
+                    ActivateHardware(viewModel);
             }
         }
 
@@ -182,6 +184,9 @@ namespace Mutey.ViewModels
                 hardwareViewModel.IsActive = false;
 
             viewModel.IsActive = true;
+
+            Settings.Default.LastDeviceId = viewModel.Id;
+            Settings.Default.Save();
         }
     }
 }

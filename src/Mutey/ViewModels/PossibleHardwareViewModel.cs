@@ -6,15 +6,18 @@ namespace Mutey.ViewModels
     {
         private bool isActive;
 
-        public PossibleHardwareViewModel(string name, string type)
+        public PossibleHardwareViewModel(string name, string type, string id)
         {
             Name = name;
             Type = type;
+            Id = id;
         }
 
         public string Name { get; }
 
         public string Type { get; }
+        
+        public string Id { get; }
 
         public bool IsActive
         {
