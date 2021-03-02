@@ -18,7 +18,7 @@ namespace Mutey.ViewModels
         private readonly IMuteHardwareManager hardwareManager;
         private readonly ISystemMuteControl systemMuteControl;
         private readonly SynchronizationContext synchronizationContext;
-        private readonly InputTransformer transformer = new(InputTransformer.DefaultInputCooldown);
+        private readonly InputTransformer transformer = new();
 
         private MuteState muteState;
 
@@ -80,7 +80,7 @@ namespace Mutey.ViewModels
 
             PossibleHardware.Clear();
             foreach (PossibleMuteHardware device in hardwareManager.AvailableDevices)
-                PossibleHardware.Add(new PossibleHardwareViewModel(device.Name, device.Type));
+                PossibleHardware.Add(new PossibleHardwareViewModel(device.FriendlyName, device.Type));
 
             if (previousSelection != null)
             {
@@ -168,7 +168,7 @@ namespace Mutey.ViewModels
                 return;
             
             PossibleMuteHardware? hardware =
-                hardwareManager.AvailableDevices.FirstOrDefault(d => d.Name == viewModel.Name);
+                hardwareManager.AvailableDevices.FirstOrDefault(d => d.FriendlyName == viewModel.Name);
 
             if (hardware == null)
             {

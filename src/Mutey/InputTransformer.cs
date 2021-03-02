@@ -12,24 +12,29 @@ namespace Mutey
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public static readonly TimeSpan DefaultInputCooldown = TimeSpan.FromMilliseconds(50);
-
         private readonly TimeSpan inputCooldown;
+        private TimeSpan smartPttActivationDuration;
+        private TransformModes modes;
 
         private readonly object transformLock = new();
         private DateTime? lastInput;
         private Timer? pttActivationTimer;
         private bool isInPttState = false;
 
-        public InputTransformer(TimeSpan inputCooldown)
+        public InputTransformer()
         {
-            this.inputCooldown = inputCooldown;
+            inputCooldown = Settings.Default.InputCooldownDuration;
+
+            Settings.Default.PropertyChanged += (_, _) => RefreshUserSettings();
+            RefreshUserSettings();   
         }
 
-        public bool SmartPtt { get; set; } = true;
+        private void RefreshUserSettings()
+        {
+            smartPttActivationDuration = Settings.Default.SmartPttActivationDuration;
+            modes = Settings.Default.DefaultTransformMode;
+        }
 
-        public TimeSpan SmartPttActivationDuration { get; set; } = TimeSpan.FromSeconds(0.35);
-        
         public event EventHandler<MuteAction>? ActionRequired;
 
         public void Transform(HardwareType hardwareType, HardwareMessageType messageType)
@@ -72,7 +77,7 @@ namespace Mutey
         {
             pttActivationTimer?.Dispose();
 
-            pttActivationTimer = new Timer(TryInitiatePtt, inputTime, SmartPttActivationDuration,
+            pttActivationTimer = new Timer(TryInitiatePtt, inputTime, smartPttActivationDuration,
                 Timeout.InfiniteTimeSpan);
         }
 
