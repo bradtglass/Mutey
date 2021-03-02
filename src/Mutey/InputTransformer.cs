@@ -13,20 +13,20 @@ namespace Mutey
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly TimeSpan inputCooldown;
-        private TimeSpan smartPttActivationDuration;
-        private TransformModes modes;
 
         private readonly object transformLock = new();
+        private bool isInPttState;
         private DateTime? lastInput;
+        private TransformModes modes;
         private Timer? pttActivationTimer;
-        private bool isInPttState = false;
+        private TimeSpan smartPttActivationDuration;
 
         public InputTransformer()
         {
             inputCooldown = Settings.Default.InputCooldownDuration;
 
             Settings.Default.PropertyChanged += (_, _) => RefreshUserSettings();
-            RefreshUserSettings();   
+            RefreshUserSettings();
         }
 
         private void RefreshUserSettings()
@@ -54,7 +54,9 @@ namespace Mutey
 
                     if (duration < inputCooldown)
                     {
-                        logger.Trace("Input ignored because duration since last previous was {Duration} (cooldown is {Cooldown})", duration, inputCooldown);
+                        logger.Trace(
+                            "Input ignored because duration since last previous was {Duration} (cooldown is {Cooldown})",
+                            duration, inputCooldown);
                         return;
                     }
 
@@ -66,7 +68,9 @@ namespace Mutey
                         RaiseAction(MuteAction.Mute);
                     }
                     else
+                    {
                         DefaultProcessInput(hardwareType, messageType, now);
+                    }
                 }
 
                 lastInput = now;
@@ -77,6 +81,7 @@ namespace Mutey
         {
             pttActivationTimer?.Dispose();
 
+            logger.Trace("Beginning smart PTT timer");
             pttActivationTimer = new Timer(TryInitiatePtt, inputTime, smartPttActivationDuration,
                 Timeout.InfiniteTimeSpan);
         }
@@ -93,10 +98,21 @@ namespace Mutey
                     return;
                 }
 
-                logger.Trace("Activating PTT");
-                isInPttState = true;
-                RaiseAction(MuteAction.Unmute);
+                if (!modes.HasFlag(TransformModes.Ptt))
+                {
+                    logger.Warn("Not activating PTT, it is not enabled");
+                    return;
+                }
+
+                ActivatePtt();
             }
+        }
+
+        private void ActivatePtt()
+        {
+            logger.Trace("Activating PTT");
+            isInPttState = true;
+            RaiseAction(MuteAction.Unmute);
         }
 
         private void RaiseAction(MuteAction action)
@@ -117,26 +133,34 @@ namespace Mutey
             }
 
             isInPttState = false;
-            switch (hardwareType)
+            switch (messageType)
             {
-                case HardwareType.Toggle:
-                    switch (messageType)
+                case HardwareMessageType.StartToggle:
+                    if (modes == TransformModes.Ptt)
                     {
-                        case HardwareMessageType.StartToggle:
-                            logger.Trace("Raising toggle action");
-                            BeginPttActivationTimer(inputTime);
-                            RaiseAction(MuteAction.Toggle);
-                            return;
-                        case HardwareMessageType.EndToggle:
-                            pttActivationTimer?.Dispose();
-                            pttActivationTimer = null;
-                            logger.Trace("Message of end toggle requires no action");
-                            return;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
+                        logger.Trace("Mode is only PTT, activating PTT directly from start toggle");
+                        ActivatePtt();
+                        return;
                     }
+
+                    if (modes.HasFlag(TransformModes.Ptt))
+                        BeginPttActivationTimer(inputTime);
+
+                    if (modes.HasFlag(TransformModes.Toggle))
+                    {
+                        logger.Trace("Raising toggle action");
+                        RaiseAction(MuteAction.Toggle);
+                    }
+
+                    return;
+                case HardwareMessageType.EndToggle:
+                    pttActivationTimer?.Dispose();
+                    pttActivationTimer = null;
+                    logger.Trace("Message of end toggle requires no action");
+
+                    return;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(hardwareType), hardwareType, null);
+                    throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
             }
         }
     }
