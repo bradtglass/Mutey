@@ -32,6 +32,8 @@
                 <ContextMenu>
                     <MenuItem Header="Open" Command="{Binding OpenCommand}" />
                     <MenuItem Header="About" Command="{Binding AboutCommand}" />
+                    <Separator/>
+                    <MenuItem Header="Check for updates" Command="{Binding RunUserInvokedUpdateCheckCommand}" />
                     <Separator />
                     <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
                 </ContextMenu>
