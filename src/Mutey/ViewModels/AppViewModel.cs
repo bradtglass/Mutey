@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using JetBrains.Annotations;
 using Microsoft.Xaml.Behaviors.Core;
@@ -11,13 +10,13 @@ namespace Mutey.ViewModels
     [UsedImplicitly]
     internal class AppViewModel : BindableBase
     {
-        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings, Lazy<CompactView> lazyCompactView, Lazy<AboutWindow> lazyAboutView)
+        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings)
         {
             Mutey = mutey;
             Settings = settings;
             QuitCommand = new ActionCommand(() => Application.Current.Shutdown());
-            AboutCommand = new ActionCommand(() => lazyAboutView.Value.Show());
-            OpenCommand = new ActionCommand(() => lazyCompactView.Value.Show());
+            AboutCommand = new ActionCommand(() => new AboutWindow().Show());
+            OpenCommand = new ActionCommand(() => new CompactWindow().Show());
         }
 
         public MuteyViewModel Mutey { get; }
