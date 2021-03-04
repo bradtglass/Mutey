@@ -5,7 +5,7 @@
     <Setting Name="LastDeviceId" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="DefaultTransformMode" Type="Mutey.TransformMode" Scope="User">
+    <Setting Name="DefaultTransformMode" Type="Mutey.TransformModes" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="InputCooldownDuration" Type="System.TimeSpan" Scope="Application">
@@ -13,6 +13,9 @@
     </Setting>
     <Setting Name="SmartPttActivationDuration" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">00:00:00.3000000</Value>
+    </Setting>
+    <Setting Name="MuteStatPopupMode" Type="Mutey.Popup.PopupMode" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

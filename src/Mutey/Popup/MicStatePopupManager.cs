@@ -1,25 +1,61 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
 using JetBrains.Annotations;
+using NLog;
 
 namespace Mutey.Popup
 {
     [UsedImplicitly]
     public class MicStatePopupManager : IDisposable
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+        
         private readonly MicStatePopupViewModel controller;
         private readonly object currentLifetimeLock = new();
         private readonly MicStatePopup popup;
+        private readonly Dispatcher dispatcher = Application.Current.Dispatcher;
 
         private Lifetime? currentLifetime;
 
         public MicStatePopupManager()
         {
+            Settings.Default.PropertyChanged += SettingsChanged;
+
+            logger.Info("Creating new popup window");
+            
             controller = new MicStatePopupViewModel();
             popup = new MicStatePopup(controller);
 
             popup.Show();
+        }
+
+        private void SettingsChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName!=nameof(Settings.MuteStatPopupMode))
+                return;
+
+            logger.Debug("Popup mode setting updated, changing popup visibility");
+            // Lock to prevent any actions occurring on the popup until we've finished changing the state
+            lock (currentLifetimeLock)
+            {
+                switch (Settings.Default.MuteStatPopupMode)
+                {
+                    /*Technically we should probably keep the requested state separately from the actual state so we
+                     can restore it when going back to temporary mode but this seems like overkill for this 
+                     specific case currently, given how often the setting is likely to change (not very).*/
+                    case PopupMode.Temporary:
+                    case PopupMode.Off:
+                        dispatcher.Invoke(() => controller.IsVisible = false);
+                        break;
+                    case PopupMode.Permanent:
+                        dispatcher.Invoke(() => controller.IsVisible = true);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
         public void Dispose()
@@ -56,15 +92,34 @@ namespace Mutey.Popup
             timer.Stop();
             timer.Tick -= EndFlashTick;
 
+            logger.Debug("Flash has completed, attempting to hide popup");
             Lifetime lifetime = (Lifetime) timer.Tag;
             lifetime.Hide();
         }
 
         private bool ShowPopup(Lifetime lifetime)
-            => CheckLifetimeAndRunUiCallback(lifetime, m => m.controller.IsVisible = true);
+        {
+            if (Settings.Default.MuteStatPopupMode != PopupMode.Temporary)
+            {
+                logger.Debug("Skipping hiding mute state popup");
+                return true;
+            }
+            
+            logger.Debug("Showing mute state popup");
+            return CheckLifetimeAndRunUiCallback(lifetime, m => m.controller.IsVisible = true);
+        }
 
         private bool HidePopup(Lifetime lifetime)
-            => CheckLifetimeAndRunUiCallback(lifetime, m => m.controller.IsVisible = false);
+        {
+            if (Settings.Default.MuteStatPopupMode != PopupMode.Temporary)
+            {
+                logger.Debug("Skipping hiding mute state popup");
+                return true;
+            }
+
+            logger.Debug("Hiding mute state popup");
+            return CheckLifetimeAndRunUiCallback(lifetime, m => m.controller.IsVisible = false);
+        }
 
         private bool ChangeIcon(Lifetime lifetime, MuteState muteState)
             => CheckLifetimeAndRunUiCallback(lifetime, m => m.controller.State = muteState);
@@ -74,12 +129,16 @@ namespace Mutey.Popup
             lock (currentLifetimeLock)
             {
                 if (!ReferenceEquals(currentLifetime, lifetime))
+                {
+                    logger.Trace("Lifetime has expired, skipping UI callback");
                     return false;
+                }
 
-                if (Application.Current.Dispatcher.CheckAccess())
+                logger.Trace("Lifetime is valid, invoking callback");
+                if (dispatcher.CheckAccess())
                     callback(this);
                 else
-                    Application.Current.Dispatcher.Invoke(callback, this);
+                    dispatcher.Invoke(callback, this);
 
                 return true;
             }
@@ -89,6 +148,7 @@ namespace Mutey.Popup
         {
             lock (currentLifetimeLock)
             {
+                logger.Trace("Beginning a new popup lifetime");
                 currentLifetime = new Lifetime(this);
                 return currentLifetime;
             }
@@ -96,7 +156,14 @@ namespace Mutey.Popup
 
         private void ReleaseUnmanagedResources()
         {
-            popup.Close();
+            try
+            {
+                dispatcher.Invoke(() => popup.Close());
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Exception raised while closing popup window");
+            }
         }
 
         ~MicStatePopupManager()

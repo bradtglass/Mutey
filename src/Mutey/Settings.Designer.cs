@@ -67,5 +67,17 @@ namespace Mutey {
                 this["SmartPttActivationDuration"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public global::Mutey.Popup.PopupMode MuteStatPopupMode {
+            get {
+                return ((global::Mutey.Popup.PopupMode)(this["MuteStatPopupMode"]));
+            }
+            set {
+                this["MuteStatPopupMode"] = value;
+            }
+        }
     }
 }

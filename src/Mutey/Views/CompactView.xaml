@@ -7,11 +7,12 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:vm="clr-namespace:Mutey.ViewModels"
+        xmlns:popup="clr-namespace:Mutey.Popup"
         mc:Ignorable="d"
         ResizeMode="NoResize"
         Title="Mutey"
         Height="450" Width="300"
-        d:DataContext="{d:DesignInstance vm:AppViewModel}">
+        d:DataContext="{d:DesignInstance vm:AppViewModel}"> 
     <DockPanel>
         <Button DockPanel.Dock="Top"
                 Command="{Binding Mutey.RefreshHardwareCommand}"
@@ -28,7 +29,25 @@
                 <TextBlock FontWeight="Bold">Transform Mode</TextBlock>
                 <CheckBox IsChecked="{Binding IsPttEnabled}" Margin="5">Push-To-Talk</CheckBox>
                 <CheckBox IsChecked="{Binding IsToggleEnabled}" Margin="5">Toggle</CheckBox>
-
+                <GroupBox Margin="5" Header="Popup Mode">
+                    <WrapPanel Orientation="Horizontal">
+                        <RadioButton GroupName="PopupMode" Margin="5"
+                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Off}}"
+                                     ToolTip="No popups will be displayed">
+                            Off
+                        </RadioButton>
+                        <RadioButton GroupName="PopupMode" Margin="5"
+                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Temporary}}"
+                                     ToolTip="Popups will appear temporarily and then fade away">
+                            Temporary
+                        </RadioButton>
+                        <RadioButton GroupName="PopupMode" Margin="5"
+                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Permanent}}"
+                                     ToolTip="The popup is always displayed and can be repositioned">
+                            Permanent
+                        </RadioButton>
+                    </WrapPanel>
+                </GroupBox>
                 <Expander Header="Advanced">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
+using Mutey.Popup;
 using Prism.Mvvm;
 
 namespace Mutey.ViewModels
@@ -10,6 +11,8 @@ namespace Mutey.ViewModels
         private bool isPttEnabled;
         private bool isToggleEnabled;
         private int smartPttActivationMilliSeconds;
+        private PopupMode popupMode;
+
 
         public SettingsViewModel()
         {
@@ -18,8 +21,15 @@ namespace Mutey.ViewModels
             isPttEnabled = Settings.Default.DefaultTransformMode.HasFlag(TransformModes.Ptt);
             isToggleEnabled = Settings.Default.DefaultTransformMode.HasFlag(TransformModes.Toggle);
             smartPttActivationMilliSeconds = (int) Settings.Default.SmartPttActivationDuration.TotalMilliseconds;
+            popupMode = Settings.Default.MuteStatPopupMode;
         }
 
+        public PopupMode PopupMode
+        {
+            get => popupMode;
+            set => SetProperty(ref popupMode, value);
+        }
+        
         public bool IsPttEnabled
         {
             get => isPttEnabled;
@@ -51,6 +61,7 @@ namespace Mutey.ViewModels
                 modes |= TransformModes.Toggle;
 
             Settings.Default.DefaultTransformMode = modes;
+            Settings.Default.MuteStatPopupMode = PopupMode;
 
             Settings.Default.Save();
         }

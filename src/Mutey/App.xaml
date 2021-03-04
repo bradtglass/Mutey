@@ -11,6 +11,7 @@
                          ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter"/>
+        <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
 
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         Name="TaskbarIcon"
