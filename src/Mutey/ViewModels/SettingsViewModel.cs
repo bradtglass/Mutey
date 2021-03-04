@@ -12,6 +12,7 @@ namespace Mutey.ViewModels
         private bool isToggleEnabled;
         private int smartPttActivationMilliSeconds;
         private PopupMode popupMode;
+        private int popupSize;
 
 
         public SettingsViewModel()
@@ -21,9 +22,16 @@ namespace Mutey.ViewModels
             isPttEnabled = Settings.Default.DefaultTransformMode.HasFlag(TransformModes.Ptt);
             isToggleEnabled = Settings.Default.DefaultTransformMode.HasFlag(TransformModes.Toggle);
             smartPttActivationMilliSeconds = (int) Settings.Default.SmartPttActivationDuration.TotalMilliseconds;
-            popupMode = Settings.Default.MuteStatPopupMode;
+            popupMode = Settings.Default.MuteStatePopupMode;
+            popupSize = Settings.Default.MuteStatePopupSize;
         }
 
+        public int PopupSize
+        {
+            get => popupSize;
+            set => SetProperty(ref popupSize, value);
+        }
+        
         public PopupMode PopupMode
         {
             get => popupMode;
@@ -61,8 +69,9 @@ namespace Mutey.ViewModels
                 modes |= TransformModes.Toggle;
 
             Settings.Default.DefaultTransformMode = modes;
-            Settings.Default.MuteStatPopupMode = PopupMode;
-
+            Settings.Default.MuteStatePopupMode = PopupMode;
+            Settings.Default.MuteStatePopupSize = PopupSize;
+            
             Settings.Default.Save();
         }
     }

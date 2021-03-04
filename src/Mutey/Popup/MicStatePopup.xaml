@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:popup="clr-namespace:Mutey.Popup"
+        xmlns:mutey="clr-namespace:Mutey"
         mc:Ignorable="d"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -13,20 +14,14 @@
         MouseDown="MicStatePopup_OnMouseDown"
         MouseUp="MicStatePopup_OnMouseUp"
         MouseMove="MicStatePopup_OnMouseMove"
+        SizeToContent="WidthAndHeight"
         WindowStartupLocation="Manual"
         Background="{x:Null}"
-        Height="60" Width="60"
         d:DataContext="{d:DesignInstance popup:MicStatePopupViewModel}" x:ClassModifier="internal">
-    <Border CornerRadius="30">
-        <Border.Background>
-            <RadialGradientBrush>
-                <GradientStop Offset="0" Color="#353633" />
-                <GradientStop Offset="0.92" Color="#353633" />
-                <GradientStop Offset="1" Color="#bfbfbf" />
-            </RadialGradientBrush>
-        </Border.Background>
-        <Border.Style>
-            <Style TargetType="{x:Type Border}">
+    <popup:MicStatePopupControl State="{Binding State}"
+                                Size="{Binding Source={x:Static mutey:Settings.Default}, Path=MuteStatePopupSize}" >
+        <popup:MicStatePopupControl.Style>
+            <Style TargetType="{x:Type popup:MicStatePopupControl}">
                 <Setter Property="Opacity" Value="0" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsVisible}" Value="true">
@@ -34,7 +29,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation
-                                        Storyboard.TargetProperty="(Border.Opacity)"
+                                        Storyboard.TargetProperty="(popup:MicStatePopupControl.Opacity)"
                                         From="0.0" To="1.0" Duration="0:0:0.3" />
                                 </Storyboard>
                             </BeginStoryboard>
@@ -44,7 +39,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation
-                                        Storyboard.TargetProperty="(Border.Opacity)"
+                                        Storyboard.TargetProperty="(popup:MicStatePopupControl.Opacity)"
                                         From="1.0" To="0.0" Duration="0:0:1" />
                                 </Storyboard>
                             </BeginStoryboard>
@@ -52,8 +47,6 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </Border.Style>
-        <Image Stretch="UniformToFill" Margin="10"
-               Source="{Binding State, Converter={StaticResource MuteStateToIconSourceConverter}}" />
-    </Border>
+        </popup:MicStatePopupControl.Style>
+    </popup:MicStatePopupControl>
 </Window>

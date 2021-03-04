@@ -33,14 +33,14 @@ namespace Mutey.Popup
 
         private void SettingsChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName!=nameof(Settings.MuteStatPopupMode))
+            if(e.PropertyName!=nameof(Settings.MuteStatePopupMode))
                 return;
 
             logger.Debug("Popup mode setting updated, changing popup visibility");
             // Lock to prevent any actions occurring on the popup until we've finished changing the state
             lock (currentLifetimeLock)
             {
-                switch (Settings.Default.MuteStatPopupMode)
+                switch (Settings.Default.MuteStatePopupMode)
                 {
                     /*Technically we should probably keep the requested state separately from the actual state so we
                      can restore it when going back to temporary mode but this seems like overkill for this 
@@ -99,7 +99,7 @@ namespace Mutey.Popup
 
         private bool ShowPopup(Lifetime lifetime)
         {
-            if (Settings.Default.MuteStatPopupMode != PopupMode.Temporary)
+            if (Settings.Default.MuteStatePopupMode != PopupMode.Temporary)
             {
                 logger.Debug("Skipping hiding mute state popup");
                 return true;
@@ -111,7 +111,7 @@ namespace Mutey.Popup
 
         private bool HidePopup(Lifetime lifetime)
         {
-            if (Settings.Default.MuteStatPopupMode != PopupMode.Temporary)
+            if (Settings.Default.MuteStatePopupMode != PopupMode.Temporary)
             {
                 logger.Debug("Skipping hiding mute state popup");
                 return true;

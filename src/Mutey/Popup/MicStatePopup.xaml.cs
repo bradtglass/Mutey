@@ -17,8 +17,8 @@ namespace Mutey.Popup
         {
             this.controller = controller;
             DataContext = controller;
-            
-            Loaded+=OnLoaded;
+
+            Loaded += OnLoaded;
 
             InitializeComponent();
 

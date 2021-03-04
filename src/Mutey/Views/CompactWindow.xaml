@@ -29,24 +29,39 @@
                 <TextBlock FontWeight="Bold">Transform Mode</TextBlock>
                 <CheckBox IsChecked="{Binding IsPttEnabled}" Margin="5">Push-To-Talk</CheckBox>
                 <CheckBox IsChecked="{Binding IsToggleEnabled}" Margin="5">Toggle</CheckBox>
-                <GroupBox Margin="5" Header="Popup Mode">
-                    <WrapPanel Orientation="Horizontal">
-                        <RadioButton GroupName="PopupMode" Margin="5"
-                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Off}}"
-                                     ToolTip="No popups will be displayed">
-                            Off
-                        </RadioButton>
-                        <RadioButton GroupName="PopupMode" Margin="5"
-                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Temporary}}"
-                                     ToolTip="Popups will appear temporarily and then fade away">
-                            Temporary
-                        </RadioButton>
-                        <RadioButton GroupName="PopupMode" Margin="5"
-                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Permanent}}"
-                                     ToolTip="The popup is always displayed and can be repositioned">
-                            Permanent
-                        </RadioButton>
-                    </WrapPanel>
+                <GroupBox Margin="5" Header="Popup">
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Margin="5">Visibility</TextBlock>
+                        <WrapPanel Orientation="Horizontal">
+                            <RadioButton GroupName="PopupMode" Margin="5"
+                                         IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Off}}"
+                                         ToolTip="No popups will be displayed">
+                                Off
+                            </RadioButton>
+                            <RadioButton GroupName="PopupMode" Margin="5"
+                                         IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Temporary}}"
+                                         ToolTip="Popups will appear temporarily and then fade away">
+                                Temporary
+                            </RadioButton>
+                            <RadioButton GroupName="PopupMode" Margin="5"
+                                         IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Permanent}}"
+                                         ToolTip="The popup is always displayed and can be repositioned">
+                                Permanent
+                            </RadioButton>
+                        </WrapPanel>
+
+                        <TextBlock FontWeight="Bold" Margin="5 15 5 5">Size</TextBlock>
+                        <Slider HorizontalAlignment="Stretch" Margin="5" 
+                                Minimum="30" Maximum="80"
+                                Value="{Binding PopupSize, UpdateSourceTrigger=PropertyChanged}" />
+                        <Border Margin="5" HorizontalAlignment="Right"
+                                Width="80" Height="80"
+                                Background="{StaticResource CheckerboardBrush}"
+                                BorderBrush="DimGray" BorderThickness="1">
+                            <popup:MicStatePopupControl HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                        Size="{Binding PopupSize}" />
+                        </Border>
+                    </StackPanel>
                 </GroupBox>
                 <Expander Header="Advanced">
                     <StackPanel Orientation="Vertical">
