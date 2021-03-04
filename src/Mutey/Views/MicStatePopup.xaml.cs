@@ -20,6 +20,17 @@ namespace Mutey.Views
             DataContext = controller;
 
             InitializeComponent();
+
+            MoveToTopLeft();
+        }
+
+        private void MoveToTopLeft()
+        {
+            const int margin = 40;
+            
+            Point topRight = SystemParameters.WorkArea.TopRight;
+            Left = topRight.X - Width - margin;
+            Top = topRight.Y + margin;
         }
 
         public static void Flash(MuteState state)

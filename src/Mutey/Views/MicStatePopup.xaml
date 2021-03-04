@@ -13,6 +13,7 @@
         MouseDown="MicStatePopup_OnMouseDown"
         MouseUp="MicStatePopup_OnMouseUp"
         MouseMove="MicStatePopup_OnMouseMove"
+        WindowStartupLocation="Manual"
         Background="{x:Null}"
         Height="60" Width="60"
         d:DataContext="{d:DesignInstance views:MicStatePopup+Controller}">
