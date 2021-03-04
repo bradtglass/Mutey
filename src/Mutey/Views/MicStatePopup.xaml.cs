@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using NLog;
@@ -11,12 +10,11 @@ namespace Mutey.Views
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private bool isDragging;
-        private bool isPrimaryMouseDown;
-        private Point mouseDownPosition;
-
-        private MicStatePopup(Controller controller)
+        private readonly Controller controller;
+        
+        public MicStatePopup(Controller controller)
         {
+            this.controller = controller;
             DataContext = controller;
 
             InitializeComponent();
@@ -27,36 +25,35 @@ namespace Mutey.Views
         private void MoveToTopLeft()
         {
             const int margin = 40;
-            
+
             Point topRight = SystemParameters.WorkArea.TopRight;
             Left = topRight.X - Width - margin;
             Top = topRight.Y + margin;
         }
 
-        public static void Flash(MuteState state)
+        public class Controller : BindableBase
         {
-            Controller controller = new(state);
-
-            MicStatePopup popup = new(controller);
-            popup.Show();
-
-            controller.IsVisible = true;
-            Timer _ = new(p => EndPopup((MicStatePopup) p), popup, TimeSpan.FromSeconds(3),
-                Timeout.InfiniteTimeSpan);
-        }
-
-        private static void EndPopup(MicStatePopup popup)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
+            private bool isVisible;
+            private MuteState state;
+            
+            public MuteState State
             {
-                Controller controller = (Controller) popup.DataContext;
-                controller.IsVisible = false;
-            });
+                get => state;
+                set => SetProperty(ref state, value);
+            }
 
-            Thread.Sleep(TimeSpan.FromSeconds(5));
-
-            Application.Current.Dispatcher.Invoke(popup.Close);
+            public bool IsVisible
+            {
+                get => isVisible;
+                set => SetProperty(ref isVisible, value);
+            }
         }
+
+        #region Mouse Handling
+
+        private bool isDragging;
+        private bool isPrimaryMouseDown;
+        private Point mouseDownPosition;
 
         private void MicStatePopup_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -75,7 +72,7 @@ namespace Mutey.Views
 
             isPrimaryMouseDown = false;
             if (!isDragging)
-                Close();
+                controller.IsVisible = false;
         }
 
         private void MicStatePopup_OnMouseMove(object sender, MouseEventArgs e)
@@ -99,30 +96,6 @@ namespace Mutey.Views
             }
         }
 
-
-        private class Controller : BindableBase
-        {
-            private bool isVisible;
-
-
-            private MuteState state;
-
-            public Controller(MuteState state)
-            {
-                this.state = state;
-            }
-
-            public MuteState State
-            {
-                get => state;
-                set => SetProperty(ref state, value);
-            }
-
-            public bool IsVisible
-            {
-                get => isVisible;
-                set => SetProperty(ref isVisible, value);
-            }
-        }
+        #endregion
     }
 }

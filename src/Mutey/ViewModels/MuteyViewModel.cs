@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Input;
 using Mutey.Mute;
-using Mutey.Views;
 using NLog;
 using Prism.Mvvm;
 
@@ -18,15 +17,17 @@ namespace Mutey.ViewModels
 
         private readonly IMuteHardwareManager hardwareManager;
         private readonly ISystemMuteControl systemMuteControl;
+        private readonly MicStatePopupManager popupManager;
         private readonly SynchronizationContext synchronizationContext;
         private readonly InputTransformer transformer = new();
 
         private MuteState muteState;
 
-        public MuteyViewModel(IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl)
+        public MuteyViewModel(IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager)
         {
             this.hardwareManager = hardwareManager;
             this.systemMuteControl = systemMuteControl;
+            this.popupManager = popupManager;
 
             synchronizationContext = SynchronizationContext.Current ??
                                      throw new InvalidOperationException("Failed to get synchronization context");
@@ -142,7 +143,7 @@ namespace Mutey.ViewModels
         }
 
         private void NotifyMuteStateToUser(MuteState state)
-            => MicStatePopup.Flash(state);
+            => popupManager.Flash(state);
 
         private void ToggleMuteByCommand()
         {
