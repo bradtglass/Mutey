@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Input;
 using Mutey.Mute;
+using Mutey.Views;
 using NLog;
 using Prism.Mvvm;
 
@@ -140,6 +141,9 @@ namespace Mutey.ViewModels
             }
         }
 
+        private void NotifyMuteStateToUser(MuteState state)
+            => MicStatePopup.Flash(state);
+
         private void ToggleMuteByCommand()
         {
             logger.Debug("User invoked manual mute toggle command");
@@ -149,6 +153,7 @@ namespace Mutey.ViewModels
         private void MuteStateChanged(object? sender, MuteChangedEventArgs e)
         {
             MuteState = e.NewState;
+            NotifyMuteStateToUser(e.NewState);
         }
 
         private void ActivateHardwareByCommand(object parameter)

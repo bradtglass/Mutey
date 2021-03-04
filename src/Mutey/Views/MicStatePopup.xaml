@@ -1,0 +1,58 @@
+﻿<Window x:Class="Mutey.Views.MicStatePopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:views="clr-namespace:Mutey.Views"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Cursor="Hand"
+        MouseDown="MicStatePopup_OnMouseDown"
+        MouseUp="MicStatePopup_OnMouseUp"
+        MouseMove="MicStatePopup_OnMouseMove"
+        Background="{x:Null}"
+        Height="60" Width="60"
+        d:DataContext="{d:DesignInstance views:MicStatePopup+Controller}">
+    <Border CornerRadius="30">
+        <Border.Background>
+            <RadialGradientBrush>
+                <GradientStop Offset="0" Color="#353633" />
+                <GradientStop Offset="0.92" Color="#353633" />
+                <GradientStop Offset="1" Color="#bfbfbf" />
+            </RadialGradientBrush>
+        </Border.Background>
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Opacity" Value="0" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsVisible}" Value="true">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="(Border.Opacity)"
+                                        From="0.0" To="1.0" Duration="0:0:0.3" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="(Border.Opacity)"
+                                        From="1.0" To="0.0" Duration="0:0:1" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Image Stretch="UniformToFill" Margin="10"
+               Source="{Binding State, Converter={StaticResource MuteStateToIconSourceConverter}}" />
+    </Border>
+</Window>

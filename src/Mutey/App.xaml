@@ -5,29 +5,19 @@
                          xmlns:tb="http://www.hardcodet.net/taskbar"
                          xmlns:p="http://prismlibrary.com/"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:mutey="clr-namespace:Mutey"
                          mc:Ignorable="d"
                          xmlns:vm="clr-namespace:Mutey.ViewModels"
+                         xmlns:converters="clr-namespace:Mutey.Converters"
                          ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
+        <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter"/>
+
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         Name="TaskbarIcon"
-                        d:DataContext="{d:DesignInstance vm:AppViewModel}" 
+                        d:DataContext="{d:DesignInstance vm:AppViewModel}"
                         ToolTipText="Mutey"
+                        IconSource="{Binding Mutey.MuteState, Converter={StaticResource MuteStateToIconSourceConverter}}"
                         LeftClickCommand="{Binding Mutey.ToggleCommand}">
-            <tb:TaskbarIcon.Style>
-                <Style TargetType="{x:Type tb:TaskbarIcon}">
-                    <Setter Property="IconSource" Value="Icons/microphone-blue.ico" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Mutey.MuteState}" Value="{x:Static mutey:MuteState.Muted}">
-                            <Setter Property="IconSource" Value="Icons/microphone-red.ico" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Mutey.MuteState}" Value="{x:Static mutey:MuteState.Unmuted}">
-                            <Setter Property="IconSource" Value="Icons/microphone-green.ico" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </tb:TaskbarIcon.Style>
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Open" Command="{Binding OpenCommand}" />
