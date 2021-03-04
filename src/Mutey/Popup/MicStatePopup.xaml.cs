@@ -2,17 +2,16 @@
 using System.Windows;
 using System.Windows.Input;
 using NLog;
-using Prism.Mvvm;
 
-namespace Mutey.Views
+namespace Mutey.Popup
 {
-    public partial class MicStatePopup
+    internal partial class MicStatePopup
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Controller controller;
-        
-        public MicStatePopup(Controller controller)
+        private readonly MicStatePopupViewModel controller;
+
+        public MicStatePopup(MicStatePopupViewModel controller)
         {
             this.controller = controller;
             DataContext = controller;
@@ -29,24 +28,6 @@ namespace Mutey.Views
             Point topRight = SystemParameters.WorkArea.TopRight;
             Left = topRight.X - Width - margin;
             Top = topRight.Y + margin;
-        }
-
-        public class Controller : BindableBase
-        {
-            private bool isVisible;
-            private MuteState state;
-            
-            public MuteState State
-            {
-                get => state;
-                set => SetProperty(ref state, value);
-            }
-
-            public bool IsVisible
-            {
-                get => isVisible;
-                set => SetProperty(ref isVisible, value);
-            }
         }
 
         #region Mouse Handling

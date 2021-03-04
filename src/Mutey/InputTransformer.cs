@@ -35,7 +35,7 @@ namespace Mutey
             modes = Settings.Default.DefaultTransformMode;
         }
 
-        public event EventHandler<MuteAction>? ActionRequired;
+        public event EventHandler<TransformedMuteOutputEventArgs>? Transformed;
 
         public void Transform(HardwareType hardwareType, HardwareMessageType messageType)
         {
@@ -65,7 +65,7 @@ namespace Mutey
                     {
                         logger.Trace("End of PTT detected, raising mute action");
                         isInPttState = false;
-                        RaiseAction(MuteAction.Mute);
+                        RaiseTransformed(MuteAction.Mute, false);
                     }
                     else
                     {
@@ -112,11 +112,11 @@ namespace Mutey
         {
             logger.Trace("Activating PTT");
             isInPttState = true;
-            RaiseAction(MuteAction.Unmute);
+            RaiseTransformed(MuteAction.Unmute, true);
         }
 
-        private void RaiseAction(MuteAction action)
-            => ActionRequired?.Invoke(this, action);
+        private void RaiseTransformed(MuteAction action, bool ptt)
+            => Transformed?.Invoke(this, new TransformedMuteOutputEventArgs(action, ptt));
 
         private void DefaultProcessInput(HardwareType hardwareType, HardwareMessageType messageType, DateTime inputTime)
         {
@@ -149,7 +149,7 @@ namespace Mutey
                     if (modes.HasFlag(TransformModes.Toggle))
                     {
                         logger.Trace("Raising toggle action");
-                        RaiseAction(MuteAction.Toggle);
+                        RaiseTransformed(MuteAction.Toggle, false);
                     }
 
                     return;

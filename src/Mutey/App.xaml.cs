@@ -3,6 +3,7 @@ using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using Mutey.Input;
 using Mutey.Mute;
+using Mutey.Popup;
 using Mutey.ViewModels;
 using Mutey.Views;
 using NLog;
