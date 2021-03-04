@@ -29,11 +29,25 @@ namespace Mutey.Popup
             popup = new MicStatePopup(controller);
 
             popup.Show();
+
+            switch (Settings.Default.MuteStatePopupMode)
+            {
+                case PopupMode.Temporary:
+                    break;
+                case PopupMode.Permanent:
+                    controller.IsVisible = true;
+                    break;
+                case PopupMode.Off:
+                    controller.IsVisible = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void SettingsChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName!=nameof(Settings.MuteStatePopupMode))
+            if(e.PropertyName != nameof(Settings.MuteStatePopupMode))
                 return;
 
             logger.Debug("Popup mode setting updated, changing popup visibility");
@@ -144,7 +158,7 @@ namespace Mutey.Popup
             }
         }
 
-        private Lifetime BeginLifetime()
+        public Lifetime BeginLifetime()
         {
             lock (currentLifetimeLock)
             {

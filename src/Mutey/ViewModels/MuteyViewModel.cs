@@ -37,6 +37,7 @@ namespace Mutey.ViewModels
 
             systemMuteControl.StateChanged += MuteStateChanged;
             MuteState = systemMuteControl.GetState();
+            popupManager.BeginLifetime().ChangeState(MuteState);
 
             hardwareManager.AvailableDevicesChanged +=
                 (_, _) => synchronizationContext.Post(_ => RefreshHardware(), null);
