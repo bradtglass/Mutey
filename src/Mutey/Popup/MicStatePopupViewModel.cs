@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using System.Windows.Input;
+using Prism.Mvvm;
 
 namespace Mutey.Popup
 {
@@ -6,6 +7,11 @@ namespace Mutey.Popup
     {
         private bool isVisible;
         private MuteState state;
+
+        public MicStatePopupViewModel(ICommand popupPressedCommand)
+        {
+            PopupPressedCommand = popupPressedCommand;
+        }
 
         public MuteState State
         {
@@ -18,5 +24,7 @@ namespace Mutey.Popup
             get => isVisible;
             set => SetProperty(ref isVisible, value);
         }
+
+        public ICommand PopupPressedCommand { get; }
     }
 }

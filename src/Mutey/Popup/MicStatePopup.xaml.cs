@@ -13,12 +13,12 @@ namespace Mutey.Popup
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly MicStatePopupViewModel controller;
+        private readonly MicStatePopupViewModel viewModel;
 
-        public MicStatePopup(MicStatePopupViewModel controller)
+        public MicStatePopup(MicStatePopupViewModel viewModel)
         {
-            this.controller = controller;
-            DataContext = controller;
+            this.viewModel = viewModel;
+            DataContext = viewModel;
 
             Loaded += OnLoaded;
             ContentRendered += OnContentRendered;
@@ -108,8 +108,8 @@ namespace Mutey.Popup
                 return;
 
             isPrimaryMouseDown = false;
-            if (!isDragging)
-                controller.IsVisible = false;
+            if (!isDragging && viewModel.PopupPressedCommand.CanExecute(null))
+                viewModel.PopupPressedCommand.Execute(null);
         }
 
         private void MicStatePopup_OnMouseMove(object sender, MouseEventArgs e)

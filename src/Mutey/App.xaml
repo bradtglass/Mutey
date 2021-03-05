@@ -23,12 +23,12 @@
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         Name="TaskbarIcon"
                         d:DataContext="{d:DesignInstance vm:AppViewModel}"
-                        ToolTipText="Mutey"
+                        ToolTipText="{Binding Mutey.MuteState, StringFormat={} Mutey - {0}}"
                         IconSource="{Binding Mutey.MuteState, Converter={StaticResource MuteStateToIconSourceConverter}}"
                         LeftClickCommand="{Binding Mutey.ToggleCommand}">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Open" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="Settings" Command="{Binding OpenCommand}" />
                     <MenuItem Header="About" Command="{Binding AboutCommand}" />
                     <Separator />
                     <MenuItem Header="Quit" Command="{Binding QuitCommand}" />

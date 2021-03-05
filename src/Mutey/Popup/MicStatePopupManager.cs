@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
 using JetBrains.Annotations;
+using Microsoft.Xaml.Behaviors.Core;
 using NLog;
 
 namespace Mutey.Popup
@@ -25,7 +26,7 @@ namespace Mutey.Popup
 
             logger.Info("Creating new popup window");
             
-            controller = new MicStatePopupViewModel();
+            controller = new MicStatePopupViewModel(new ActionCommand(OnPopupPressed));
             popup = new MicStatePopup(controller);
 
             popup.Show();
@@ -44,6 +45,9 @@ namespace Mutey.Popup
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        private void OnPopupPressed()
+            => PopupPressed?.Invoke(this, EventArgs.Empty);
 
         private void SettingsChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -167,6 +171,8 @@ namespace Mutey.Popup
                 return currentLifetime;
             }
         }
+
+        public event EventHandler? PopupPressed;
 
         private void ReleaseUnmanagedResources()
         {

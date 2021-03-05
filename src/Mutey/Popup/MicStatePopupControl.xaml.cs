@@ -39,14 +39,11 @@ namespace Mutey.Popup
             MicStatePopupControl control = (MicStatePopupControl) d;
             int size = (int) e.NewValue;
 
-            Size original = new(control.ActualWidth, control.ActualHeight);
             using DispatcherProcessingDisabled _ = control.Dispatcher.DisableProcessing();
             control.Width = size;
             control.Height = size;
             control.ContainerBorder.CornerRadius = new CornerRadius((double) size / 2);
             control.Image.Margin = new Thickness((double) size / 5);
-
-            // control.OnRenderSizeChanged(new SizeChangedInfo(control, original, true, true));
         }
     }
 }

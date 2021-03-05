@@ -19,7 +19,8 @@
         ResizeMode="NoResize"
         WindowStartupLocation="Manual"
         Background="{x:Null}"
-        d:DataContext="{d:DesignInstance popup:MicStatePopupViewModel}" x:ClassModifier="internal">
+        d:DataContext="{d:DesignInstance popup:MicStatePopupViewModel}" x:ClassModifier="internal"
+        ToolTip="Toggle Mute">
     <popup:MicStatePopupControl State="{Binding State}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Size="{Binding Source={x:Static mutey:Settings.Default}, Path=MuteStatePopupSize}"

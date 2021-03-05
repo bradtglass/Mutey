@@ -37,6 +37,7 @@ namespace Mutey.ViewModels
 
             systemMuteControl.StateChanged += MuteStateChanged;
             MuteState = systemMuteControl.GetState();
+            popupManager.PopupPressed += (_, _) => ToggleMuteByCommand();
             popupManager.BeginLifetime().ChangeState(MuteState);
 
             hardwareManager.AvailableDevicesChanged +=
