@@ -13,10 +13,10 @@
         <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter"/>
         <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
         
-        <DrawingBrush x:Key="CheckerboardBrush" TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
+        <DrawingBrush x:Key="DarkCheckerboardBrush" TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
             <!-- Source: https://stackoverflow.com/a/47049174/9766035 -->
             <DrawingBrush.Drawing>
-                <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="LightGray"/>
+                <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="#363636"/>
             </DrawingBrush.Drawing>
         </DrawingBrush>
 

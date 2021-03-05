@@ -61,13 +61,13 @@ namespace Mutey
             logger.Info("Registering types with Prism");
             
             ViewModelLocationProvider.Register<TaskbarIcon, AppViewModel>();
-            ViewModelLocationProvider.Register<CompactWindow, AppViewModel>();
+            ViewModelLocationProvider.Register<SettingsWindow, AppViewModel>();
 
             containerRegistry.RegisterSingleton<IMuteHardwareManager, MuteHardwareManager>();
             containerRegistry.RegisterSingleton<ISystemMuteControl, SystemMuteControl>();
             containerRegistry.RegisterSingleton<AppViewModel>();
             containerRegistry.RegisterManySingleton<MuteyViewModel>(typeof(MuteyViewModel), typeof(IMutey));
-            containerRegistry.RegisterSingleton<CompactWindow>();
+            containerRegistry.RegisterSingleton<SettingsWindow>();
             containerRegistry.RegisterSingleton<AboutWindow>();
             containerRegistry.RegisterSingleton<MicStatePopupManager>();
         }

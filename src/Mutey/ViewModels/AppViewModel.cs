@@ -16,7 +16,7 @@ namespace Mutey.ViewModels
             Settings = settings;
             QuitCommand = new ActionCommand(() => Application.Current.Shutdown());
             AboutCommand = new ActionCommand(() => new AboutWindow().Show());
-            OpenCommand = new ActionCommand(() => new CompactWindow().Show());
+            OpenCommand = new ActionCommand(() => new SettingsWindow().Show());
         }
 
         public MuteyViewModel Mutey { get; }

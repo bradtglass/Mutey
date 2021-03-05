@@ -1,8 +1,8 @@
 ﻿namespace Mutey.Views
 {
-    public partial class CompactWindow
+    public partial class SettingsWindow
     {
-        public CompactWindow()
+        public SettingsWindow()
         {
             InitializeComponent();
         }
