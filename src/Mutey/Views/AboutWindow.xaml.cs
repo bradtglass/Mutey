@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Navigation;
@@ -13,15 +12,7 @@ namespace Mutey.Views
 
         public AboutWindow()
         {
-            Closing += OnClosing;
-
             InitializeComponent();
-        }
-
-        private void OnClosing(object sender, CancelEventArgs e)
-        {
-            e.Cancel = true;
-            Hide();
         }
 
         private void GithubMouseDown(object sender, MouseButtonEventArgs e)

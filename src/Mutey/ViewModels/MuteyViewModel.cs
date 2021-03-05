@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Input;
 using Mutey.Mute;
+using Mutey.Popup;
 using NLog;
 using Prism.Mvvm;
 
@@ -17,23 +18,27 @@ namespace Mutey.ViewModels
 
         private readonly IMuteHardwareManager hardwareManager;
         private readonly ISystemMuteControl systemMuteControl;
+        private readonly MicStatePopupManager popupManager;
         private readonly SynchronizationContext synchronizationContext;
         private readonly InputTransformer transformer = new();
 
         private MuteState muteState;
 
-        public MuteyViewModel(IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl)
+        public MuteyViewModel(IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager)
         {
             this.hardwareManager = hardwareManager;
             this.systemMuteControl = systemMuteControl;
+            this.popupManager = popupManager;
 
             synchronizationContext = SynchronizationContext.Current ??
                                      throw new InvalidOperationException("Failed to get synchronization context");
 
-            transformer.ActionRequired += OnTransformedActionRequired;
+            transformer.Transformed += OnTransformedActionRequired;
 
             systemMuteControl.StateChanged += MuteStateChanged;
             MuteState = systemMuteControl.GetState();
+            popupManager.PopupPressed += (_, _) => ToggleMuteByCommand();
+            popupManager.BeginLifetime().ChangeState(MuteState);
 
             hardwareManager.AvailableDevicesChanged +=
                 (_, _) => synchronizationContext.Post(_ => RefreshHardware(), null);
@@ -93,9 +98,9 @@ namespace Mutey.ViewModels
             }
         }
 
-        private void OnTransformedActionRequired(object? sender, MuteAction e)
+        private void OnTransformedActionRequired(object sender, TransformedMuteOutputEventArgs e)
         {
-            switch (e)
+            switch (e.Action)
             {
                 case MuteAction.Mute:
                     synchronizationContext.Send(_ => systemMuteControl.Mute(), null);
@@ -109,6 +114,12 @@ namespace Mutey.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException(nameof(e), e, null);
             }
+
+            MuteState currentState = systemMuteControl.GetState();
+            if (e.IsInPtt)
+                popupManager.Show(currentState);
+            else
+                popupManager.Flash(currentState);
         }
 
         private void CurrentInputDeviceChanged(object? sender, CurrentDeviceChangedEventArgs e)
@@ -144,6 +155,7 @@ namespace Mutey.ViewModels
         {
             logger.Debug("User invoked manual mute toggle command");
             ToggleMute();
+            popupManager.Flash(systemMuteControl.GetState());
         }
 
         private void MuteStateChanged(object? sender, MuteChangedEventArgs e)
