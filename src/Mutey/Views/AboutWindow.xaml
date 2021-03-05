@@ -7,42 +7,94 @@
         Title="Mutey"
         ResizeMode="NoResize"
         Height="450" Width="600"
-        WindowStyle="ToolWindow">
+        WindowStyle="ToolWindow"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
-        <DockPanel>
-            <Grid DockPanel.Dock="Bottom" Margin="5">
-                <Image HorizontalAlignment="Right" Source="../Icons/GitHub-Mark-64px.png"
-                       Cursor="Hand"
-                       Width="16" Height="16"
-                       MouseDown="GithubMouseDown" />
-            </Grid>
+        <Grid>
+            <Image HorizontalAlignment="Right" VerticalAlignment="Top"
+                   Source="../Icons/GitHub-Mark-64px.png"
+                   Cursor="Hand"
+                   Width="24" Height="24"
+                   Margin="8"
+                   MouseDown="GithubMouseDown" />
 
-            <Grid>
-                <StackPanel>
-                    <Image Source="../Icons/microphone-black.ico" HorizontalAlignment="Center" Margin="10"
-                           Width="32" Height="32" />
-                    <TextBlock Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Light">Mutey</TextBlock>
-                    <TextBlock Margin="10" TextWrapping="Wrap" MaxWidth="250">A software utility for muting conferencing applications with a hardware button.</TextBlock>
+            <StackPanel>
+                <Image Source="../Icons/microphone-blue.ico" HorizontalAlignment="Center" Margin="10"
+                       Width="32" Height="32" />
+                <TextBlock Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Light">Mutey</TextBlock>
+                <TextBlock Margin="10" TextWrapping="Wrap" MaxWidth="250">A software utility for controlling microphone mute with an input device or on-screen button.</TextBlock>
 
-                    <GroupBox Header="Attributions" Margin="20">
-                        <StackPanel>
-                            <TextBlock FontWeight="Bold">Icon</TextBlock>
-                            <TextBlock>
-                                Icons made by
-                                <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
-                                           NavigateUri="https://www.flaticon.com/authors/kiranshastry">
-                                    Kiranshastry
-                                </Hyperlink>
-                                from
-                                <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
-                                           NavigateUri="https://www.flaticon.com">
-                                    www.flaticon.com
-                                </Hyperlink>
-                            </TextBlock>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-            </Grid>
-        </DockPanel>
+                <TextBlock Margin="5" HorizontalAlignment="Center">
+                    <Run FontWeight="Medium">Version:</Run>
+                    <Run Text="{Binding Version, Mode=OneTime}" />
+                </TextBlock>
+                <TextBlock Margin="5" HorizontalAlignment="Center">
+                    <Run FontWeight="Medium">OS:</Run>
+                    <Run Text="{Binding OsInfo, Mode=OneTime}" />
+                </TextBlock>
+                <TextBlock Margin="5" HorizontalAlignment="Center">
+                    <Run FontWeight="Medium">Runtime:</Run>
+                    <Run Text="{Binding RuntimeInfo, Mode=OneTime}" />
+                </TextBlock>
+
+                <GroupBox Margin="20">
+                    <StackPanel>
+                        <TextBlock Margin="0 10" Width="450" TextWrapping="Wrap">
+                            This utility uses many open source packages, the below list is not exhaustive but hopefully captures the ones which are irreplaceable. To view an exhaustive list head to the
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://github.com/G18SSY/Mutey">
+                                GitHub repo
+                            </Hyperlink>
+                            .
+                        </TextBlock>
+
+                        <Separator Margin="10" />
+
+                        <TextBlock FontWeight="Bold" Margin="0 10 0 5">
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://github.com/PrismLibrary/Prism">
+                                Prism
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock MaxWidth="450" TextWrapping="Wrap">Prism is a fully open source version of the Prism guidance originally produced by Microsoft Patterns &amp; Practices.  Prism provides an implementation of a collection of design patterns that are helpful in writing well structured and maintainable XAML applications, including MVVM, dependency injection, commanding, event aggregation, and more.</TextBlock>
+
+                        <TextBlock FontWeight="Bold" Margin="0 10 0 5">
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://github.com/naudio/NAudio">
+                                NAudio
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock MaxWidth="450" TextWrapping="Wrap">NAudio, an audio library for .NET</TextBlock>
+
+                        <TextBlock FontWeight="Bold" Margin="0 10 0 5">
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://github.com/hardcodet/wpf-notifyicon">
+                                Hardcodet.NotifyIcon
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock MaxWidth="450" TextWrapping="Wrap">This is an implementation of a NotifyIcon (aka system tray icon or taskbar icon) for the WPF platform. It does not just rely on the Windows Forms NotifyIcon component, but is a purely independent control which leverages several features of the WPF framework in order to display rich tooltips, popups, context menus, and balloon messages. It can be used directly in code or embedded in any XAML file.</TextBlock>
+
+                        <TextBlock FontWeight="Bold" Margin="0 10 0 5">
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://www.flaticon.com/free-icon/microphone_709682?term=microphone&amp;page=1&amp;position=1&amp;page=1&amp;position=1&amp;related_id=709682&amp;origin=style">
+                                Icon
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock MaxWidth="450" TextWrapping="Wrap">
+                            Icon adapted from the original made by
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://www.flaticon.com/authors/kiranshastry">
+                                Kiranshastry
+                            </Hyperlink>
+                            from
+                            <Hyperlink RequestNavigate="HyperlinkRequestNavigate"
+                                       NavigateUri="https://www.flaticon.com">
+                                www.flaticon.com
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Grid>
     </ScrollViewer>
 </Window>
