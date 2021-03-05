@@ -97,7 +97,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type vm:PossibleHardwareViewModel}">
                                     <Button
-                                        Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.Mutey.ActivateHardwareCommand}"
+                                        Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.Mutey.ToggleHardwareCommand}"
                                         CommandParameter="{Binding}">
                                         <Button.Template>
                                             <ControlTemplate>
