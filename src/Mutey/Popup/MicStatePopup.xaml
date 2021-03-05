@@ -14,14 +14,16 @@
         MouseDown="MicStatePopup_OnMouseDown"
         MouseUp="MicStatePopup_OnMouseUp"
         MouseMove="MicStatePopup_OnMouseMove"
-        Width="100" Height="100"
+        SizeToContent="Manual"
+        Width="80" Height="80"
         ResizeMode="NoResize"
         WindowStartupLocation="Manual"
         Background="{x:Null}"
         d:DataContext="{d:DesignInstance popup:MicStatePopupViewModel}" x:ClassModifier="internal">
     <popup:MicStatePopupControl State="{Binding State}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Size="{Binding Source={x:Static mutey:Settings.Default}, Path=MuteStatePopupSize}" >
+                                Size="{Binding Source={x:Static mutey:Settings.Default}, Path=MuteStatePopupSize}"
+                                SizeChanged="MuteStateControl_OnSizeChanged">
         <popup:MicStatePopupControl.Style>
             <Style TargetType="{x:Type popup:MicStatePopupControl}">
                 <Setter Property="Opacity" Value="0" />

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using NLog;
 
 namespace Mutey.Popup
@@ -19,10 +21,13 @@ namespace Mutey.Popup
             DataContext = controller;
 
             Loaded += OnLoaded;
-
+            ContentRendered += OnContentRendered;
             InitializeComponent();
+        }
 
-            MoveToTopLeft();
+        private void OnContentRendered(object sender, EventArgs e)
+        {
+            MoveToStartupPosition();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -33,6 +38,34 @@ namespace Mutey.Popup
             // Performing some magic to hide the form from Alt+Tab
             SetWindowLong(helper, GWL_EX_STYLE,
                 (GetWindowLong(helper, GWL_EX_STYLE) | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW);
+        }
+
+        private void MoveToStartupPosition()
+        {
+            const int margin = 40;
+
+            Point topRight = SystemParameters.WorkArea.TopRight;
+            Left = topRight.X - Width - margin;
+            Top = topRight.Y + margin;
+        }
+
+        private void MuteStateControl_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            using DispatcherProcessingDisabled _ = Dispatcher.DisableProcessing();
+
+            // Store current centre
+            double xMiddle = Left + ActualWidth * 0.5;
+            double yMiddle = Top + ActualHeight * 0.5;
+
+            // Resize to content
+            // (Assuming no margin here)
+            Control control = (Control) sender;
+            Height = control.ActualHeight;
+            Width = control.ActualWidth;
+
+            // Move window to keep centre in same position instead of top left
+            Left = xMiddle - ActualWidth * 0.5;
+            Top = yMiddle - ActualHeight * 0.5;
         }
 
         #region ToolWindow
@@ -52,15 +85,6 @@ namespace Mutey.Popup
         // ReSharper restore IdentifierTypo
 
         #endregion
-
-        private void MoveToTopLeft()
-        {
-            const int margin = 40;
-
-            Point topRight = SystemParameters.WorkArea.TopRight;
-            Left = topRight.X - Width - margin;
-            Top = topRight.Y + margin;
-        }
 
         #region Mouse Handling
 

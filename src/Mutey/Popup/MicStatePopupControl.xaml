@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="50" d:DesignWidth="50">
-    <Border x:Name="ContainerBorder">
+    <Border x:Name="ContainerBorder"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border.Background>
             <RadialGradientBrush>
                 <GradientStop Offset="0" Color="#353633" />
