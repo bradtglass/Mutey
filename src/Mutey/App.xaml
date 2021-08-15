@@ -1,22 +1,27 @@
 ﻿<p:PrismApplication x:Class="Mutey.App"
-                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                         xmlns:tb="http://www.hardcodet.net/taskbar"
-                         xmlns:p="http://prismlibrary.com/"
-                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         mc:Ignorable="d"
-                         xmlns:vm="clr-namespace:Mutey.ViewModels"
-                         xmlns:converters="clr-namespace:Mutey.Converters"
-                         ShutdownMode="OnExplicitShutdown">
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:tb="http://www.hardcodet.net/taskbar"
+                    xmlns:p="http://prismlibrary.com/"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    mc:Ignorable="d"
+                    xmlns:vm="clr-namespace:Mutey.ViewModels"
+                    xmlns:converters="clr-namespace:Mutey.Converters"
+                    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                    xmlns:mutey="clr-namespace:Mutey"
+                    ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
-        <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter"/>
-        <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
-        
+        <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter" />
+        <converters:EqualityConverter x:Key="BooleanEqualityConverter" />
+        <converters:EqualityConverter x:Key="VisibilityEqualityConverter"
+                                      EqualValue="{x:Static Visibility.Visible}"
+                                      NotEqualValue="{x:Static Visibility.Collapsed}" />
+
         <DrawingBrush x:Key="DarkCheckerboardBrush" TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
             <!-- Source: https://stackoverflow.com/a/47049174/9766035 -->
             <DrawingBrush.Drawing>
-                <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="#363636"/>
+                <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="#363636" />
             </DrawingBrush.Drawing>
         </DrawingBrush>
 
@@ -30,8 +35,16 @@
                 <ContextMenu>
                     <MenuItem Header="Settings" Command="{Binding OpenCommand}" />
                     <MenuItem Header="About" Command="{Binding AboutCommand}" />
-                    <Separator/>
-                    <MenuItem Header="Check for updates" Command="{Binding RunUserInvokedUpdateCheckCommand}" />
+                    <Separator />
+                    <MenuItem Header="Checking for updates..." IsEnabled="False"
+                              Icon="{iconPacks:FontAwesome SyncSolid}"
+                              Visibility="{Binding UpdateState, Converter={StaticResource VisibilityEqualityConverter}, ConverterParameter={x:Static mutey:UpdateState.Checking}}" />
+                    <MenuItem Header="Check for updates" Command="{Binding CheckForUpdateCommand}"
+                              Visibility="{Binding UpdateState, Converter={StaticResource VisibilityEqualityConverter}, ConverterParameter={x:Static mutey:UpdateState.Latest}}" />
+                    <MenuItem Header="Check for updates" Command="{Binding CheckForUpdateCommand}"
+                              Visibility="{Binding UpdateState, Converter={StaticResource VisibilityEqualityConverter}, ConverterParameter={x:Static mutey:UpdateState.NotChecked}}" />
+                    <MenuItem Header="Update" Command="{Binding UpdateCommand}"
+                              Visibility="{Binding UpdateState, Converter={StaticResource VisibilityEqualityConverter}, ConverterParameter={x:Static mutey:UpdateState.Available}}" />
                     <Separator />
                     <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
                 </ContextMenu>

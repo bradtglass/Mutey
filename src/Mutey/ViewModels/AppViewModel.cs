@@ -7,7 +7,6 @@ using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Views;
 using NLog;
 using Prism.Mvvm;
-using Squirrel;
 
 namespace Mutey.ViewModels
 {
@@ -15,78 +14,86 @@ namespace Mutey.ViewModels
     internal class AppViewModel : BindableBase
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        
-        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings)
+        private readonly UpdateService updateService;
+
+        private UpdateState updateState;
+
+        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings, UpdateService updateService)
         {
+            this.updateService = updateService;
+            updateService.StateChanged += OnUpdateStateChanged;
+            UpdateState = updateService.State;
+
             Mutey = mutey;
             Settings = settings;
             QuitCommand = new ActionCommand(() => Application.Current.Shutdown());
             AboutCommand = new ActionCommand(() => new AboutWindow().Show());
             OpenCommand = new ActionCommand(() => new SettingsWindow().Show());
-            RunUserInvokedUpdateCheckCommand = new ActionCommand(RunUserInvokedUpdateCheck);
+            UpdateCommand = new ActionCommand(RequestUpdate);
+            CheckForUpdateCommand = new ActionCommand(CheckForUpdate);
         }
 
-        private async void RunUserInvokedUpdateCheck()
+        public UpdateState UpdateState
         {
-            try
-            {
-                logger.Info("Beginning update check");
-
-                using IUpdateManager updateManager = await Task.Run(()=> UpdateManager.GitHubUpdateManager(@"https://github.com/G18SSY/Mutey"));
-                UpdateInfo updateInfo = await Task.Run(() => updateManager.CheckForUpdate());
-
-                if (updateInfo.CurrentlyInstalledVersion.Version == updateInfo.FutureReleaseEntry.Version)
-                {
-                    logger.Info("Update check determined latest version is current version");
-                    MessageBox.Show($"Already running latest version ({updateInfo.CurrentlyInstalledVersion.Version})",
-                        "Update", MessageBoxButton.OK, MessageBoxImage.Information);
-                    
-                    return;
-                }
-                
-                logger.Info("Latest version is {Version}", updateInfo.FutureReleaseEntry.Version);
-                MessageBoxResult result = MessageBox.Show(
-                    $"Version {updateInfo.FutureReleaseEntry.Version} is available, would you like to download and install?",
-                    "Update", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result != MessageBoxResult.Yes)
-                {
-                    logger.Info("User chose not to install update");
-                    
-                    return;
-                }
-
-                await updateManager.DownloadReleases(updateInfo.ReleasesToApply);
-                await updateManager.ApplyReleases(updateInfo);
-                await updateManager.CreateUninstallerRegistryEntry();
-
-                logger.Info("Update applied");
-                
-                result = MessageBox.Show("Update applied successfully, would you like to restart?", "Update",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    logger.Info("Restarting application");
-                    UpdateManager.RestartApp();
-                }
-            }
-            catch (Exception e)
-            {
-                logger.Error(e, "Error durign update check");
-            }
+            get => updateState;
+            private set => SetProperty(ref updateState, value);
         }
 
         public MuteyViewModel Mutey { get; }
 
         public ICommand QuitCommand { get; }
-        
+
         public ICommand AboutCommand { get; }
-        
+
         public ICommand OpenCommand { get; }
-        
-        public ICommand RunUserInvokedUpdateCheckCommand { get; }
-        
+
+        public ICommand UpdateCommand { get; }
+
+        public ICommand CheckForUpdateCommand { get; }
+
         public SettingsViewModel Settings { get; }
+
+        private async void CheckForUpdate()
+        {
+            try
+            {
+                UpdateState state = await Task.Run(updateService.RefreshStateAsync);
+                if (state != UpdateState.Available)
+                    return;
+
+                MessageBoxResult result = MessageBox.Show(
+                    "An update is available, would you like to download and install?",
+                    "Update", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                await Task.Run(updateService.UpdateAsync);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error whilst checking for updates");
+            }
+        }
+
+        private void OnUpdateStateChanged(object sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() => UpdateState = updateService.State);
+        }
+
+        private async void RequestUpdate()
+        {
+            try
+            {
+                if (updateService.State == UpdateState.Available)
+                    await Task.Run(updateService.UpdateAsync);
+                else
+                    CheckForUpdate();
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error during update check");
+            }
+        }
     }
 }

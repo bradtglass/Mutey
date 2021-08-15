@@ -70,6 +70,7 @@ namespace Mutey
             containerRegistry.RegisterSingleton<SettingsWindow>();
             containerRegistry.RegisterSingleton<AboutWindow>();
             containerRegistry.RegisterSingleton<MicStatePopupManager>();
+            containerRegistry.RegisterSingleton<UpdateService>();
         }
 
         protected override Window? CreateShell()
