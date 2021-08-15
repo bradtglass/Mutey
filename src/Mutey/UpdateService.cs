@@ -13,7 +13,7 @@ namespace Mutey
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly TimeSpan delayBetweenNonErroredChecked = TimeSpan.FromMinutes(2); // TODO Change this to 1 hour
+        private readonly TimeSpan delayBetweenNonErroredChecked = TimeSpan.FromHours(1);
         private readonly TimeSpan maxBackOff = TimeSpan.FromMinutes(5);
 
         private readonly SemaphoreSlim updateSemaphore = new(1);
