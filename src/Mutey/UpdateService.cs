@@ -103,7 +103,7 @@ namespace Mutey
                 UpdateInfo updateInfo = await updateManager.CheckForUpdate();
 
                 UpdateState newState;
-                if (updateInfo.CurrentlyInstalledVersion.Version == updateInfo.FutureReleaseEntry.Version)
+                if (updateInfo.CurrentlyInstalledVersion.Version < updateInfo.FutureReleaseEntry.Version)
                 {
                     logger.Info("Update check determined latest version is current version");
                     newState = UpdateState.Latest;
@@ -134,7 +134,7 @@ namespace Mutey
         {
             logger.Debug("Creating new update manager instance");
 
-            return await UpdateManager.GitHubUpdateManager(@"https://github.com/G18SSY/Mutey");
+            return await UpdateManager.GitHubUpdateManager(@"https://github.com/G18SSY/Mutey", prerelease: true);
         }
 
 
