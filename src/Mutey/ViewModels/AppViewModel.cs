@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+using System;
 using System.Windows;
 using System.Windows.Input;
 using JetBrains.Annotations;
@@ -15,13 +14,13 @@ namespace Mutey.ViewModels
     internal class AppViewModel : BindableBase
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings, Lazy<CompactView> lazyCompactView, Lazy<AboutWindow> lazyAboutView)
+        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings)
         {
             Mutey = mutey;
             Settings = settings;
             QuitCommand = new ActionCommand(() => Application.Current.Shutdown());
-            AboutCommand = new ActionCommand(() => lazyAboutView.Value.Show());
-            OpenCommand = new ActionCommand(() => lazyCompactView.Value.Show());
+            AboutCommand = new ActionCommand(() => new AboutWindow().Show());
+            OpenCommand = new ActionCommand(() => new SettingsWindow().Show());
             RunUserInvokedUpdateCheckCommand = new ActionCommand(RunUserInvokedUpdateCheck);
         }
 
@@ -74,6 +73,8 @@ namespace Mutey.ViewModels
             {
                 logger.Error(e, "Error durign update check");
             }
+            AboutCommand = new ActionCommand(() => new AboutWindow().Show());
+            OpenCommand = new ActionCommand(() => new SettingsWindow().Show());
         }
 
         public MuteyViewModel Mutey { get; }
@@ -84,7 +85,6 @@ namespace Mutey.ViewModels
         
         public ICommand OpenCommand { get; }
         
-
         public ICommand RunUserInvokedUpdateCheckCommand { get; }
         
         public SettingsViewModel Settings { get; }

@@ -6,34 +6,42 @@ using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Input;
 using Mutey.Mute;
+using Mutey.Popup;
 using NLog;
 using Prism.Mvvm;
 
 namespace Mutey.ViewModels
 {
+    /// <summary>
+    /// This is the primary place that all of the business logic is pulled together, input devices, software inputs, popups and input transformation.
+    /// </summary>
     internal class MuteyViewModel : BindableBase, IMutey
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly IMuteHardwareManager hardwareManager;
         private readonly ISystemMuteControl systemMuteControl;
+        private readonly MicStatePopupManager popupManager;
         private readonly SynchronizationContext synchronizationContext;
         private readonly InputTransformer transformer = new();
 
         private MuteState muteState;
 
-        public MuteyViewModel(IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl)
+        public MuteyViewModel(IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager)
         {
             this.hardwareManager = hardwareManager;
             this.systemMuteControl = systemMuteControl;
+            this.popupManager = popupManager;
 
             synchronizationContext = SynchronizationContext.Current ??
                                      throw new InvalidOperationException("Failed to get synchronization context");
 
-            transformer.ActionRequired += OnTransformedActionRequired;
+            transformer.Transformed += OnTransformedActionRequired;
 
             systemMuteControl.StateChanged += MuteStateChanged;
             MuteState = systemMuteControl.GetState();
+            popupManager.PopupPressed += (_, _) => ToggleMuteByCommand();
+            popupManager.BeginLifetime().ChangeState(MuteState);
 
             hardwareManager.AvailableDevicesChanged +=
                 (_, _) => synchronizationContext.Post(_ => RefreshHardware(), null);
@@ -41,10 +49,10 @@ namespace Mutey.ViewModels
 
             ToggleCommand = new ActionCommand(ToggleMuteByCommand);
             RefreshHardwareCommand = new ActionCommand(RefreshHardwareByCommand);
-            ActivateHardwareCommand = new ActionCommand(ActivateHardwareByCommand);
+            ToggleHardwareCommand = new ActionCommand(ToggleHardwareByCommand);
         }
 
-        public ICommand ActivateHardwareCommand { get; }
+        public ICommand ToggleHardwareCommand { get; }
 
         public ICommand RefreshHardwareCommand { get; }
 
@@ -74,11 +82,9 @@ namespace Mutey.ViewModels
         /// </summary>
         public void RefreshHardware()
         {
-            hardwareManager.ChangeDevice(null);
-
             string? previousSelection = PossibleHardware.FirstOrDefault(h => h.IsActive)?.Id ??
                                         Settings.Default.LastDeviceId;
-
+            
             PossibleHardware.Clear();
             foreach (PossibleMuteHardware device in hardwareManager.AvailableDevices)
                 PossibleHardware.Add(new PossibleHardwareViewModel(device.FriendlyName, device.Type, device.LocalIdentifier));
@@ -89,13 +95,15 @@ namespace Mutey.ViewModels
                     viewModel = PossibleHardware.FirstOrDefault(h => h.Id == previousSelection);
                 
                 if (viewModel != null)
-                    ActivateHardware(viewModel);
+                    ChangeHardwareState(viewModel, true);
+                else
+                    hardwareManager.ChangeDevice(null);
             }
         }
 
-        private void OnTransformedActionRequired(object? sender, MuteAction e)
+        private void OnTransformedActionRequired(object sender, TransformedMuteOutputEventArgs e)
         {
-            switch (e)
+            switch (e.Action)
             {
                 case MuteAction.Mute:
                     synchronizationContext.Send(_ => systemMuteControl.Mute(), null);
@@ -109,6 +117,12 @@ namespace Mutey.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException(nameof(e), e, null);
             }
+
+            MuteState currentState = systemMuteControl.GetState();
+            if (e.IsInPtt)
+                popupManager.Show(currentState);
+            else
+                popupManager.Flash(currentState);
         }
 
         private void CurrentInputDeviceChanged(object? sender, CurrentDeviceChangedEventArgs e)
@@ -144,6 +158,7 @@ namespace Mutey.ViewModels
         {
             logger.Debug("User invoked manual mute toggle command");
             ToggleMute();
+            popupManager.Flash(systemMuteControl.GetState());
         }
 
         private void MuteStateChanged(object? sender, MuteChangedEventArgs e)
@@ -151,23 +166,29 @@ namespace Mutey.ViewModels
             MuteState = e.NewState;
         }
 
-        private void ActivateHardwareByCommand(object parameter)
+        private void ToggleHardwareByCommand(object parameter)
         {
-            logger.Debug("User activated a new input hardware");
+            logger.Debug("User toggled the active hardware");
             
             if (parameter is not PossibleHardwareViewModel viewModel)
             {
-                logger.Error("Invalid parameter type to activate hardware: {Parameter}", parameter);
+                logger.Error("Invalid parameter type to toggle hardware: {Parameter}", parameter);
                 return;
             }
-            
-            ActivateHardware(viewModel);
+
+            ChangeHardwareState(viewModel, !viewModel.IsActive);
         }
         
-        private void ActivateHardware(PossibleHardwareViewModel viewModel)
+        private void ChangeHardwareState(PossibleHardwareViewModel viewModel, bool newState)
         {
-            if(viewModel.IsActive)
+            if(viewModel.IsActive == newState)
                 return;
+
+            viewModel.IsActive = newState;
+            foreach (PossibleHardwareViewModel hardwareViewModel in PossibleHardware.Where(h=>!ReferenceEquals(h, viewModel)))
+            {
+                hardwareViewModel.IsActive = false;
+            }
             
             PossibleMuteHardware? hardware =
                 hardwareManager.AvailableDevices.FirstOrDefault(d => d.FriendlyName == viewModel.Name);
@@ -178,15 +199,25 @@ namespace Mutey.ViewModels
                 return;
             }
 
-            hardwareManager.ChangeDevice(hardware);
+            if (newState)
+            {
+                logger.Debug("Activating new device: {Device}", hardware.LocalIdentifier);
+                hardwareManager.ChangeDevice(hardware);
 
-            foreach (PossibleHardwareViewModel hardwareViewModel in PossibleHardware)
-                hardwareViewModel.IsActive = false;
+                Settings.Default.LastDeviceId = viewModel.Id;
+                Settings.Default.Save();    
+            }
+            else
+            {
+                logger.Debug("Deactivating current device");
+                hardwareManager.ChangeDevice(null);
 
-            viewModel.IsActive = true;
-
-            Settings.Default.LastDeviceId = viewModel.Id;
-            Settings.Default.Save();
+                if (viewModel.Id == Settings.Default.LastDeviceId)
+                {
+                    Settings.Default.LastDeviceId = null;
+                    Settings.Default.Save();
+                }
+            }
         }
     }
 }

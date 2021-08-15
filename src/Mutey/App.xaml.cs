@@ -3,6 +3,7 @@ using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using Mutey.Input;
 using Mutey.Mute;
+using Mutey.Popup;
 using Mutey.ViewModels;
 using Mutey.Views;
 using NLog;
@@ -60,14 +61,15 @@ namespace Mutey
             logger.Info("Registering types with Prism");
             
             ViewModelLocationProvider.Register<TaskbarIcon, AppViewModel>();
-            ViewModelLocationProvider.Register<CompactView, AppViewModel>();
+            ViewModelLocationProvider.Register<SettingsWindow, AppViewModel>();
 
             containerRegistry.RegisterSingleton<IMuteHardwareManager, MuteHardwareManager>();
             containerRegistry.RegisterSingleton<ISystemMuteControl, SystemMuteControl>();
             containerRegistry.RegisterSingleton<AppViewModel>();
             containerRegistry.RegisterManySingleton<MuteyViewModel>(typeof(MuteyViewModel), typeof(IMutey));
-            containerRegistry.RegisterSingleton<CompactView>();
+            containerRegistry.RegisterSingleton<SettingsWindow>();
             containerRegistry.RegisterSingleton<AboutWindow>();
+            containerRegistry.RegisterSingleton<MicStatePopupManager>();
         }
 
         protected override Window? CreateShell()

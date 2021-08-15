@@ -5,32 +5,30 @@
                          xmlns:tb="http://www.hardcodet.net/taskbar"
                          xmlns:p="http://prismlibrary.com/"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:mutey="clr-namespace:Mutey"
                          mc:Ignorable="d"
                          xmlns:vm="clr-namespace:Mutey.ViewModels"
+                         xmlns:converters="clr-namespace:Mutey.Converters"
                          ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
+        <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter"/>
+        <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+        
+        <DrawingBrush x:Key="DarkCheckerboardBrush" TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
+            <!-- Source: https://stackoverflow.com/a/47049174/9766035 -->
+            <DrawingBrush.Drawing>
+                <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="#363636"/>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+
         <tb:TaskbarIcon x:Key="TaskbarIcon"
                         Name="TaskbarIcon"
-                        d:DataContext="{d:DesignInstance vm:AppViewModel}" 
-                        ToolTipText="Mutey"
+                        d:DataContext="{d:DesignInstance vm:AppViewModel}"
+                        ToolTipText="{Binding Mutey.MuteState, StringFormat={} Mutey - {0}}"
+                        IconSource="{Binding Mutey.MuteState, Converter={StaticResource MuteStateToIconSourceConverter}}"
                         LeftClickCommand="{Binding Mutey.ToggleCommand}">
-            <tb:TaskbarIcon.Style>
-                <Style TargetType="{x:Type tb:TaskbarIcon}">
-                    <Setter Property="IconSource" Value="Icons/microphone-blue.ico" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Mutey.MuteState}" Value="{x:Static mutey:MuteState.Muted}">
-                            <Setter Property="IconSource" Value="Icons/microphone-red.ico" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Mutey.MuteState}" Value="{x:Static mutey:MuteState.Unmuted}">
-                            <Setter Property="IconSource" Value="Icons/microphone-green.ico" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </tb:TaskbarIcon.Style>
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Open" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="Settings" Command="{Binding OpenCommand}" />
                     <MenuItem Header="About" Command="{Binding AboutCommand}" />
                     <Separator/>
                     <MenuItem Header="Check for updates" Command="{Binding RunUserInvokedUpdateCheckCommand}" />

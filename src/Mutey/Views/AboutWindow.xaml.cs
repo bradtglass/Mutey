@@ -1,6 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using NLog;
@@ -13,17 +14,26 @@ namespace Mutey.Views
 
         public AboutWindow()
         {
-            Closing += OnClosing;
-
             InitializeComponent();
         }
 
-        private void OnClosing(object sender, CancelEventArgs e)
+        public string Version
         {
-            e.Cancel = true;
-            Hide();
+            get
+            {
+                Assembly assembly = GetType().Assembly;
+
+                return assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+                       assembly.GetCustomAttribute<AssemblyVersionAttribute>().Version;
+            }
         }
 
+        public string RuntimeInfo
+            => RuntimeInformation.FrameworkDescription;
+
+        public string OsInfo
+            => RuntimeInformation.OSDescription;
+        
         private void GithubMouseDown(object sender, MouseButtonEventArgs e)
             => Navigate(new Uri(@"https://github.com/G18SSY/Mutey"));
 
