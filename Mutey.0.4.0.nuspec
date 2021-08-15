@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Mutey</id>
+    <version>0.4.0</version>
+    <title></title>
+    <authors>Brad Glass</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A software utility for controlling microphone mute with an input device or on-screen button.</description>
+  </metadata>
+  <files>
+    <file src="src/Mutey/bin/Release/net472/*.dll" target="lib\net45" />
+	<file src="src/Mutey/bin/Release/net472/*.exe" target="lib\net45" />
+	<file src="src/Mutey/bin/Release/net472/*.exe.config" target="lib\net45" />
+  </files>
+</package>
