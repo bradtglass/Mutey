@@ -8,7 +8,7 @@
         <LangVersion>9</LangVersion>
         <ApplicationIcon>Icons\microphone-blue.ico</ApplicationIcon>
         
-        <Version>0.2.0</Version>
+        <Version>0.3.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,6 +23,7 @@
       <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
       <PackageReference Include="NLog" Version="4.7.7" />
       <PackageReference Include="Prism.DryIoc" Version="8.0.0.1909" />
+      <PackageReference Include="Squirrel.Windows" Version="2.0.1" />
       <PackageReference Include="System.IO.Ports" Version="5.0.0" />
       <PackageReference Include="System.Management" Version="5.0.0" />
     </ItemGroup>

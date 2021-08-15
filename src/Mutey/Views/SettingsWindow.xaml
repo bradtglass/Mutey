@@ -35,17 +35,17 @@
                     <TextBlock FontWeight="Bold" Margin="5">Visibility</TextBlock>
                     <WrapPanel Orientation="Horizontal">
                         <RadioButton GroupName="PopupMode" Margin="5"
-                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Off}}"
+                                     IsChecked="{Binding PopupMode, Converter={StaticResource BooleanEqualityConverter}, ConverterParameter={x:Static popup:PopupMode.Off}}"
                                      ToolTip="No popups will be displayed">
                             Off
                         </RadioButton>
                         <RadioButton GroupName="PopupMode" Margin="5"
-                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Temporary}}"
+                                     IsChecked="{Binding PopupMode, Converter={StaticResource BooleanEqualityConverter}, ConverterParameter={x:Static popup:PopupMode.Temporary}}"
                                      ToolTip="Popups will appear temporarily and then fade away">
                             Temporary
                         </RadioButton>
                         <RadioButton GroupName="PopupMode" Margin="5"
-                                     IsChecked="{Binding PopupMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter={x:Static popup:PopupMode.Permanent}}"
+                                     IsChecked="{Binding PopupMode, Converter={StaticResource BooleanEqualityConverter}, ConverterParameter={x:Static popup:PopupMode.Permanent}}"
                                      ToolTip="The popup is always displayed and can be repositioned">
                             Permanent
                         </RadioButton>

@@ -31,7 +31,7 @@ namespace Mutey.Input
                 .OfType<ManagementObject>())
             {
                 object guid = instance.GetPropertyValue("ClassGuid");
-                if (guid == null || guid.ToString()?.ToUpper() != "{4D36E978-E325-11CE-BFC1-08002BE10318}")
+                if (guid == null || guid.ToString().ToUpper() != "{4D36E978-E325-11CE-BFC1-08002BE10318}")
                     continue; // Skip all devices except device class "PORTS"
 
                 string description = (string) instance.GetPropertyValue("Caption");
