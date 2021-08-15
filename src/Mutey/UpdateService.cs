@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using JetBrains.Annotations;
 using NLog;
+using NuGet;
 using Squirrel;
+using ILogger = NLog.ILogger;
 
 namespace Mutey
 {
@@ -102,8 +105,20 @@ namespace Mutey
                 using IUpdateManager updateManager = await GetUpdateManagerAsync();
                 UpdateInfo updateInfo = await updateManager.CheckForUpdate();
 
+                SemanticVersion? currentVersion = updateInfo?.CurrentlyInstalledVersion?.Version;
+
+                if (currentVersion == null)
+                {
+                    logger.Warn("Squirrel failed to detect current version");
+                    Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                    currentVersion ??= new SemanticVersion(assemblyVersion);
+                }
+
+                if (updateInfo?.FutureReleaseEntry == null)
+                    throw new InvalidOperationException("No entries found on remote");
+                
                 UpdateState newState;
-                if (updateInfo.CurrentlyInstalledVersion.Version < updateInfo.FutureReleaseEntry.Version)
+                if (currentVersion <= updateInfo.FutureReleaseEntry.Version)
                 {
                     logger.Info("Update check determined latest version is current version");
                     newState = UpdateState.Latest;
