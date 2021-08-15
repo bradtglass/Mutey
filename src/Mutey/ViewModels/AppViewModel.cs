@@ -59,7 +59,11 @@ namespace Mutey.ViewModels
             {
                 UpdateState state = await Task.Run(updateService.RefreshStateAsync);
                 if (state != UpdateState.Available)
+                {
+                    MessageBox.Show("No updates available", "Up to date", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
                     return;
+                }
 
                 MessageBoxResult result = MessageBox.Show(
                     "An update is available, would you like to download and install?",
