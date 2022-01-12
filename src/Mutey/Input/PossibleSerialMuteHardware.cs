@@ -13,7 +13,7 @@ namespace Mutey.Input
             LocalIdentifier = $"{Port}:{manufacturer}:{deviceId}";
         }
 
-        public int BaudRate { get; init; } = 57600;
+        public int BaudRate { get; } = 57600;
 
         public string Port { get; }
 
