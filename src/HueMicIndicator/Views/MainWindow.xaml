@@ -27,6 +27,12 @@
                     </Style>
                 </Ellipse.Style>
             </Ellipse>
+            
+            <Button HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Command="{Binding LaunchSetupCommand}">
+                Setup
+            </Button>
         </Grid>
         <Button Visibility="{Binding IsConfigured, Converter={StaticResource TrueToCollapsedConverter}}"
                 Command="{Binding ConfigureCommand}"

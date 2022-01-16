@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using HueMicIndicator.Hue;
+using HueMicIndicator.Views;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 
@@ -20,6 +21,13 @@ public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInter
 
         RefreshIsConfigured();
         ConfigureCommand = new AsyncRelayCommand(ConfigureAsync);
+        LaunchSetupCommand = new RelayCommand(LaunchSetup);
+    }
+
+    private void LaunchSetup()
+    {
+        SetupWindow window = new(new HueSetupViewModel(hueHandler));
+        window.ShowDialog();
     }
 
     private void RefreshIsConfigured()
@@ -39,11 +47,16 @@ public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInter
 
         await hueHandler.LoginInteractiveAsync(this);
         RefreshIsConfigured();
+        
+        if(IsConfigured)
+            LaunchSetup();
     }
 
     public StateViewModel State { get; }
 
     public ICommand ConfigureCommand { get; }
+    
+    public ICommand LaunchSetupCommand { get; }
 
     public bool IsConfigured
     {

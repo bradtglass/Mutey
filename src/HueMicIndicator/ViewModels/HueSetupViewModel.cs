@@ -1,0 +1,74 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using HueMicIndicator.Hue;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
+using Q42.HueApi.ColorConverters;
+
+namespace HueMicIndicator.ViewModels;
+
+public class HueSetupViewModel : ObservableObject
+{
+    private readonly HueHandler handler;
+
+    public HueSetupViewModel(HueHandler handler)
+    {
+        this.handler = handler;
+
+        SaveCommand = new RelayCommand(Save);
+        LoadLightsCommand = new AsyncRelayCommand(LoadLights);
+    }
+
+    private async Task LoadLights()
+    {
+        IReadOnlyCollection<LightInfo> lights = await Task.Run(handler.GetLightsAsync);
+
+        List<HueStateSetupViewModel> viewModels = new()
+        {
+            new HueStateSetupViewModel(true, "Active", lights),
+            new HueStateSetupViewModel(false, "Inactive", lights)
+        };
+
+        States ??= viewModels;
+    }
+
+    public ICommand LoadLightsCommand { get; }
+
+    public ICommand SaveCommand { get; }
+
+
+    private IReadOnlyList<HueStateSetupViewModel>? states;
+
+    public IReadOnlyList<HueStateSetupViewModel>? States
+    {
+        get => states;
+        private set => SetProperty(ref states, value);
+    }
+    
+    private void Save()
+    {
+        if (States == null)
+            return;
+        
+        foreach (var state in States)
+        {
+            var setting = GetSetting(state);
+            handler.StateStore.Set(state.IsActive, setting);
+        }
+    }
+
+    private static HueStateSetting GetSetting(HueStateSetupViewModel viewModel)
+        => new(viewModel.Setups.ToDictionary(s => s.Info.Name, GetSetting));
+
+    private static HueLightSetting GetSetting(LightSetupViewModel viewModel)
+    {
+        RGBColor? color = null;
+
+        if (viewModel.Color is { } vmColor)
+            color = new RGBColor(vmColor.R, vmColor.G, vmColor.B);
+
+        return new HueLightSetting(viewModel.On, color);
+    }
+}

@@ -12,5 +12,11 @@
         <converters:BoolVisibilityConverter x:Key="TrueToCollapsedConverter"
                                             TrueValue="Collapsed"
                                             FalseValue="Visible"/>
+        <converters:NullableVisibilityConverter x:Key="NullToCollapsedConverter"
+                                                NullValue="Collapsed"
+                                                NotNullValue="Visible" />
+        <converters:NullableVisibilityConverter x:Key="NullToVisibleConverter"
+                                                NullValue="Visible"
+                                                NotNullValue="Collapsed" />
     </Application.Resources>
 </Application>
