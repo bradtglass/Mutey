@@ -7,17 +7,18 @@ using Nito.AsyncEx;
 
 namespace HueMicIndicator.ViewModels
 {
-    public class StateViewModel : ObservableObject, IDisposable
+    public sealed class StateViewModel : ObservableObject, IDisposable
     {
         private readonly AsyncLock changeLock = new();
         private readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-        private readonly HueHandler hueHandler = new();
+        private readonly HueHandler hueHandler;
         private readonly MicrophoneActivityWatcher microphoneWatcher;
 
         private bool isActive;
 
-        public StateViewModel()
+        public StateViewModel(HueHandler hueHandler)
         {
+            this.hueHandler = hueHandler;
             microphoneWatcher = MicrophoneActivityWatcher.Create();
             microphoneWatcher.Notify += OnStateChange;
         }
@@ -33,7 +34,7 @@ namespace HueMicIndicator.ViewModels
             microphoneWatcher.Dispose();
         }
 
-        private async void OnStateChange(object sender, MicrophoneActivityEventArgs e)
+        private async void OnStateChange(object? sender, MicrophoneActivityEventArgs e)
         {
             using var _ = await changeLock.LockAsync();
 

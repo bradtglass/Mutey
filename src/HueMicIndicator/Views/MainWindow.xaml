@@ -3,23 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HueMicIndicator"
         xmlns:vm="clr-namespace:HueMicIndicator.ViewModels"
         mc:Ignorable="d"
         Height="450" Width="800"
         DataContext="{StaticResource AppViewModel}"
+        Title="Microphone Monitor"
         d:DataContext="{d:DesignInstance vm:ApplicationViewModel}">
-    <Window.Style>
-        <Style TargetType="Window">
-            <Setter Property="Background" Value="Blue" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding State.IsActive}" Value="true">
-                    <Setter Property="Background" Value="Red" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Style>
     <Grid>
-        
+        <Grid Visibility="{Binding IsConfigured, Converter={StaticResource TrueToVisibleConverter}}">
+            <Ellipse Width="20"
+                     Height="20"
+                     HorizontalAlignment="Right"
+                     VerticalAlignment="Top"
+                     Margin="10">
+                <Ellipse.Style>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="Green" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State.IsActive}" Value="true">
+                                <Setter Property="Fill" Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
+        </Grid>
+        <Button Visibility="{Binding IsConfigured, Converter={StaticResource TrueToCollapsedConverter}}"
+                Command="{Binding ConfigureCommand}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            Configure
+        </Button>
     </Grid>
 </Window>

@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueMicIndicator.Core", "src\HueMicIndicator.Core\HueMicIndicator.Core.csproj", "{CA15469A-BB94-4C5F-956E-7B66437E7B9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,10 +33,15 @@ Global
 		{3924E484-457A-4AA1-BF1F-6E24FEE025FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3924E484-457A-4AA1-BF1F-6E24FEE025FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3924E484-457A-4AA1-BF1F-6E24FEE025FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA15469A-BB94-4C5F-956E-7B66437E7B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA15469A-BB94-4C5F-956E-7B66437E7B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA15469A-BB94-4C5F-956E-7B66437E7B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA15469A-BB94-4C5F-956E-7B66437E7B9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C4B51816-EF21-4B3F-92A9-99B104F9D7EB} = {1CA3C122-4301-45F8-9580-4041BB1114C3}
 		{1DB4D22A-94B4-4D0E-9E10-0D37D5C64BF2} = {1CA3C122-4301-45F8-9580-4041BB1114C3}
 		{3924E484-457A-4AA1-BF1F-6E24FEE025FD} = {1CA3C122-4301-45F8-9580-4041BB1114C3}
+		{CA15469A-BB94-4C5F-956E-7B66437E7B9D} = {1CA3C122-4301-45F8-9580-4041BB1114C3}
 	EndGlobalSection
 EndGlobal

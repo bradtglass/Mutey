@@ -5,4 +5,7 @@
   <ItemGroup>
     <PackageReference Include="Q42.HueApi" Version="3.19.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HueMicIndicator.Core\HueMicIndicator.Core.csproj" />
+  </ItemGroup>
 </Project>
