@@ -4,10 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:vm="clr-namespace:HueMicIndicator.ViewModels"
+        xmlns:setup="clr-namespace:HueMicIndicator.ViewModels.Setup"
         mc:Ignorable="d"
         Title="Setup" 
         Height="450" Width="800"
-        d:DataContext="{d:DesignInstance vm:HueSetupViewModel}">
+        d:DataContext="{d:DesignInstance setup:HueSetupViewModel}">
     <Grid>
         <DockPanel Visibility="{Binding States, Converter={StaticResource NullToCollapsedConverter}}">
             <Button DockPanel.Dock="Bottom"
@@ -42,12 +43,12 @@
 
             <TabControl ItemsSource="{Binding States}">
                 <TabControl.ItemContainerStyle>
-                    <Style TargetType="{x:Type TabItem}" d:DataContext="{d:DesignInstance vm:HueStateSetupViewModel}">
+                    <Style TargetType="{x:Type TabItem}" d:DataContext="{d:DesignInstance setup:HueStateSetupViewModel}">
                         <Setter Property="Header" Value="{Binding Path=Title}" />
                     </Style>
                 </TabControl.ItemContainerStyle>
                 <TabControl.ContentTemplate>
-                    <DataTemplate DataType="vm:HueStateSetupViewModel">
+                    <DataTemplate DataType="setup:HueStateSetupViewModel">
                         <ScrollViewer HorizontalScrollBarVisibility="Visible">
                             <ItemsControl ItemsSource="{Binding Lights}">
                                 <ItemsControl.ItemTemplate>

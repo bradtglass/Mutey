@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 
-namespace HueMicIndicator.ViewModels;
+namespace HueMicIndicator.ViewModels.Setup;
 
 public class HueStateSetupViewModel : ObservableObject
 {

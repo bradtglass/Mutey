@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
 using HueMicIndicator.Hue;
 using HueMicIndicator.Hue.State;
 using HueMicIndicator.Hue.State.Color;
@@ -12,7 +11,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Q42.HueApi.ColorConverters;
 
-namespace HueMicIndicator.ViewModels;
+namespace HueMicIndicator.ViewModels.Setup;
 
 public class HueSetupViewModel : ObservableObject
 {
@@ -103,41 +102,13 @@ public class HueSetupViewModel : ObservableObject
 
     private static void InitializeFromCurrentSettings(HueStateSetupViewModel viewModel, HueStateSetting setting, LightInfo light)
     {
-        if (viewModel.Lights.FirstOrDefault(l => l.Info.Name == light.Name) is not { } lightViewModel)
-        {
-            lightViewModel = new LightSetupViewModel(light);
-            viewModel.Lights.Add(lightViewModel);
-        }
+        var lightSetting = setting.Lights.GetValueOrDefault(light.Name);
 
-        if (!setting.Lights.TryGetValue(light.Name, out var lightSetting))
+        if (viewModel.Lights.FirstOrDefault(l => l.Info.Name == light.Name) is { })
             return;
 
-        InitializeFromCurrentSettings(lightViewModel, lightSetting);
-    }
-
-    private static void InitializeFromCurrentSettings(LightSetupViewModel viewModel, HueLightSetting setting)
-    {
-        viewModel.On = setting.On;
-        viewModel.Brightness = setting.Brightness.HasValue ? (double)setting.Brightness.Value / byte.MaxValue : null;
-
-        switch (setting.Color)
-        {
-            case null:
-                viewModel.Color = null;
-                break;
-            case RgbHueColor rgbHueColor:
-                viewModel.Color = Color.FromRgb((byte)rgbHueColor.Color.R,
-                    (byte)rgbHueColor.Color.G,
-                    (byte)rgbHueColor.Color.B);
-                break;
-            // TODO
-            // case TemperatureHueColor temperatureHueColor:
-            //     break;
-            // case XyHueColor xyHueColor:
-            //     break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(setting), setting.Color, $"Unsupported colour type: {setting.Color.GetType()}");
-        }
+        var lightViewModel = new LightSetupViewModel(light, lightSetting);
+        viewModel.Lights.Add(lightViewModel);
     }
 
     private void SelectableChanged(object? sender, PropertyChangedEventArgs e)
@@ -186,15 +157,5 @@ public class HueSetupViewModel : ObservableObject
     }
 
     private static HueStateSetting GetSetting(HueStateSetupViewModel viewModel)
-        => new(viewModel.Lights.ToDictionary(s => s.Info.Name, GetSetting));
-
-    private static HueLightSetting GetSetting(LightSetupViewModel viewModel)
-    {
-        RgbHueColor? color = null;
-
-        if (viewModel.Color is { } vmColor)
-            color = new RgbHueColor(new RGBColor(vmColor.R, vmColor.G, vmColor.B));
-
-        return new HueLightSetting(viewModel.On, null, color);
-    }
+        => new(viewModel.Lights.ToDictionary(s => s.Info.Name, s => s.GetSetting()));
 }
