@@ -42,6 +42,7 @@ public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInter
             if (result != MessageBoxResult.Yes)
                 return;
 
+            context.Reset();
             RefreshIsConfigured();
         }
 

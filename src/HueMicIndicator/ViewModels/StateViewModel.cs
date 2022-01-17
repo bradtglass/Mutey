@@ -41,7 +41,7 @@ namespace HueMicIndicator.ViewModels
             try
             {
                 await dispatcher.InvokeAsync(() => IsActive = e.IsActive);
-                await context.ChangeState(e.IsActive);
+                await context.SetStateAsync(e.IsActive);
             }
             catch (Exception exception)
             {

@@ -6,6 +6,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
     <PackageReference Include="Q42.HueApi" Version="3.19.2" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.18.1" />
+    <PackageReference Include="RateLimiter" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HueMicIndicator.Core\HueMicIndicator.Core.csproj" />

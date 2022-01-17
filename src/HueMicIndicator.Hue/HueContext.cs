@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using ComposableAsync;
 using HueMicIndicator.Core.Settings;
 using Microsoft.Extensions.Caching.Memory;
 using Q42.HueApi;
 using Q42.HueApi.Interfaces;
 using Q42.HueApi.Models.Bridge;
+using RateLimiter;
 
 namespace HueMicIndicator.Hue
 {
     public class HueContext
     {
         private readonly MemoryCache cache = new(new MemoryCacheOptions());
+
+        private readonly TimeLimiter rateLimiter = TimeLimiter.GetFromMaxCountByInterval(10, TimeSpan.FromSeconds(1));
+
         public HueStateStore StateStore { get; }
         private IHueClient? client;
+
         public HueContext()
         {
             StateStore = new HueStateStore(this);
@@ -38,7 +44,7 @@ namespace HueMicIndicator.Hue
 
             return bridge.IpAddress;
         }
-        
+
         public async Task LoginInteractiveAsync(IInteractiveLoginHelper loginHelper)
         {
             if (IsConfigured())
@@ -78,7 +84,7 @@ namespace HueMicIndicator.Hue
                 catch (LinkButtonNotPressedException) { }
             }
         }
-        
+
         public async Task<IHueClient> LoginAsync()
         {
             if (GetSettings().AppKey is not { } appKey)
@@ -91,19 +97,24 @@ namespace HueMicIndicator.Hue
             return innerClient;
         }
 
-        public async Task ChangeState(bool isActive)
+        private async ValueTask<T> ExecuteAsync<T>(Func<IHueClient, ValueTask<T>> callback)
+        {
+            if (client is not { } innerClient)
+                innerClient = await LoginAsync();
+
+            await rateLimiter;
+            
+            return await callback(innerClient);
+        }
+
+        public async Task SetStateAsync(bool isActive)
         {
             var state = await StateStore.GetAsync(isActive);
             await state.ApplyAsync(this);
         }
 
         public async Task SendCommandAsync(LightCommand command, IEnumerable<string> lights)
-        {
-            if (client is not { } innerClient)
-                innerClient = await LoginAsync();
-
-            await innerClient.SendCommandAsync(command, lights);
-        }
+            => await ExecuteAsync(async c => await c.SendCommandAsync(command, lights));
 
         public async Task<IReadOnlyCollection<LightInfo>> GetLightsAsync()
         {
@@ -112,11 +123,9 @@ namespace HueMicIndicator.Hue
             if (cache.Get<IReadOnlyCollection<LightInfo>>(cacheKey) is { } result)
                 return result;
 
-            if (client is not { } innerClient)
-                innerClient = await LoginAsync();
-
-            IEnumerable<Light> lights = await innerClient.GetLightsAsync();
-            List<LightInfo> infoList = lights.Select(l=>new LightInfo(l.Id, l.Name, l.Capabilities)).ToList();
+            IEnumerable<Light> lights = await ExecuteAsync(async c => await c.GetLightsAsync());
+            List<LightInfo> infoList = lights.Select(l => new LightInfo(l.Id, l.Name, l.Capabilities))
+                .ToList();
             var infos = new ReadOnlyCollection<LightInfo>(infoList);
 
             cache.Set(cacheKey, infos, TimeSpan.FromHours(1));
