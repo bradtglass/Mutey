@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Q42.HueApi.Interfaces;
 
 namespace HueMicIndicator.Hue;
 
@@ -12,10 +11,9 @@ public class HueStateWrapper : IHueState
     {
         this.states = states;
     }
-
-
-    public async Task ApplyAsync(IHueClient client)
+    
+    public async Task ApplyAsync(HueContext context)
         => await Parallel.ForEachAsync(states,
             new ParallelOptions { MaxDegreeOfParallelism = 4 },
-            async (state, ct) => await state.ApplyAsync(client));
+            async (state, _) => await state.ApplyAsync(context));
 }

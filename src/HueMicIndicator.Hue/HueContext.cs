@@ -93,11 +93,16 @@ namespace HueMicIndicator.Hue
 
         public async Task ChangeState(bool isActive)
         {
+            var state = await StateStore.GetAsync(isActive);
+            await state.ApplyAsync(this);
+        }
+
+        public async Task SendCommandAsync(LightCommand command, IEnumerable<string> lights)
+        {
             if (client is not { } innerClient)
                 innerClient = await LoginAsync();
 
-            var state = await StateStore.GetAsync(isActive);
-            await state.ApplyAsync(innerClient);
+            await innerClient.SendCommandAsync(command, lights);
         }
 
         public async Task<IReadOnlyCollection<LightInfo>> GetLightsAsync()

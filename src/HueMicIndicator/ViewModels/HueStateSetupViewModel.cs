@@ -24,7 +24,7 @@ public class HueStateSetupViewModel : ObservableObject
 
     public IReadOnlyCollection<SelectableViewModel<LightInfo>>? SelectableLights { get; }
 
-    private IReadOnlyCollection<SelectableViewModel<LightInfo>>? LoadLights(IEnumerable<LightInfo> lights)
+    private IReadOnlyCollection<SelectableViewModel<LightInfo>> LoadLights(IEnumerable<LightInfo> lights)
     {
         List<SelectableViewModel<LightInfo>> viewModels = lights.Select(l => new SelectableViewModel<LightInfo>(l)).ToList();
 

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters.Original;
-using Q42.HueApi.Interfaces;
 
 namespace HueMicIndicator.Hue;
 
@@ -17,7 +16,7 @@ public class HueLightState : IHueState
         this.lights = lights;
     }
 
-    public async Task ApplyAsync(IHueClient client)
+    public async Task ApplyAsync(HueContext context)
     {
         var command = new LightCommand();
 
@@ -26,6 +25,6 @@ public class HueLightState : IHueState
 
         command.On = setting.On;
 
-        await client.SendCommandAsync(command, lights);
+        await context.SendCommandAsync(command, lights);
     }
 }
