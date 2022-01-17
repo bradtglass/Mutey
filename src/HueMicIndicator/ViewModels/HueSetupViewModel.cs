@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -15,6 +17,10 @@ public class HueSetupViewModel : ObservableObject
 {
     private readonly HueContext context;
 
+    private IReadOnlyCollection<SelectableViewModel<LightInfo>>? selectableLights;
+
+    private IReadOnlyList<HueStateSetupViewModel>? states;
+
     public HueSetupViewModel(HueContext context)
     {
         this.context = context;
@@ -23,37 +29,87 @@ public class HueSetupViewModel : ObservableObject
         LoadLightsCommand = new AsyncRelayCommand(LoadLights);
     }
 
-    private async Task LoadLights()
+    public IReadOnlyCollection<SelectableViewModel<LightInfo>>? SelectableLights
     {
-        IReadOnlyCollection<LightInfo> lights = await Task.Run(context.GetLightsAsync);
-
-        List<HueStateSetupViewModel> viewModels = new()
-        {
-            new HueStateSetupViewModel(true, "Active", lights),
-            new HueStateSetupViewModel(false, "Inactive", lights)
-        };
-
-        States ??= viewModels;
+        get => selectableLights;
+        private set => SetProperty(ref selectableLights, value);
     }
 
     public ICommand LoadLightsCommand { get; }
 
     public ICommand SaveCommand { get; }
 
-
-    private IReadOnlyList<HueStateSetupViewModel>? states;
-
     public IReadOnlyList<HueStateSetupViewModel>? States
     {
         get => states;
         private set => SetProperty(ref states, value);
     }
-    
+
+    private async Task LoadLights()
+    {
+        IReadOnlyCollection<LightInfo> lights = await Task.Run(context.GetLightsAsync);
+
+        ConfigureFromLights(lights);
+
+        List<HueStateSetupViewModel> viewModels = new()
+        {
+            new HueStateSetupViewModel(true, "Active"),
+            new HueStateSetupViewModel(false, "Inactive")
+        };
+
+        States ??= viewModels;
+    }
+
+
+    private void ConfigureFromLights(IEnumerable<LightInfo> lights)
+    {
+        List<SelectableViewModel<LightInfo>> viewModels =
+            lights.Select(l => new SelectableViewModel<LightInfo>(l)).ToList();
+
+        foreach (SelectableViewModel<LightInfo> viewModel in viewModels)
+            viewModel.PropertyChanged += SelectableChanged;
+
+        SelectableLights = viewModels;
+    }
+
+    private void SelectableChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(SelectableViewModel<LightInfo>.IsSelected))
+            return;
+
+        SelectableViewModel<LightInfo> selectable = (SelectableViewModel<LightInfo>)sender!;
+
+        if (selectable.IsSelected)
+            ForEachState(s => EnsureEditable(s, selectable.Value));
+        else
+            ForEachState(s => EnsureNotEditable(s, selectable.Value));
+    }
+
+    private void ForEachState(Action<HueStateSetupViewModel> callback)
+    {
+        foreach (var viewModel in States ?? Array.Empty<HueStateSetupViewModel>()) callback(viewModel);
+    }
+
+    private static void EnsureNotEditable(HueStateSetupViewModel viewModel, LightInfo lightInfo)
+    {
+        for (var i = viewModel.Setups.Count - 1; i >= 0; i--)
+            if (viewModel.Setups[i].Info.Equals(lightInfo))
+                viewModel.Setups.RemoveAt(i);
+    }
+
+    private static void EnsureEditable(HueStateSetupViewModel viewModel, LightInfo lightInfo)
+    {
+        if (viewModel.Setups.Any(s => s.Info.Equals(lightInfo)))
+            return;
+
+        viewModel.Setups.Add(new LightSetupViewModel(lightInfo));
+    }
+
     private void Save()
     {
         if (States == null)
             return;
-        
+
         foreach (var state in States)
         {
             var setting = GetSetting(state);
@@ -71,6 +127,6 @@ public class HueSetupViewModel : ObservableObject
         if (viewModel.Color is { } vmColor)
             color = new RgbHueColor(new RGBColor(vmColor.R, vmColor.G, vmColor.B));
 
-        return new HueLightSetting(viewModel.On, null,color);
+        return new HueLightSetting(viewModel.On, null, color);
     }
 }

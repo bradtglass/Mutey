@@ -15,6 +15,31 @@
                     HorizontalAlignment="Right"
                     Command="{Binding SaveCommand}">Save</Button>
 
+            <ScrollViewer DockPanel.Dock="Left"
+                          Margin="5"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Auto"
+                          Grid.IsSharedSizeScope="True">
+                <ItemsControl ItemsSource="{Binding SelectableLights}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Check"/>
+                                </Grid.ColumnDefinitions>
+                                            
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Value.Name}" />
+                                            
+                                <CheckBox Grid.Column="1"
+                                          IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
             <TabControl ItemsSource="{Binding States}">
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="{x:Type TabItem}" d:DataContext="{d:DesignInstance vm:HueStateSetupViewModel}">
@@ -22,33 +47,7 @@
                     </Style>
                 </TabControl.ItemContainerStyle>
                 <TabControl.ContentTemplate>
-                <DataTemplate DataType="vm:HueStateSetupViewModel">
-                    <DockPanel>
-                        <ScrollViewer DockPanel.Dock="Left"
-                                      Margin="5"
-                                      HorizontalScrollBarVisibility="Hidden"
-                                      VerticalScrollBarVisibility="Auto"
-                                      Grid.IsSharedSizeScope="True">
-                            <ItemsControl ItemsSource="{Binding SelectableLights}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
-                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Check"/>
-                                            </Grid.ColumnDefinitions>
-                                            
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{Binding Value.Name}" />
-                                            
-                                            <CheckBox Grid.Column="1"
-                                                       IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                        
+                    <DataTemplate DataType="vm:HueStateSetupViewModel">
                         <ScrollViewer HorizontalScrollBarVisibility="Visible">
                             <ItemsControl ItemsSource="{Binding Setups}">
                                 <ItemsControl.ItemTemplate>
@@ -62,12 +61,11 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                    </DockPanel>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
         </DockPanel>
-        
+
         <Button Visibility="{Binding States, Converter={StaticResource NullToVisibleConverter}}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
