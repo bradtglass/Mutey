@@ -15,14 +15,21 @@ public class HueStateStore
         this.context = context;
     }
 
-    public async ValueTask<IHueState> GetAsync(bool isActive)
+    public HueStateSetting Get(bool isActive)
     {
         var key = GetStateKey(isActive);
         ImmutableDictionary<string, HueStateSetting> settings = SettingsStore.Get<HueSettings>(HueSettings.Sub).States;
         if (settings.TryGetValue(key, out var setting))
-            return await BuildStateAsync(setting);
+            return setting;
 
-        return NoOpHueState.Instance;
+        return HueStateSetting.Empty;
+    }
+
+    public async ValueTask<IHueState> GetStateAsync(bool isActive)
+    {
+        var setting = Get(isActive);
+
+        return await BuildStateAsync(setting);
     }
 
     private async ValueTask<IHueState> BuildStateAsync(HueStateSetting setting)

@@ -110,7 +110,7 @@ namespace HueMicIndicator.Hue
 
         public async Task SetStateAsync(bool isActive)
         {
-            var state = await StateStore.GetAsync(isActive);
+            var state = await StateStore.GetStateAsync(isActive);
             await state.ApplyAsync(this);
         }
 

@@ -6,6 +6,7 @@ namespace HueMicIndicator.ViewModels;
 
 public class LightSetupViewModel : ObservableObject
 {
+    private double? brightness;
     private Color? color;
 
     private bool? on;
@@ -27,5 +28,11 @@ public class LightSetupViewModel : ObservableObject
     {
         get => color;
         set => SetProperty(ref color, value);
+    }
+
+    public double? Brightness
+    {
+        get => brightness;
+        set => SetProperty(ref brightness, value);
     }
 }

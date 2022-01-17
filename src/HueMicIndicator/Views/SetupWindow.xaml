@@ -49,7 +49,7 @@
                 <TabControl.ContentTemplate>
                     <DataTemplate DataType="vm:HueStateSetupViewModel">
                         <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                            <ItemsControl ItemsSource="{Binding Setups}">
+                            <ItemsControl ItemsSource="{Binding Lights}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <GroupBox Header="{Binding Info.Name, Mode=OneTime}">

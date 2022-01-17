@@ -15,5 +15,5 @@ public class HueStateSetupViewModel : ObservableObject
 
     public string Title { get; }
 
-    public ObservableCollection<LightSetupViewModel> Setups { get; } = new();
+    public ObservableCollection<LightSetupViewModel> Lights { get; } = new();
 }
