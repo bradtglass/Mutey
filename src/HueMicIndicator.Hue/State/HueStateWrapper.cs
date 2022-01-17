@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HueMicIndicator.Hue;
+namespace HueMicIndicator.Hue.State;
 
 public class HueStateWrapper : IHueState
 {

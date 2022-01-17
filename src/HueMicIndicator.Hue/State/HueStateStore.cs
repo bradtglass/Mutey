@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HueMicIndicator.Core.Settings;
 
-namespace HueMicIndicator.Hue;
+namespace HueMicIndicator.Hue.State;
 
 public class HueStateStore
 {

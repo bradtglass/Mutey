@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using HueMicIndicator.Hue.State;
 
 namespace HueMicIndicator.Hue;
 

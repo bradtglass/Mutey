@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ComposableAsync;
 using HueMicIndicator.Core.Settings;
+using HueMicIndicator.Hue.State;
 using Microsoft.Extensions.Caching.Memory;
 using Q42.HueApi;
 using Q42.HueApi.Interfaces;

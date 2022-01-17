@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using HueMicIndicator.Hue;
+using HueMicIndicator.Hue.State;
+using HueMicIndicator.Hue.State.Color;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Q42.HueApi.ColorConverters;
@@ -64,11 +66,11 @@ public class HueSetupViewModel : ObservableObject
 
     private static HueLightSetting GetSetting(LightSetupViewModel viewModel)
     {
-        RGBColor? color = null;
+        RgbHueColor? color = null;
 
         if (viewModel.Color is { } vmColor)
-            color = new RGBColor(vmColor.R, vmColor.G, vmColor.B);
+            color = new RgbHueColor(new RGBColor(vmColor.R, vmColor.G, vmColor.B));
 
-        return new HueLightSetting(viewModel.On, color);
+        return new HueLightSetting(viewModel.On, null,color);
     }
 }
