@@ -8,11 +8,11 @@ namespace HueMicIndicator.Hue;
 
 public class HueStateStore
 {
-    private readonly HueHandler handler;
+    private readonly HueContext context;
 
-    internal HueStateStore(HueHandler handler)
+    internal HueStateStore(HueContext context)
     {
-        this.handler = handler;
+        this.context = context;
     }
 
     public async ValueTask<IHueState> GetAsync(bool isActive)
@@ -51,7 +51,7 @@ public class HueStateStore
         List<string> ids = new();
 
         foreach (var light in lights)
-            if (await handler.FindLightIdAsync(light) is { } id)
+            if (await context.FindLightIdAsync(light) is { } id)
                 ids.Add(id);
 
         if (ids.Count == 0)

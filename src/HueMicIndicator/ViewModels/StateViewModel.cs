@@ -11,14 +11,14 @@ namespace HueMicIndicator.ViewModels
     {
         private readonly AsyncLock changeLock = new();
         private readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-        private readonly HueHandler hueHandler;
+        private readonly HueContext context;
         private readonly MicrophoneActivityWatcher microphoneWatcher;
 
         private bool isActive;
 
-        public StateViewModel(HueHandler hueHandler)
+        public StateViewModel(HueContext context)
         {
-            this.hueHandler = hueHandler;
+            this.context = context;
             microphoneWatcher = MicrophoneActivityWatcher.Create();
             microphoneWatcher.Notify += OnStateChange;
         }
@@ -41,7 +41,7 @@ namespace HueMicIndicator.ViewModels
             try
             {
                 await dispatcher.InvokeAsync(() => IsActive = e.IsActive);
-                await hueHandler.ChangeState(e.IsActive);
+                await context.ChangeState(e.IsActive);
             }
             catch (Exception exception)
             {

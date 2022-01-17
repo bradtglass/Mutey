@@ -11,11 +11,11 @@ namespace HueMicIndicator.ViewModels;
 
 public class HueSetupViewModel : ObservableObject
 {
-    private readonly HueHandler handler;
+    private readonly HueContext context;
 
-    public HueSetupViewModel(HueHandler handler)
+    public HueSetupViewModel(HueContext context)
     {
-        this.handler = handler;
+        this.context = context;
 
         SaveCommand = new RelayCommand(Save);
         LoadLightsCommand = new AsyncRelayCommand(LoadLights);
@@ -23,7 +23,7 @@ public class HueSetupViewModel : ObservableObject
 
     private async Task LoadLights()
     {
-        IReadOnlyCollection<LightInfo> lights = await Task.Run(handler.GetLightsAsync);
+        IReadOnlyCollection<LightInfo> lights = await Task.Run(context.GetLightsAsync);
 
         List<HueStateSetupViewModel> viewModels = new()
         {
@@ -55,7 +55,7 @@ public class HueSetupViewModel : ObservableObject
         foreach (var state in States)
         {
             var setting = GetSetting(state);
-            handler.StateStore.Set(state.IsActive, setting);
+            context.StateStore.Set(state.IsActive, setting);
         }
     }
 

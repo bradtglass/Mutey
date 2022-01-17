@@ -11,13 +11,13 @@ namespace HueMicIndicator.ViewModels;
 
 public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInteractiveLoginHelper
 {
-    private readonly HueHandler hueHandler = new();
+    private readonly HueContext context = new();
 
     private bool isConfigured;
 
     public ApplicationViewModel()
     {
-        State = new StateViewModel(hueHandler);
+        State = new StateViewModel(context);
 
         RefreshIsConfigured();
         ConfigureCommand = new AsyncRelayCommand(ConfigureAsync);
@@ -26,12 +26,12 @@ public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInter
 
     private void LaunchSetup()
     {
-        SetupWindow window = new(new HueSetupViewModel(hueHandler));
+        SetupWindow window = new(new HueSetupViewModel(context));
         window.ShowDialog();
     }
 
     private void RefreshIsConfigured()
-        => IsConfigured = hueHandler.IsConfigured();
+        => IsConfigured = context.IsConfigured();
 
     private async Task ConfigureAsync()
     {
@@ -45,7 +45,7 @@ public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInter
             RefreshIsConfigured();
         }
 
-        await hueHandler.LoginInteractiveAsync(this);
+        await context.LoginInteractiveAsync(this);
         RefreshIsConfigured();
         
         if(IsConfigured)

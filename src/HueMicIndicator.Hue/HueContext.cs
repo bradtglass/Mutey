@@ -11,12 +11,12 @@ using Q42.HueApi.Models.Bridge;
 
 namespace HueMicIndicator.Hue
 {
-    public class HueHandler
+    public class HueContext
     {
         private readonly MemoryCache cache = new(new MemoryCacheOptions());
         public HueStateStore StateStore { get; }
         private IHueClient? client;
-        public HueHandler()
+        public HueContext()
         {
             StateStore = new HueStateStore(this);
         }
