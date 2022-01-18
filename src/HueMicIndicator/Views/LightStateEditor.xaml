@@ -14,10 +14,10 @@
                 <DataTemplate DataType="{x:Type setup:LightOnSetupViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton IsChecked="{Binding On}">
-                            Turn On
+                            <TextBlock>Turn On</TextBlock>
                         </RadioButton>
                         <RadioButton Margin="5 0">
-                            Turn Off
+                            <TextBlock>Turn Off</TextBlock>
                         </RadioButton>
                     </StackPanel>
                 </DataTemplate>
@@ -39,21 +39,36 @@
                     </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type setup:LightColorTempSetupViewModel}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <DockPanel>
+                        <Border DockPanel.Dock="Bottom"
+                                   HorizontalAlignment="Stretch"
+                                   BorderBrush="SteelBlue"
+                                   BorderThickness="1"
+                                   Margin="5"
+                                   Height="20">
+                            <Border.Background>
+                                <SolidColorBrush
+                                    Color="{Binding Temperature, Converter={StaticResource ColorTempToColorConverter}}" />
+                            </Border.Background>
+                        </Border>
+                        
+                        <Grid DockPanel.Dock="Top">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <Slider Grid.Column="0"
-                                Minimum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.MinTemp}"
-                                Maximum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.MaxTemp}"
-                                Value="{Binding Temperature, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock Grid.Column="1"
-                                   Margin="5 0 0 0"
-                                   FontWeight="Light"
-                                   Text="{Binding Temperature, StringFormat={}{0:F0}K}" />
-                    </Grid>
+                            <Slider Grid.Column="0"
+                                    Minimum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.MinTemp}"
+                                    Maximum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.MaxTemp}"
+                                    Value="{Binding Temperature, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Grid.Column="1"
+                                       Margin="5 0 0 0"
+                                       FontWeight="Light"
+                                       Text="{Binding Temperature, StringFormat={}{0:F0}K}" />
+                        </Grid>
+
+                    </DockPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type setup:LightColorSetupViewModel}" />
             </DockPanel.Resources>
@@ -89,7 +104,9 @@
                     <DataTemplate>
                         <Border BorderBrush="LightGray"
                                 BorderThickness="1"
-                                CornerRadius="1">
+                                CornerRadius="1"
+                                TextElement.Foreground="White"
+                                Background="#2E2E2E">
                             <DockPanel Margin="5">
                                 <Grid DockPanel.Dock="Top" Margin="0 0 0 5">
                                     <Grid.ColumnDefinitions>
