@@ -3,7 +3,7 @@
 public class LightBrightnessSetupViewModel : LightFieldSetupViewModel
 {
     private double brightness;
-    
+
     public LightBrightnessSetupViewModel() : base(LightField.Brightness) { }
 
     public double Brightness
@@ -11,4 +11,10 @@ public class LightBrightnessSetupViewModel : LightFieldSetupViewModel
         get => brightness;
         set => SetProperty(ref brightness, value);
     }
+
+    public void SetBrightness(byte value)
+        => Brightness = (double)value / byte.MaxValue;
+
+    public byte GetBrightness()
+        => (byte)(Brightness * byte.MaxValue);
 }

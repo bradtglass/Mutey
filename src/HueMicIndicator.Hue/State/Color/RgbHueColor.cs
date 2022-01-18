@@ -8,6 +8,8 @@ namespace HueMicIndicator.Hue.State.Color;
 [JsonConverter(typeof(HueColorConverter))]
 public class RgbHueColor : HueColor
 {
+    public RgbHueColor(double r, double g, double b) : this(new RGBColor(r, g, b)) { }
+
     public RgbHueColor(RGBColor color)
     {
         Color = color;

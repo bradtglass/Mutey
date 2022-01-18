@@ -11,7 +11,7 @@ public class HueStateWrapper : IHueState
     {
         this.states = states;
     }
-    
+
     public async Task ApplyAsync(HueContext context)
         => await Parallel.ForEachAsync(states,
             new ParallelOptions { MaxDegreeOfParallelism = 4 },

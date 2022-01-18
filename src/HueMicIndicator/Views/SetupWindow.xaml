@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:vm="clr-namespace:HueMicIndicator.ViewModels"
         xmlns:setup="clr-namespace:HueMicIndicator.ViewModels.Setup"
+        xmlns:views="clr-namespace:HueMicIndicator.Views"
         mc:Ignorable="d"
         Title="Setup" 
         Height="450" Width="800"
@@ -49,15 +49,12 @@
                 </TabControl.ItemContainerStyle>
                 <TabControl.ContentTemplate>
                     <DataTemplate DataType="setup:HueStateSetupViewModel">
-                        <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                        <ScrollViewer HorizontalScrollBarVisibility="Visible" HorizontalAlignment="Stretch">
                             <ItemsControl ItemsSource="{Binding Lights}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <GroupBox Header="{Binding Info.Name, Mode=OneTime}">
-                                            <StackPanel Orientation="Vertical">
-                                                <CheckBox Content="On" IsChecked="{Binding On, Mode=TwoWay}" />
-                                            </StackPanel>
-                                        </GroupBox>
+                                       <views:LightStateEditor Light="{Binding}"
+                                                               Margin="5"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

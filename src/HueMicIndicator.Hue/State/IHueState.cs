@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace HueMicIndicator.Hue.State
+namespace HueMicIndicator.Hue.State;
+
+public interface IHueState
 {
-    public interface IHueState
-    {
-        Task ApplyAsync(HueContext context);
-    }
+    Task ApplyAsync(HueContext context);
 }

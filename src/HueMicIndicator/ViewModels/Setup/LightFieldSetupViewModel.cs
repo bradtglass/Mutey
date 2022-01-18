@@ -14,4 +14,7 @@ public abstract class LightFieldSetupViewModel : ObservableObject
     public LightField Field { get; }
 
     public string FieldName { get; }
+
+    public virtual bool ConflictsWith(LightFieldSetupViewModel other)
+        => false;
 }

@@ -1,5 +1,4 @@
-﻿using HueMicIndicator.ViewModels;
-using HueMicIndicator.ViewModels.Setup;
+﻿using HueMicIndicator.ViewModels.Setup;
 
 namespace HueMicIndicator.Views;
 

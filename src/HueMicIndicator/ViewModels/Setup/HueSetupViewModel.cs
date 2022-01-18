@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using HueMicIndicator.Hue;
 using HueMicIndicator.Hue.State;
-using HueMicIndicator.Hue.State.Color;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using Q42.HueApi.ColorConverters;
 
 namespace HueMicIndicator.ViewModels.Setup;
 

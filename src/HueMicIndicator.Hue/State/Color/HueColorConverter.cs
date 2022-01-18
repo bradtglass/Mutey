@@ -56,7 +56,7 @@ public class HueColorConverter : JsonConverter<HueColor>
 
             var number = innerReader.GetDouble();
             innerReader.Read();
-            
+
             return number;
         }
     }

@@ -1,8 +1,10 @@
-﻿namespace HueMicIndicator.ViewModels.Setup;
+﻿using HueMicIndicator.Hue.State.Color;
 
-public class LightColorTempSetupViewModel : LightFieldSetupViewModel
+namespace HueMicIndicator.ViewModels.Setup;
+
+public class LightColorTempSetupViewModel : LightColorSetupViewModelBase
 {
-    private double temperature;
+    private double temperature = 2500;
     
     public LightColorTempSetupViewModel() : base(LightField.ColorTemperature) { }
 
@@ -11,4 +13,7 @@ public class LightColorTempSetupViewModel : LightFieldSetupViewModel
         get => temperature;
         set => SetProperty(ref temperature, value);
     }
+
+    public override HueColor GetHueColor()
+        => new TemperatureHueColor(Temperature);
 }

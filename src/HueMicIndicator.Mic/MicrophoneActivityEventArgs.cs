@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace HueMicIndicator.Mic
-{
-    public class MicrophoneActivityEventArgs : EventArgs
-    {
-        public MicrophoneActivityEventArgs(bool isActive)
-        {
-            IsActive = isActive;
-        }
+namespace HueMicIndicator.Mic;
 
-        public bool IsActive { get; }
+public class MicrophoneActivityEventArgs : EventArgs
+{
+    public MicrophoneActivityEventArgs(bool isActive)
+    {
+        IsActive = isActive;
     }
+
+    public bool IsActive { get; }
 }

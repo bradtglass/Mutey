@@ -1,12 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using System.Windows.Media;
 using HueMicIndicator.Hue;
 using HueMicIndicator.Hue.State;
 using HueMicIndicator.Hue.State.Color;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Q42.HueApi.ColorConverters;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace HueMicIndicator.ViewModels.Setup;
 
@@ -17,32 +18,46 @@ public class LightSetupViewModel : ObservableObject
         Info = lightInfo;
         if (initialSetting != null)
             InitializeFields(initialSetting);
+
         RefreshAvailable();
+
+        RemoveFieldCommand = new RelayCommand<LightFieldSetupViewModel>(RemoveField);
     }
 
     public LightInfo Info { get; }
 
-    public ObservableCollection<LightField> AvailableFields { get; } = new();
+    public ICommand RemoveFieldCommand { get; }
+
+    public ObservableCollection<LightField?> AvailableFields { get; } = new();
 
     public LightField? NextField
     {
         get => null;
         set
         {
-            if(value.HasValue)
+            if (value.HasValue)
                 AddField(value.Value);
         }
     }
 
-    private void RemoveField(LightFieldSetupViewModel viewModel)
+    public ObservableCollection<LightFieldSetupViewModel> Fields { get; } = new();
+
+    public double MinTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Max ?? 500);
+
+    public double MaxTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Min ?? 153);
+
+    private void RemoveField(LightFieldSetupViewModel? viewModel)
     {
+        if (viewModel == null)
+            return;
+
         Fields.Remove(viewModel);
         RefreshAvailable();
     }
 
     private void AddField(LightField field)
     {
-        Fields.Add(GetField(field));
+        AddField(GetField(field));
         RefreshAvailable();
     }
 
@@ -56,11 +71,10 @@ public class LightSetupViewModel : ObservableObject
             _ => throw new ArgumentOutOfRangeException(nameof(field), field, null)
         };
 
-    public ObservableCollection<LightFieldSetupViewModel> Fields { get; } = new();
-
-    internal void RefreshAvailable()
+    private void RefreshAvailable()
     {
         AvailableFields.Clear();
+        AvailableFields.Add(null);
 
         if (!Fields.Any(f => f is LightOnSetupViewModel))
             AvailableFields.Add(LightField.On);
@@ -73,30 +87,53 @@ public class LightSetupViewModel : ObservableObject
             if (Info.Capabilities.Control.ColorGamut.HasValue)
                 AvailableFields.Add(LightField.Color);
 
-            AvailableFields.Add(LightField.ColorTemperature);
+            if (Info.Capabilities.Control.ColorTemperature != null)
+                AvailableFields.Add(LightField.ColorTemperature);
         }
+    }
+
+    private void AddField<T>(Action<T> configure)
+        where T : LightFieldSetupViewModel, new()
+    {
+        T field = new();
+        configure(field);
+
+        AddField(field);
+    }
+
+    private void AddField(LightFieldSetupViewModel field)
+    {
+        var type = field.GetType();
+        if (Fields.Any(f => f.GetType() == type))
+            return;
+
+        foreach (var conflict in Fields.Where(f => f.ConflictsWith(field)).ToList()) Fields.Remove(conflict);
+
+        Fields.Add(field);
     }
 
     private void InitializeFields(HueLightSetting setting)
     {
-        viewModel.On = setting.On;
-        viewModel.Brightness = setting.Brightness.HasValue ? (double)setting.Brightness.Value / byte.MaxValue : null;
+        if (setting.On is { } on)
+            AddField<LightOnSetupViewModel>(vm => vm.On = on);
+
+        if (setting.Brightness is { } brightness)
+            AddField<LightBrightnessSetupViewModel>(vm => vm.SetBrightness(brightness));
 
         switch (setting.Color)
         {
             case null:
-                viewModel.Color = null;
                 break;
             case RgbHueColor rgbHueColor:
-                viewModel.Color = Color.FromRgb((byte)rgbHueColor.Color.R,
+                var color = Color.FromRgb((byte)rgbHueColor.Color.R,
                     (byte)rgbHueColor.Color.G,
                     (byte)rgbHueColor.Color.B);
+                AddField<LightColorSetupViewModel>(vm => vm.Color = color);
+
                 break;
-            // TODO
-            // case TemperatureHueColor temperatureHueColor:
-            //     break;
-            // case XyHueColor xyHueColor:
-            //     break;
+            case TemperatureHueColor temperatureHueColor:
+                AddField<LightColorTempSetupViewModel>(vm => vm.Temperature = temperatureHueColor.Temperature);
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(setting), setting.Color,
                     $"Unsupported colour type: {setting.Color.GetType()}");
@@ -105,12 +142,10 @@ public class LightSetupViewModel : ObservableObject
 
     internal HueLightSetting GetSetting()
     {
-        RgbHueColor? color = null;
-        if(Fields.)
+        var on = Fields.OfType<LightOnSetupViewModel>().FirstOrDefault()?.On;
+        var brightness = Fields.OfType<LightBrightnessSetupViewModel>().FirstOrDefault()?.GetBrightness();
+        var color = Fields.OfType<LightColorSetupViewModelBase>().FirstOrDefault()?.GetHueColor();
 
-        if (viewModel.Color is { } vmColor)
-            color = new RgbHueColor(new RGBColor(vmColor.R, vmColor.G, vmColor.B));
-
-        return new HueLightSetting(viewModel.On, null, color);
+        return new HueLightSetting(on, brightness, color);
     }
 }

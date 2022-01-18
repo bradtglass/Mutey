@@ -12,135 +12,132 @@ using Q42.HueApi.Interfaces;
 using Q42.HueApi.Models.Bridge;
 using RateLimiter;
 
-namespace HueMicIndicator.Hue
+namespace HueMicIndicator.Hue;
+
+public class HueContext
 {
-    public class HueContext
+    private readonly MemoryCache cache = new(new MemoryCacheOptions());
+
+    private readonly TimeLimiter rateLimiter = TimeLimiter.GetFromMaxCountByInterval(10, TimeSpan.FromSeconds(1));
+    private IHueClient? client;
+
+    public HueContext()
     {
-        private readonly MemoryCache cache = new(new MemoryCacheOptions());
+        StateStore = new HueStateStore(this);
+    }
 
-        private readonly TimeLimiter rateLimiter = TimeLimiter.GetFromMaxCountByInterval(10, TimeSpan.FromSeconds(1));
+    public HueStateStore StateStore { get; }
 
-        public HueStateStore StateStore { get; }
-        private IHueClient? client;
+    public bool IsConfigured()
+        => GetSettings().AppKey != null;
 
-        public HueContext()
-        {
-            StateStore = new HueStateStore(this);
-        }
+    private static HueSettings GetSettings()
+        => SettingsStore.Get<HueSettings>(HueSettings.Sub);
 
-        public bool IsConfigured()
-            => GetSettings().AppKey != null;
+    public void Reset()
+        => SettingsStore.Reset(HueSettings.Sub);
 
-        private static HueSettings GetSettings()
-            => SettingsStore.Get<HueSettings>(HueSettings.Sub);
-        
-        public void Reset()
-            => SettingsStore.Reset(HueSettings.Sub);
+    private static async Task<string> GetBridgeIpAsync()
+    {
+        IBridgeLocator locator = new HttpBridgeLocator();
+        IEnumerable<LocatedBridge> bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(30));
+        var bridge = bridges.First();
 
-        private static async Task<string> GetBridgeIpAsync()
-        {
-            IBridgeLocator locator = new HttpBridgeLocator();
-            IEnumerable<LocatedBridge> bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(30));
-            var bridge = bridges.First();
+        return bridge.IpAddress;
+    }
 
-            return bridge.IpAddress;
-        }
-
-        public async Task LoginInteractiveAsync(IInteractiveLoginHelper loginHelper)
-        {
-            if (IsConfigured())
+    public async Task LoginInteractiveAsync(IInteractiveLoginHelper loginHelper)
+    {
+        if (IsConfigured())
+            try
             {
-                try
-                {
-                    await LoginAsync();
-                    
-                    return;
-                }
-                catch (Exception e)
-                {
-                    // TODO Log error
-                    Console.WriteLine(e);
-                }
+                await LoginAsync();
+
+                return;
+            }
+            catch (Exception e)
+            {
+                // TODO Log error
+                Console.WriteLine(e);
             }
 
-            var ip = await GetBridgeIpAsync();
+        var ip = await GetBridgeIpAsync();
 
-            var loginClient = new LocalHueClient(ip);
-            
-            while (true)
+        var loginClient = new LocalHueClient(ip);
+
+        while (true)
+        {
+            var @continue = await loginHelper.RequestButtonPressAsync();
+
+            if (!@continue)
+                return;
+
+            try
             {
-                bool @continue = await loginHelper.RequestButtonPressAsync();
+                var appKey = await loginClient.RegisterAsync("HueMicIndicator", Environment.MachineName);
 
-                if (!@continue)
-                    return;
-                
-                try
-                {
-                    var appKey = await loginClient.RegisterAsync("HueMicIndicator", Environment.MachineName);
+                SettingsStore.Set<HueSettings>(HueSettings.Sub, s => s with { AppKey = appKey });
 
-                    SettingsStore.Set<HueSettings>(HueSettings.Sub, s => s with { AppKey = appKey });
-                    
-                    return;
-                }
-                catch (LinkButtonNotPressedException) { }
+                return;
             }
+            catch (LinkButtonNotPressedException) { }
         }
+    }
 
-        public async Task<IHueClient> LoginAsync()
-        {
-            if (GetSettings().AppKey is not { } appKey)
-                throw new InvalidOperationException("App key is not configured");
-            
-            var ip = await GetBridgeIpAsync();
-            var innerClient = new LocalHueClient(ip, appKey);
-            client = innerClient;
+    public async Task<IHueClient> LoginAsync()
+    {
+        if (GetSettings().AppKey is not { } appKey)
+            throw new InvalidOperationException("App key is not configured");
 
-            return innerClient;
-        }
+        var ip = await GetBridgeIpAsync();
+        var innerClient = new LocalHueClient(ip, appKey);
+        client = innerClient;
 
-        private async ValueTask<T> ExecuteAsync<T>(Func<IHueClient, ValueTask<T>> callback)
-        {
-            if (client is not { } innerClient)
-                innerClient = await LoginAsync();
+        return innerClient;
+    }
 
-            await rateLimiter;
-            
-            return await callback(innerClient);
-        }
+    private async ValueTask<T> ExecuteAsync<T>(Func<IHueClient, ValueTask<T>> callback)
+    {
+        if (client is not { } innerClient)
+            innerClient = await LoginAsync();
 
-        public async Task SetStateAsync(bool isActive)
-        {
-            var state = await StateStore.GetStateAsync(isActive);
-            await state.ApplyAsync(this);
-        }
+        await rateLimiter;
 
-        public async Task SendCommandAsync(LightCommand command, IEnumerable<string> lights)
-            => await ExecuteAsync(async c => await c.SendCommandAsync(command, lights));
+        return await callback(innerClient);
+    }
 
-        public async Task<IReadOnlyCollection<LightInfo>> GetLightsAsync()
-        {
-            const string cacheKey = "lights";
+    public async Task SetStateAsync(bool isActive)
+    {
+        var state = await StateStore.GetStateAsync(isActive);
+        await state.ApplyAsync(this);
+    }
 
-            if (cache.Get<IReadOnlyCollection<LightInfo>>(cacheKey) is { } result)
-                return result;
+    public async Task SendCommandAsync(LightCommand command, IEnumerable<string> lights)
+        => await ExecuteAsync(async c => await c.SendCommandAsync(command, lights));
 
-            IEnumerable<Light> lights = await ExecuteAsync(async c => await c.GetLightsAsync());
-            List<LightInfo> infoList = lights.Select(l => new LightInfo(l.Id, l.Name, l.Capabilities))
-                .ToList();
-            var infos = new ReadOnlyCollection<LightInfo>(infoList);
+    public async Task<IReadOnlyCollection<LightInfo>> GetLightsAsync()
+    {
+        const string cacheKey = "lights";
 
-            cache.Set(cacheKey, infos, TimeSpan.FromHours(1));
+        if (cache.Get<IReadOnlyCollection<LightInfo>>(cacheKey) is { } result)
+            return result;
 
-            return infos;
-        }
+        IEnumerable<Light> lights = await ExecuteAsync(async c => await c.GetLightsAsync());
+        List<LightInfo> infoList = lights.Select(l => new LightInfo(l.Id, l.Name, l.Capabilities))
+            .ToList();
+        ReadOnlyCollection<LightInfo> infos = new ReadOnlyCollection<LightInfo>(infoList);
 
-        public async ValueTask<string?> FindLightIdAsync(string name)
-        {
-            IReadOnlyCollection<LightInfo> lights = await GetLightsAsync();
+        cache.Set(cacheKey, infos, TimeSpan.FromHours(1));
 
-            return lights.FirstOrDefault(l
-                => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
-                   l.Id.Equals(name, StringComparison.OrdinalIgnoreCase))?.Id;
-        }
+        return infos;
+    }
+
+    public async ValueTask<string?> FindLightIdAsync(string name)
+    {
+        IReadOnlyCollection<LightInfo> lights = await GetLightsAsync();
+
+        return lights.FirstOrDefault(l
+            => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
+               l.Id.Equals(name, StringComparison.OrdinalIgnoreCase))?.Id;
     }
 }
