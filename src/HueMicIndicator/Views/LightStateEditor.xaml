@@ -88,6 +88,10 @@
                               ItemsSource="{Binding AvailableFields}"
                               SelectedItem="{Binding NextField, Mode=TwoWay}" />
                 </Grid>
+                
+                <CheckBox IsChecked="{Binding ResetFirst}">
+                    Reset First
+                </CheckBox>
             </DockPanel>
             
             <Border DockPanel.Dock="Bottom"

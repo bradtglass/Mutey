@@ -28,6 +28,6 @@ public static class Extensions
                 break;
         }
 
-        return new HueLightSetting(state.On, state.Brightness, color);
+        return new HueLightSetting(state.On, state.Brightness, color, false);
     }
 }

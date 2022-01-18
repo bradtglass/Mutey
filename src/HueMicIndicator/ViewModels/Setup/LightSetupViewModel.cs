@@ -15,6 +15,9 @@ namespace HueMicIndicator.ViewModels.Setup;
 
 public class LightSetupViewModel : ObservableObject
 {
+
+    private Color color = Colors.Transparent;
+    private bool resetFirst;
     public LightSetupViewModel(LightInfo lightInfo, HueLightSetting? initialSetting)
     {
         Info = lightInfo;
@@ -50,12 +53,16 @@ public class LightSetupViewModel : ObservableObject
     // ReSharper disable once ConstantConditionalAccessQualifier
     public double MaxTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Min ?? 153);
 
-    private Color color = Colors.Transparent;
-
     public Color Color
     {
         get => color;
         private set => SetProperty(ref color, value);
+    }
+
+    public bool ResetFirst
+    {
+        get => resetFirst;
+        set => SetProperty(ref resetFirst, value);
     }
 
     private void RemoveField(LightFieldSetupViewModel? viewModel)
@@ -149,6 +156,8 @@ public class LightSetupViewModel : ObservableObject
 
     private void InitializeFields(HueLightSetting setting)
     {
+        ResetFirst = setting.ResetFirst;
+        
         if (setting.On is { } on)
             AddField<LightOnSetupViewModel>(vm => vm.On = on);
 
@@ -181,6 +190,6 @@ public class LightSetupViewModel : ObservableObject
         var brightness = Fields.OfType<LightBrightnessSetupViewModel>().FirstOrDefault()?.GetBrightness();
         var hueColor = Fields.OfType<LightColorSetupViewModelBase>().FirstOrDefault()?.GetHueColor();
 
-        return new HueLightSetting(on, brightness, hueColor);
+        return new HueLightSetting(on, brightness, hueColor, ResetFirst);
     }
 }

@@ -7,17 +7,19 @@ namespace HueMicIndicator.Hue;
 public sealed class StateReset : IAsyncDisposable
 {
     private readonly HueContext context;
+    private readonly bool cacheOnReset;
     private readonly IHueState state;
 
-    public StateReset(IHueState state, HueContext context)
+    public StateReset(IHueState state, HueContext context, bool cacheOnReset)
     {
         this.state = state;
         this.context = context;
+        this.cacheOnReset = cacheOnReset;
     }
 
     public async ValueTask DisposeAsync()
         => await ResetAsync();
 
     public async ValueTask ResetAsync()
-        => await state.ApplyAsync(context);
+        => await context.ApplyStateAsync(state, cacheOnReset);
 }

@@ -17,12 +17,34 @@ internal class HueLightState : IHueState
 
     public async Task ApplyAsync(HueContext context)
     {
+        if (setting.ResetFirst)
+            await ApplyWithResetAsync(context);
+        else
+            await ApplyWithoutResetAsync(context);
+    }
+
+
+    public IEnumerable<string> GetAffectedLights()
+        => lights;
+
+    private async ValueTask ApplyWithoutResetAsync(HueContext context)
+        => await ApplyCoreAsync(context, lights, setting);
+
+    private static async ValueTask ApplyCoreAsync(HueContext context, IEnumerable<string> lights,
+        params HueLightSetting?[] settings)
+    {
         var command = new LightCommand();
-        setting.Apply(command);
+        foreach (var setting in settings) setting?.Apply(command);
 
         await context.SendCommandAsync(command, lights);
     }
 
-    public IEnumerable<string> GetAffectedLights()
-        => lights;
+    private async ValueTask ApplyWithResetAsync(HueContext context)
+    {
+        foreach (var light in lights)
+        {
+            var lastState = context.GetLastLightState(light);
+            await ApplyCoreAsync(context, new[] { light }, lastState, setting);
+        }
+    }
 }
