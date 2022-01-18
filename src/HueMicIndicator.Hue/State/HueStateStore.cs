@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using System.Threading.Tasks;
 using HueMicIndicator.Core.Settings;
 
@@ -29,42 +27,7 @@ public class HueStateStore
     {
         var setting = Get(isActive);
 
-        return await BuildStateAsync(setting);
-    }
-
-    private async ValueTask<IHueState> BuildStateAsync(HueStateSetting setting)
-    {
-        List<IHueState> states = new();
-        foreach (IGrouping<HueLightSetting, KeyValuePair<string, HueLightSetting>> lightGroup in setting.Lights
-                     .GroupBy(l => l.Value))
-        {
-            var state = await BuildStateForLightGroupAsync(lightGroup.Key, lightGroup.Select(kvp => kvp.Key));
-
-            if (state != null)
-                states.Add(state);
-        }
-
-        return states.Count switch
-        {
-            0 => NoOpHueState.Instance,
-            1 => states[0],
-            _ => new HueStateWrapper(states)
-        };
-    }
-
-    private async ValueTask<IHueState?> BuildStateForLightGroupAsync(HueLightSetting setting,
-        IEnumerable<string> lights)
-    {
-        List<string> ids = new();
-
-        foreach (var light in lights)
-            if (await context.FindLightIdAsync(light) is { } id)
-                ids.Add(id);
-
-        if (ids.Count == 0)
-            return null;
-
-        return new HueLightState(setting, ids);
+        return await HueState.CreateAsync(setting, context);
     }
 
     public void Set(bool isActive, HueStateSetting setting)

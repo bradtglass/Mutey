@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HueMicIndicator.Hue.State;
 
-public class HueStateWrapper : IHueState
+internal class HueStateWrapper : IHueState
 {
     private readonly IReadOnlyCollection<IHueState> states;
 
@@ -16,4 +17,7 @@ public class HueStateWrapper : IHueState
         => await Parallel.ForEachAsync(states,
             new ParallelOptions { MaxDegreeOfParallelism = 4 },
             async (state, _) => await state.ApplyAsync(context));
+
+    public IEnumerable<string> GetAffectedLights()
+        => states.SelectMany(s => s.GetAffectedLights());
 }

@@ -8,11 +8,13 @@ using HueMicIndicator.Hue;
 using HueMicIndicator.Hue.State;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
+using Nito.AsyncEx;
 
 namespace HueMicIndicator.ViewModels.Setup;
 
 public class HueSetupViewModel : ObservableObject
 {
+    private readonly AsyncLock previewLock = new();
     private readonly HueContext context;
 
     private IReadOnlyCollection<SelectableViewModel<LightInfo>>? selectableLights;
@@ -25,6 +27,7 @@ public class HueSetupViewModel : ObservableObject
 
         SaveCommand = new RelayCommand(Save);
         LoadLightsCommand = new AsyncRelayCommand(LoadLights);
+        PreviewCommand = new AsyncRelayCommand<HueStateSetupViewModel>(PreviewAsync);
     }
 
     public IReadOnlyCollection<SelectableViewModel<LightInfo>>? SelectableLights
@@ -37,12 +40,31 @@ public class HueSetupViewModel : ObservableObject
 
     public ICommand SaveCommand { get; }
 
+    public ICommand PreviewCommand { get; }
+
     public IReadOnlyList<HueStateSetupViewModel>? States
     {
         get => states;
         private set => SetProperty(ref states, value);
     }
+    
+    private async Task PreviewAsync(HueStateSetupViewModel? state)
+    {
+        if (state == null)
+            return;
 
+        var stateSetting = GetSetting(state);
+        using var @lock = await previewLock.LockAsync();
+
+        var previewState = await HueState.CreateAsync(stateSetting, context);
+        await using (var _ = await context.PreviewStateAsync(previewState))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        await Task.Delay(TimeSpan.FromSeconds(2));
+    }
+    
     private async Task LoadLights()
     {
         List<HueStateSetupViewModel> viewModels = new()

@@ -43,22 +43,38 @@
 
             <TabControl ItemsSource="{Binding States}">
                 <TabControl.ItemContainerStyle>
-                    <Style TargetType="{x:Type TabItem}" d:DataContext="{d:DesignInstance setup:HueStateSetupViewModel}">
+                    <Style TargetType="{x:Type TabItem}"
+                           d:DataContext="{d:DesignInstance setup:HueStateSetupViewModel}">
                         <Setter Property="Header" Value="{Binding Path=Title}" />
                     </Style>
                 </TabControl.ItemContainerStyle>
                 <TabControl.ContentTemplate>
                     <DataTemplate DataType="setup:HueStateSetupViewModel">
-                        <ScrollViewer HorizontalScrollBarVisibility="Visible" HorizontalAlignment="Stretch">
-                            <ItemsControl ItemsSource="{Binding Lights}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                       <views:LightStateEditor Light="{Binding}"
-                                                               Margin="5"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
+                        <DockPanel>
+                            <Button DockPanel.Dock="Top"
+                                    HorizontalAlignment="Right"
+                                    Margin="5"
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TabControl}, Path=DataContext.PreviewCommand}">
+                                Preview
+                            </Button>
+
+                            <ScrollViewer HorizontalScrollBarVisibility="Visible" HorizontalAlignment="Stretch">
+                                <ItemsControl ItemsSource="{Binding Lights}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:LightStateEditor Light="{Binding}"
+                                                                    Margin="5" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </DockPanel>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>

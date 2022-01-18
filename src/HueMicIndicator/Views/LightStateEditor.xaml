@@ -13,12 +13,10 @@
             <DockPanel.Resources>
                 <DataTemplate DataType="{x:Type setup:LightOnSetupViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="On"
-                                     IsChecked="{Binding On}">
+                        <RadioButton IsChecked="{Binding On}">
                             Turn On
                         </RadioButton>
-                        <RadioButton GroupName="On"
-                                     Margin="5 0">
+                        <RadioButton Margin="5 0">
                             Turn Off
                         </RadioButton>
                     </StackPanel>

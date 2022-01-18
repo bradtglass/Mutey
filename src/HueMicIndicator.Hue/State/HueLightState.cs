@@ -4,7 +4,7 @@ using Q42.HueApi;
 
 namespace HueMicIndicator.Hue.State;
 
-public class HueLightState : IHueState
+internal class HueLightState : IHueState
 {
     private readonly IReadOnlyCollection<string> lights;
     private readonly HueLightSetting setting;
@@ -22,4 +22,7 @@ public class HueLightState : IHueState
 
         await context.SendCommandAsync(command, lights);
     }
+
+    public IEnumerable<string> GetAffectedLights()
+        => lights;
 }

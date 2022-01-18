@@ -122,14 +122,39 @@ public class HueContext
         if (cache.Get<IReadOnlyCollection<LightInfo>>(cacheKey) is { } result)
             return result;
 
-        IEnumerable<Light> lights = await ExecuteAsync(async c => await c.GetLightsAsync());
+        IEnumerable<Light> lights = await GetLightsAsyncCore();
         List<LightInfo> infoList = lights.Select(l => new LightInfo(l.Id, l.Name, l.Capabilities))
             .ToList();
-        ReadOnlyCollection<LightInfo> infos = new ReadOnlyCollection<LightInfo>(infoList);
+
+        ReadOnlyCollection<LightInfo> infos = new(infoList);
 
         cache.Set(cacheKey, infos, TimeSpan.FromHours(1));
 
         return infos;
+    }
+
+    private async Task<IEnumerable<Light>> GetLightsAsyncCore()
+        => await ExecuteAsync(async c => await c.GetLightsAsync());
+
+    public async ValueTask<StateReset> PreviewStateAsync(IHueState state)
+    {
+        // Enumerate affected lights and store current state
+        List<Light> currentLights = (await GetLightsAsyncCore()).ToList();
+        List<HueLightState> lightStates = state.GetAffectedLights()
+            .Distinct()
+            .Select(id => currentLights.FirstOrDefault(l => l.Id.Equals(id)))
+            .Where(l => l != null)
+            .Select(l => (l!.Id, Setting: l.State.GetSetting()))
+            .GroupBy(l => l.Item2)
+            .Select(l => new HueLightState(l.Key, l.Select(ll => ll.Id).ToList()))
+            .ToList();
+        var resetState = HueState.Get(lightStates);
+
+        // Apply new state
+        await state.ApplyAsync(this);
+
+        // Return reset object
+        return new StateReset(resetState, this);
     }
 
     public async ValueTask<string?> FindLightIdAsync(string name)
