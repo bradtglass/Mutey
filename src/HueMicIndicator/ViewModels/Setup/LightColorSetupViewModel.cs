@@ -5,7 +5,7 @@ namespace HueMicIndicator.ViewModels.Setup;
 
 public class LightColorSetupViewModel : LightColorSetupViewModelBase
 {
-    private Color color;
+    private Color color = Colors.MediumBlue;
 
     public LightColorSetupViewModel() : base(LightField.Color) { }
 

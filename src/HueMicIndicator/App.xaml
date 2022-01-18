@@ -11,7 +11,7 @@
                                             FalseValue="Collapsed"/>
         <converters:BoolVisibilityConverter x:Key="TrueToCollapsedConverter"
                                             TrueValue="Collapsed"
-                                            FalseValue="Visible"/>
+                                            FalseValue="Visible" />
         <converters:NullableVisibilityConverter x:Key="NullToCollapsedConverter"
                                                 NullValue="Collapsed"
                                                 NotNullValue="Visible" />

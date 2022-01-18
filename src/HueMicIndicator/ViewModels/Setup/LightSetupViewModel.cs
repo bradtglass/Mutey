@@ -89,13 +89,13 @@ public class LightSetupViewModel : ObservableObject
         AvailableFields.Clear();
         AvailableFields.Add(null);
 
-        if (!Fields.Any(f => f is LightOnSetupViewModel))
+        if (!Fields.OfType<LightOnSetupViewModel>().Any())
             AvailableFields.Add(LightField.On);
 
-        if (!Fields.Any(f => f is LightBrightnessSetupViewModel))
+        if (!Fields.OfType<LightBrightnessSetupViewModel>().Any())
             AvailableFields.Add(LightField.Brightness);
 
-        if (!Fields.Any(f => f is LightColorSetupViewModel or LightColorTempSetupViewModel))
+        if (!Fields.OfType<LightColorSetupViewModelBase>().Any())
         {
             if (Info.Capabilities.Control.ColorGamut.HasValue)
                 AvailableFields.Add(LightField.Color);
