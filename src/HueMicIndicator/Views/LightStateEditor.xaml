@@ -9,7 +9,7 @@
             BorderThickness="1"
             CornerRadius="1"
             DataContext="{Binding ElementName=ControlElement, Path=Light}">
-        <DockPanel Margin="5">
+        <DockPanel>
             <DockPanel.Resources>
                 <DataTemplate DataType="{x:Type setup:LightOnSetupViewModel}">
                     <StackPanel Orientation="Horizontal">
@@ -39,46 +39,32 @@
                     </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type setup:LightColorTempSetupViewModel}">
-                    <DockPanel>
-                        <Border DockPanel.Dock="Bottom"
-                                   HorizontalAlignment="Stretch"
-                                   BorderBrush="SteelBlue"
-                                   BorderThickness="1"
-                                   Margin="5"
-                                   Height="20">
-                            <Border.Background>
-                                <SolidColorBrush
-                                    Color="{Binding Temperature, Converter={StaticResource ColorTempToColorConverter}}" />
-                            </Border.Background>
-                        </Border>
-                        
-                        <Grid DockPanel.Dock="Top">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                            <Slider Grid.Column="0"
-                                    Minimum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.MinTemp}"
-                                    Maximum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.MaxTemp}"
-                                    Value="{Binding Temperature, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Grid.Column="1"
-                                       Margin="5 0 0 0"
-                                       FontWeight="Light"
-                                       Text="{Binding Temperature, StringFormat={}{0:F0}K}" />
-                        </Grid>
-
-                    </DockPanel>
+                        <Slider Grid.Column="0"
+                                Minimum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.(setup:LightSetupViewModel.MinTemp)}"
+                                Maximum="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}, Path=DataContext.(setup:LightSetupViewModel.MaxTemp)}"
+                                Value="{Binding Temperature, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="5 0 0 0"
+                                   FontWeight="Light"
+                                   Text="{Binding Temperature, StringFormat={}{0:F0}K}" />
+                    </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type setup:LightColorSetupViewModel}" />
             </DockPanel.Resources>
 
-            <DockPanel DockPanel.Dock="Top">
+            <DockPanel DockPanel.Dock="Top"
+                       Margin="5">
                 <Label DockPanel.Dock="Top"
                        FontWeight="Bold"
                        Content="{Binding Info.Name}"
                        Target="{Binding ElementName=NextSelector}" />
-
+                
                 <Grid DockPanel.Dock="Bottom"
                       HorizontalAlignment="Stretch"
                       Margin="0 5">
@@ -99,14 +85,36 @@
                 </Grid>
             </DockPanel>
             
+            <Border DockPanel.Dock="Bottom"
+                    MinHeight="80">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0 1" EndPoint="0 0">
+                        <GradientStop Color="Black" Offset="0"/>
+                        <GradientStop Color="Black" Offset="0.7"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                
+                <Border HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        BorderThickness="1"
+                        CornerRadius="5"
+                        Margin="5 8"
+                        Height="40">
+                    <Border.Background>
+                        <SolidColorBrush
+                            Color="{Binding Color}" />
+                    </Border.Background>
+                </Border>
+            </Border>
+            
             <ItemsControl ItemsSource="{Binding Fields}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="LightGray"
                                 BorderThickness="1"
                                 CornerRadius="1"
-                                TextElement.Foreground="White"
-                                Background="#2E2E2E">
+                                Margin="5 5 5 0">
                             <DockPanel Margin="5">
                                 <Grid DockPanel.Dock="Top" Margin="0 0 0 5">
                                     <Grid.ColumnDefinitions>

@@ -10,6 +10,7 @@ public static class Extensions
     {
         HueColor? color;
 
+        // ReSharper disable once ConstantConditionalAccessQualifier
         switch (state.ColorMode?.ToLower())
         {
             case "xy":

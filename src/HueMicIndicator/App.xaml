@@ -18,6 +18,5 @@
         <converters:NullableVisibilityConverter x:Key="NullToVisibleConverter"
                                                 NullValue="Visible"
                                                 NotNullValue="Collapsed" />
-        <converters:ColorTempToColorConverter x:Key="ColorTempToColorConverter" />
     </Application.Resources>
 </Application>

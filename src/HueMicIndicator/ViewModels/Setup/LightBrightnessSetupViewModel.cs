@@ -1,8 +1,8 @@
 ﻿namespace HueMicIndicator.ViewModels.Setup;
 
-public class LightBrightnessSetupViewModel : LightFieldSetupViewModel
+public class LightBrightnessSetupViewModel : LightFieldSetupViewModel, IAffectsColor
 {
-    private double brightness;
+    private double brightness = 1;
 
     public LightBrightnessSetupViewModel() : base(LightField.Brightness) { }
 
@@ -17,4 +17,7 @@ public class LightBrightnessSetupViewModel : LightFieldSetupViewModel
 
     public byte GetBrightness()
         => (byte)(Brightness * byte.MaxValue);
+
+    public (byte? a, (byte r, byte g, byte b)?) GetColorComponents()
+        => (GetBrightness(), null);
 }

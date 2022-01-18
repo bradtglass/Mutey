@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Globalization;
-using System.Windows.Data;
 using System.Windows.Media;
 
-namespace HueMicIndicator.Converters;
+namespace HueMicIndicator;
 
-public class ColorTempToColorConverter : IValueConverter
+public static class ColorUtility
 {
-    // Source: https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public static Color TempToColor(double temp)
     {
-        var temp = (double)value;
-
+        // Source: https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
         var r = GetRed(temp);
         var g = GetGreen(temp);
         var b = GetBlue(temp);
 
         return Color.FromRgb(r, g, b);
     }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => throw new NotSupportedException();
 
     private static byte GetRed(double temp)
     {

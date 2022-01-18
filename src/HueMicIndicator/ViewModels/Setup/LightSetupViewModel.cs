@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -42,9 +44,19 @@ public class LightSetupViewModel : ObservableObject
 
     public ObservableCollection<LightFieldSetupViewModel> Fields { get; } = new();
 
+    // ReSharper disable once ConstantConditionalAccessQualifier
     public double MinTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Max ?? 500);
 
+    // ReSharper disable once ConstantConditionalAccessQualifier
     public double MaxTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Min ?? 153);
+
+    private Color color = Colors.Transparent;
+
+    public Color Color
+    {
+        get => color;
+        private set => SetProperty(ref color, value);
+    }
 
     private void RemoveField(LightFieldSetupViewModel? viewModel)
     {
@@ -53,6 +65,7 @@ public class LightSetupViewModel : ObservableObject
 
         Fields.Remove(viewModel);
         RefreshAvailable();
+        RefreshColor();
     }
 
     private void AddField(LightField field)
@@ -87,6 +100,7 @@ public class LightSetupViewModel : ObservableObject
             if (Info.Capabilities.Control.ColorGamut.HasValue)
                 AvailableFields.Add(LightField.Color);
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (Info.Capabilities.Control.ColorTemperature != null)
                 AvailableFields.Add(LightField.ColorTemperature);
         }
@@ -107,9 +121,30 @@ public class LightSetupViewModel : ObservableObject
         if (Fields.Any(f => f.GetType() == type))
             return;
 
-        foreach (var conflict in Fields.Where(f => f.ConflictsWith(field)).ToList()) Fields.Remove(conflict);
+        foreach (var conflict in Fields.Where(f => f.ConflictsWith(field)).ToList()) 
+            Fields.Remove(conflict);
 
         Fields.Add(field);
+        
+        if(field is IAffectsColor)
+            field.PropertyChanged += OnColorComponentChanged;
+
+        RefreshColor();
+    }
+
+    private void OnColorComponentChanged(object? sender, PropertyChangedEventArgs e)
+        => RefreshColor();
+
+    private void RefreshColor()
+    {
+        List<(byte? a, (byte r, byte g, byte b)?)> parts = Fields.OfType<IAffectsColor>()
+            .Select(f => f.GetColorComponents())
+            .ToList();
+
+        var a = parts.Select(p => p.a).FirstOrDefault(a => a.HasValue) ?? byte.MaxValue;
+        var (r, g, b) = parts.Select(p => p.Item2).FirstOrDefault(rgb => rgb.HasValue) ?? (255, 229, 207);
+
+        Color = Color.FromArgb(a, r, g, b);
     }
 
     private void InitializeFields(HueLightSetting setting)
@@ -125,10 +160,10 @@ public class LightSetupViewModel : ObservableObject
             case null:
                 break;
             case RgbHueColor rgbHueColor:
-                var color = Color.FromRgb((byte)rgbHueColor.Color.R,
+                var rgb = Color.FromRgb((byte)rgbHueColor.Color.R,
                     (byte)rgbHueColor.Color.G,
                     (byte)rgbHueColor.Color.B);
-                AddField<LightColorSetupViewModel>(vm => vm.Color = color);
+                AddField<LightColorSetupViewModel>(vm => vm.Color = rgb);
 
                 break;
             case TemperatureHueColor temperatureHueColor:
@@ -144,8 +179,8 @@ public class LightSetupViewModel : ObservableObject
     {
         var on = Fields.OfType<LightOnSetupViewModel>().FirstOrDefault()?.On;
         var brightness = Fields.OfType<LightBrightnessSetupViewModel>().FirstOrDefault()?.GetBrightness();
-        var color = Fields.OfType<LightColorSetupViewModelBase>().FirstOrDefault()?.GetHueColor();
+        var hueColor = Fields.OfType<LightColorSetupViewModelBase>().FirstOrDefault()?.GetHueColor();
 
-        return new HueLightSetting(on, brightness, color);
+        return new HueLightSetting(on, brightness, hueColor);
     }
 }

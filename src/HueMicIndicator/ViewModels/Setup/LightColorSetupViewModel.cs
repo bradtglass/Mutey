@@ -17,4 +17,7 @@ public class LightColorSetupViewModel : LightColorSetupViewModelBase
 
     public override HueColor GetHueColor()
         => new RgbHueColor(Color.ScR, Color.ScG, Color.ScB);
+
+    protected override (byte r, byte g, byte b) GetRgb()
+        => (Color.R, Color.G, Color.B);
 }

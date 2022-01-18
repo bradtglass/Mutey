@@ -16,4 +16,11 @@ public class LightColorTempSetupViewModel : LightColorSetupViewModelBase
 
     public override HueColor GetHueColor()
         => new TemperatureHueColor(Temperature);
+
+    protected override (byte r, byte g, byte b) GetRgb()
+    {
+        var color = ColorUtility.TempToColor(Temperature);
+
+        return (color.R, color.G, color.B);
+    }
 }
