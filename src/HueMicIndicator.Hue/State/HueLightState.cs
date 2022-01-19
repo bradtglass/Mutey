@@ -34,7 +34,8 @@ internal class HueLightState : IHueState
         params HueLightSetting?[] settings)
     {
         var command = new LightCommand();
-        foreach (var setting in settings) setting?.Apply(command);
+        foreach (var setting in settings) 
+            setting?.Apply(command);
 
         await context.SendCommandAsync(command, lights);
     }

@@ -7,8 +7,21 @@ public record HueLightSetting(bool? On, byte? Brightness, HueColor? Color, bool 
 {
     public void Apply(LightCommand command)
     {
-        Color?.Apply(command);
-        command.On = On;
-        command.Brightness = Brightness;
+        if (Color != null)
+        {
+            // Clear any existing color settings to prevent conflicts
+            command.ColorCoordinates = null!;
+            command.ColorTemperature = null;
+            command.Hue = null;
+            command.Saturation = null;
+
+            Color?.Apply(command);
+        }
+
+        if (On.HasValue)
+            command.On = On;
+
+        if (Brightness.HasValue)
+            command.Brightness = Brightness;
     }
 }
