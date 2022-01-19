@@ -5,49 +5,70 @@ using HueMicIndicator.Mic;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Nito.AsyncEx;
 
-namespace HueMicIndicator.ViewModels
+namespace HueMicIndicator.ViewModels;
+
+public sealed class StateViewModel : ObservableObject, IDisposable
 {
-    public sealed class StateViewModel : ObservableObject, IDisposable
+    private readonly AsyncLock changeLock = new();
+    private readonly HueContext context;
+    private readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+    private readonly MicrophoneActivityWatcher microphoneWatcher;
+
+    private bool isActive;
+
+    private bool setActiveOverride;
+
+    public StateViewModel(HueContext context)
     {
-        private readonly AsyncLock changeLock = new();
-        private readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-        private readonly HueContext context;
-        private readonly MicrophoneActivityWatcher microphoneWatcher;
+        this.context = context;
+        microphoneWatcher = MicrophoneActivityWatcher.Create();
+        microphoneWatcher.Notify += OnStateChange;
 
-        private bool isActive;
+        RefreshState();
+    }
 
-        public StateViewModel(HueContext context)
+    public bool IsActive
+    {
+        get => isActive;
+        private set
         {
-            this.context = context;
-            microphoneWatcher = MicrophoneActivityWatcher.Create();
-            microphoneWatcher.Notify += OnStateChange;
+            if (SetProperty(ref isActive, value))
+                PropagateState(value);
         }
+    }
 
-        public bool IsActive
+    public bool SetActiveOverride
+    {
+        get => setActiveOverride;
+        set
         {
-            get => isActive;
-            private set => SetProperty(ref isActive, value);
+            if (SetProperty(ref setActiveOverride, value)) RefreshState();
         }
+    }
 
-        public void Dispose()
+    public void Dispose()
+    {
+        microphoneWatcher.Dispose();
+    }
+
+    private void OnStateChange(object? sender, MicrophoneActivityEventArgs e)
+        => RefreshState();
+
+    private void RefreshState()
+        => dispatcher.InvokeAsync(() => IsActive = SetActiveOverride || microphoneWatcher.IsActive);
+
+    private async void PropagateState(bool value)
+    {
+        using var _ = await changeLock.LockAsync();
+
+        try
         {
-            microphoneWatcher.Dispose();
+            await context.SetStateAsync(value);
         }
-
-        private async void OnStateChange(object? sender, MicrophoneActivityEventArgs e)
+        catch (Exception exception)
         {
-            using var _ = await changeLock.LockAsync();
-
-            try
-            {
-                await dispatcher.InvokeAsync(() => IsActive = e.IsActive);
-                await context.SetStateAsync(e.IsActive);
-            }
-            catch (Exception exception)
-            {
-                // TODO Log exception properly
-                Console.WriteLine(exception);
-            }
+            // TODO Log exception properly
+            Console.WriteLine(exception);
         }
     }
 }

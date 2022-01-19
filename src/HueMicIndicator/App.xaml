@@ -18,5 +18,9 @@
         <converters:NullableVisibilityConverter x:Key="NullToVisibleConverter"
                                                 NullValue="Visible"
                                                 NotNullValue="Collapsed" />
+        
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="5 3" />
+        </Style>
     </Application.Resources>
 </Application>

@@ -9,5 +9,6 @@ public partial class SetupWindow
         InitializeComponent();
 
         DataContext = viewModel;
+        viewModel.RequestClose += Close;
     }
 }

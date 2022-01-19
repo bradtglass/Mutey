@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using HueMicIndicator.Hue;
 using HueMicIndicator.Hue.State;
@@ -14,11 +15,12 @@ namespace HueMicIndicator.ViewModels.Setup;
 
 public class HueSetupViewModel : ObservableObject
 {
+    public event Action? RequestClose;
+    
     private readonly AsyncLock previewLock = new();
     private readonly HueContext context;
 
     private IReadOnlyCollection<SelectableViewModel<LightInfo>>? selectableLights;
-
     private IReadOnlyList<HueStateSetupViewModel>? states;
 
     public HueSetupViewModel(HueContext context)
@@ -174,6 +176,9 @@ public class HueSetupViewModel : ObservableObject
             var setting = GetSetting(state);
             context.StateStore.Set(state.IsActive, setting);
         }
+
+        MessageBox.Show("Settings updated", "Settings", MessageBoxButton.OK, MessageBoxImage.Information);
+        RequestClose?.Invoke();
     }
 
     private static HueStateSetting GetSetting(HueStateSetupViewModel viewModel)
