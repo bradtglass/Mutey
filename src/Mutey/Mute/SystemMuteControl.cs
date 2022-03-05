@@ -5,16 +5,25 @@ using NLog;
 
 namespace Mutey.Mute
 {
+    using Nito.AsyncEx;
+
     [UsedImplicitly]
     public class SystemMuteControl : ISystemMuteControl, IDisposable
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        
+
+        private readonly AsyncContextThread syncThread = new();
         private MMDevice? current;
+        private bool disposed;
 
         public void Dispose()
         {
-            current?.Dispose();
+            if(disposed)
+                return;
+            
+            disposed = true;
+            syncThread.Context.SynchronizationContext.Send(() => current?.Dispose());
+            syncThread.Dispose();
         }
 
         public void Mute()
