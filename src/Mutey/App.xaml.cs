@@ -25,6 +25,7 @@ namespace Mutey
             LoggingConfiguration current = LogManager.Configuration??
                                            new LoggingConfiguration();
             
+            ConfigureFileLogging(current);
             ConfigureSentinelLogging(current);
 
             LogManager.Configuration = current;
@@ -42,7 +43,22 @@ namespace Mutey
                 Address = "udp://127.0.0.1:9999"
             };
 
-            configuration.AddRule(LogLevel.Trace,LogLevel.Fatal, target);
+            configuration.AddRule( LogLevel.Trace, LogLevel.Fatal, target );
+        }
+
+        private static void ConfigureFileLogging( LoggingConfiguration configuration )
+        {
+            FileTarget target = new("File")
+            {
+                ArchiveEvery = FileArchivePeriod.Day,
+                MaxArchiveDays = 3,
+                FileName = "${specialfolder:folder=localapplicationdata}/Mutey/logs/mutey.log",
+                Layout = "${longdate} - ${level:uppercase=true}: ${message}${onexception:${newline}exception\\: ${exception:format=tostring}}"
+            };
+
+            var minLevel = Debugger.IsAttached ? LogLevel.Debug : LogLevel.Info; 
+            
+            configuration.AddRule(minLevel, LogLevel.Fatal, target);
         }
         
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
