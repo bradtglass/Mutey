@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace Mutey.Converters
@@ -19,7 +18,7 @@ namespace Mutey.Converters
             if (Equals(value, EqualValue))
                 return parameter;
 
-            return DependencyProperty.UnsetValue;
+            return Binding.DoNothing;
         }
     }
 }

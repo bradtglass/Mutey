@@ -10,10 +10,18 @@
                     xmlns:converters="clr-namespace:Mutey.Converters"
                     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:mutey="clr-namespace:Mutey"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <converters:MuteStateToIconSourceConverter x:Key="MuteStateToIconSourceConverter" />
-        <converters:EqualityConverter x:Key="BooleanEqualityConverter" />
+        <converters:EqualityConverter x:Key="BooleanEqualityConverter">
+            <converters:EqualityConverter.EqualValue>
+                <system:Boolean>True</system:Boolean>
+            </converters:EqualityConverter.EqualValue>
+            <converters:EqualityConverter.NotEqualValue>
+                <system:Boolean>False</system:Boolean>
+            </converters:EqualityConverter.NotEqualValue>
+        </converters:EqualityConverter>
         <converters:EqualityConverter x:Key="VisibilityEqualityConverter"
                                       EqualValue="{x:Static Visibility.Visible}"
                                       NotEqualValue="{x:Static Visibility.Collapsed}" />
