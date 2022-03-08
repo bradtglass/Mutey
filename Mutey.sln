@@ -17,15 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B2BF2FEE-3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hue", "Hue", "{C92FD036-12F4-4298-A11A-C1C060BB551D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueMicIndicator.Hue.Test", "test\Hue\HueMicIndicator.Hue.Test\HueMicIndicator.Hue.Test.csproj", "{4D65AE22-0571-4B4E-82C0-415F795B406D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Client.Test", "test\Hue\Mutey.Hue.Client.Test\Mutey.Hue.Client.Test.csproj", "{4D65AE22-0571-4B4E-82C0-415F795B406D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueMicIndicator", "src\Hue\HueMicIndicator\HueMicIndicator.csproj", "{2EE3118A-7E2B-402C-9A94-7130244200EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue", "src\Hue\Mutey.Hue\Mutey.Hue.csproj", "{2EE3118A-7E2B-402C-9A94-7130244200EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueMicIndicator.Core", "src\Hue\HueMicIndicator.Core\HueMicIndicator.Core.csproj", "{CF307376-724C-47B2-988F-5445106DDDB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Core", "src\Hue\Mutey.Hue.Core\Mutey.Hue.Core.csproj", "{CF307376-724C-47B2-988F-5445106DDDB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueMicIndicator.Hue", "src\Hue\HueMicIndicator.Hue\HueMicIndicator.Hue.csproj", "{7A678E3D-65AB-4BC6-BEAF-226148107394}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Client", "src\Hue\Mutey.Hue.Client\Mutey.Hue.Client.csproj", "{7A678E3D-65AB-4BC6-BEAF-226148107394}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueMicIndicator.Mic", "src\Hue\HueMicIndicator.Mic\HueMicIndicator.Mic.csproj", "{9396F669-1104-477A-A9E3-4C0A85D87030}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Mic", "src\Hue\Mutey.Hue.Mic\Mutey.Hue.Mic.csproj", "{9396F669-1104-477A-A9E3-4C0A85D87030}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
