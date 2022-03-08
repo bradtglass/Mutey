@@ -1,0 +1,26 @@
+﻿<Application x:Class="HueMicIndicator.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:HueMicIndicator.ViewModels"
+             xmlns:converters="clr-namespace:HueMicIndicator.Converters"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <viewModels:ApplicationViewModel x:Key="AppViewModel" />
+        <converters:BoolVisibilityConverter x:Key="TrueToVisibleConverter"
+                                            TrueValue="Visible"
+                                            FalseValue="Collapsed"/>
+        <converters:BoolVisibilityConverter x:Key="TrueToCollapsedConverter"
+                                            TrueValue="Collapsed"
+                                            FalseValue="Visible" />
+        <converters:NullableVisibilityConverter x:Key="NullToCollapsedConverter"
+                                                NullValue="Collapsed"
+                                                NotNullValue="Visible" />
+        <converters:NullableVisibilityConverter x:Key="NullToVisibleConverter"
+                                                NullValue="Visible"
+                                                NotNullValue="Collapsed" />
+        
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="5 3" />
+        </Style>
+    </Application.Resources>
+</Application>
