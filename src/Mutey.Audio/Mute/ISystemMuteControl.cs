@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Mutey.Mute
+﻿namespace Mutey.Audio.Mute
 {
+    using System;
+
     public interface ISystemMuteControl
     {
         public void Mute();

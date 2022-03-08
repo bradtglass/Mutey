@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mutey.Mute
+namespace Mutey.Audio.Mute
 {
     public class MuteChangedEventArgs : EventArgs
     {

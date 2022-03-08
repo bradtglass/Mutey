@@ -5,13 +5,15 @@ using System.Threading;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Mutey.Input;
-using Mutey.Mute;
 using Mutey.Popup;
 using NLog;
 using Prism.Mvvm;
 
 namespace Mutey.ViewModels
 {
+    using Mutey.Audio;
+    using Mutey.Audio.Mute;
+
     /// <summary>
     /// This is the primary place that all of the business logic is pulled together, input devices, software inputs, popups and input transformation.
     /// </summary>

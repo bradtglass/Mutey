@@ -8,6 +8,8 @@ using NLog;
 
 namespace Mutey.Popup
 {
+    using Mutey.Audio;
+
     [UsedImplicitly]
     public class MicStatePopupManager : IDisposable
     {

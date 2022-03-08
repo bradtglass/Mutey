@@ -3,6 +3,8 @@ using Prism.Mvvm;
 
 namespace Mutey.Popup
 {
+    using Mutey.Audio;
+
     internal class MicStatePopupViewModel : BindableBase
     {
         private bool isVisible;

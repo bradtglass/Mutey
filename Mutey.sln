@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Client", "src\Hue
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Mic", "src\Hue\Mutey.Hue.Mic\Mutey.Hue.Mic.csproj", "{9396F669-1104-477A-A9E3-4C0A85D87030}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Audio", "src\Mutey.Audio\Mutey.Audio.csproj", "{12EC73FF-1A14-423E-9107-9D7644B2630B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,7 @@ Global
 		{CF307376-724C-47B2-988F-5445106DDDB6} = {A3E3DE85-B1B5-4175-8CB5-209ECBC52D1F}
 		{7A678E3D-65AB-4BC6-BEAF-226148107394} = {A3E3DE85-B1B5-4175-8CB5-209ECBC52D1F}
 		{9396F669-1104-477A-A9E3-4C0A85D87030} = {A3E3DE85-B1B5-4175-8CB5-209ECBC52D1F}
+		{12EC73FF-1A14-423E-9107-9D7644B2630B} = {BFD0C49B-6EDC-4A53-A6E9-583A71720FEC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -66,5 +69,9 @@ Global
 		{9396F669-1104-477A-A9E3-4C0A85D87030}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9396F669-1104-477A-A9E3-4C0A85D87030}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9396F669-1104-477A-A9E3-4C0A85D87030}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12EC73FF-1A14-423E-9107-9D7644B2630B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12EC73FF-1A14-423E-9107-9D7644B2630B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12EC73FF-1A14-423E-9107-9D7644B2630B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12EC73FF-1A14-423E-9107-9D7644B2630B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -2,7 +2,6 @@
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using Mutey.Input;
-using Mutey.Mute;
 using Mutey.Popup;
 using Mutey.ViewModels;
 using Mutey.Views;
@@ -15,6 +14,8 @@ using Prism.Mvvm;
 
 namespace Mutey
 {
+    using Mutey.Audio.Mute;
+
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>

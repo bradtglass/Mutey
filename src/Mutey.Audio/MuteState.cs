@@ -1,4 +1,4 @@
-﻿namespace Mutey
+﻿namespace Mutey.Audio
 {
     /// <summary>
     /// The possible states for audio input.

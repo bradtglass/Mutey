@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading;
-using JetBrains.Annotations;
-using NAudio.CoreAudioApi;
-using Nito.AsyncEx;
-using NLog;
-
-namespace Mutey.Mute
+﻿namespace Mutey.Audio.Mute
 {
+    using System;
+    using System.Threading;
+    using JetBrains.Annotations;
+    using NAudio.CoreAudioApi;
+    using Nito.AsyncEx;
+    using NLog;
+
     [UsedImplicitly]
     public class SystemMuteControl : ISystemMuteControl, IDisposable
     {

@@ -8,12 +8,8 @@
 
     <ItemGroup>
       <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-      <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
       <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.8.0" />
       <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
-      <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
-      <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
-      <PackageReference Include="NLog" Version="4.7.7" />
       <PackageReference Include="Prism.DryIoc" Version="8.0.0.1909" />
       <PackageReference Include="System.IO.Ports" Version="5.0.0" />
       <PackageReference Include="System.Management" Version="5.0.0" />
@@ -46,6 +42,10 @@
 
     <ItemGroup>
       <Folder Include="Properties" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Mutey.Audio\Mutey.Audio.csproj" />
     </ItemGroup>
 
 </Project>

@@ -3,6 +3,8 @@ using System.Windows.Threading;
 
 namespace Mutey.Popup
 {
+    using Mutey.Audio;
+
     public partial class MicStatePopupControl
     {
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register(

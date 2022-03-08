@@ -6,6 +6,8 @@ using System.Windows.Media.Imaging;
 
 namespace Mutey.Converters
 {
+    using Mutey.Audio;
+
     public class MuteStateToIconSourceConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
