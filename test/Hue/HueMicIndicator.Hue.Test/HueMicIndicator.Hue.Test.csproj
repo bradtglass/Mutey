@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\HueMicIndicator.Hue\HueMicIndicator.Hue.csproj"/>
+        <ProjectReference Include="..\..\..\src\Hue\HueMicIndicator.Hue\HueMicIndicator.Hue.csproj"/>
     </ItemGroup>
 
 </Project>
