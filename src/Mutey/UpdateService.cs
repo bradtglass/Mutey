@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using JetBrains.Annotations;
 using NLog;
-using NuGet;
-using Squirrel;
 using ILogger = NLog.ILogger;
 
 namespace Mutey
 {
     [UsedImplicitly]
-    public class UpdateService
+    public class UpdateService : IUpdateService
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
@@ -21,7 +17,6 @@ namespace Mutey
 
         private readonly SemaphoreSlim updateSemaphore = new(1);
         private TimeSpan lastBackOff = TimeSpan.FromSeconds(2);
-
 
         public UpdateService()
         {
@@ -102,34 +97,11 @@ namespace Mutey
                 logger.Info("Beginning update check");
                 ChangeState(UpdateState.Checking);
 
-                using IUpdateManager updateManager = await GetUpdateManagerAsync();
-                UpdateInfo updateInfo = await updateManager.CheckForUpdate();
-
-                SemanticVersion? currentVersion = updateInfo?.CurrentlyInstalledVersion?.Version;
-
-                if (currentVersion == null)
-                {
-                    logger.Warn("Squirrel failed to detect current version");
-                    Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
-                    currentVersion ??= new SemanticVersion(assemblyVersion);
-                }
-
-                if (updateInfo?.FutureReleaseEntry == null)
-                    throw new InvalidOperationException("No entries found on remote");
+                logger.Warn("Update checking is not implemented");
                 
-                UpdateState newState;
-                if (currentVersion <= updateInfo.FutureReleaseEntry.Version)
-                {
-                    logger.Info("Update check determined latest version is current version");
-                    newState = UpdateState.Latest;
-                }
-                else
-                {
-                    logger.Info("Update check detected a newer version {Version}",
-                        updateInfo.FutureReleaseEntry.Version);
-                    newState = UpdateState.Available;
-                }
-
+                // BG Update checking disabled due to issues with virus scanning of squirrel exe
+                // Also because Squirrel.Windows does not support .NET 6
+                const UpdateState newState = UpdateState.Latest;
                 ChangeState(newState);
 
                 return newState;
@@ -145,33 +117,12 @@ namespace Mutey
             }
         }
 
-        private async Task<IUpdateManager> GetUpdateManagerAsync()
-        {
-            logger.Debug("Creating new update manager instance");
-
-            return await UpdateManager.GitHubUpdateManager(@"https://github.com/G18SSY/Mutey", prerelease: true);
-        }
-
-
         public async Task UpdateAsync()
         {
             await updateSemaphore.WaitAsync();
             try
             {
-                using IUpdateManager updateManager = await GetUpdateManagerAsync();
-
-                await updateManager.UpdateApp();
-                logger.Info("Update applied");
-
-                MessageBoxResult result = MessageBox.Show(
-                    "Update applied successfully, would you like to restart to start using the latest version?",
-                    "Update", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    logger.Info("Restarting application");
-                    UpdateManager.RestartApp();
-                }
+                throw new NotSupportedException("Automatic updates have been disabled");
             }
             finally
             {

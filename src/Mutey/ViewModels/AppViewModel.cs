@@ -14,11 +14,11 @@ namespace Mutey.ViewModels
     internal class AppViewModel : BindableBase
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        private readonly UpdateService updateService;
+        private readonly IUpdateService updateService;
 
         private UpdateState updateState;
 
-        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings, UpdateService updateService)
+        public AppViewModel(MuteyViewModel mutey, SettingsViewModel settings, IUpdateService updateService)
         {
             this.updateService = updateService;
             updateService.StateChanged += OnUpdateStateChanged;

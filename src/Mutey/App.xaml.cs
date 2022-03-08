@@ -72,8 +72,6 @@ namespace Mutey
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            
-            
             logger.Info("Registering types with Prism");
             
             ViewModelLocationProvider.Register<TaskbarIcon, AppViewModel>();
@@ -86,7 +84,7 @@ namespace Mutey
             containerRegistry.RegisterSingleton<SettingsWindow>();
             containerRegistry.RegisterSingleton<AboutWindow>();
             containerRegistry.RegisterSingleton<MicStatePopupManager>();
-            containerRegistry.RegisterSingleton<UpdateService>();
+            containerRegistry.RegisterSingleton<IUpdateService, UpdateService>();
         }
 
         protected override Window? CreateShell()

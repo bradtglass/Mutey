@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 ProjectSection(SolutionItems) = preProject
 	README.md = README.md
 	Directory.Build.props = Directory.Build.props
-	Mutey.0.4.0.nuspec = Mutey.0.4.0.nuspec
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hue", "Hue", "{A3E3DE85-B1B5-4175-8CB5-209ECBC52D1F}"
