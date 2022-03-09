@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Mutey.Input
+﻿namespace Mutey.Input
 {
+    using System;
+    using System.Collections.Generic;
+
     public interface IMuteHardwareDetector
     {
         /// <summary>

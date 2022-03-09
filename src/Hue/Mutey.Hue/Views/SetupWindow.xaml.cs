@@ -1,14 +1,15 @@
-﻿namespace Mutey.Hue.Views;
-
-using Mutey.Hue.ViewModels.Setup;
-
-public partial class SetupWindow
+﻿namespace Mutey.Hue.Views
 {
-    public SetupWindow(HueSetupViewModel viewModel)
-    {
-        InitializeComponent();
+    using Mutey.Hue.ViewModels.Setup;
 
-        DataContext = viewModel;
-        viewModel.RequestClose += Close;
+    public partial class SetupWindow
+    {
+        public SetupWindow( HueSetupViewModel viewModel )
+        {
+            InitializeComponent();
+
+            DataContext = viewModel;
+            viewModel.RequestClose += Close;
+        }
     }
 }

@@ -3,9 +3,9 @@
         <OutputType>Library</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
+        <PackageReference Include="NAudio.Wasapi" Version="2.0.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Mutey.Hue.Core\Mutey.Hue.Core.csproj" />
+        <ProjectReference Include="..\Mutey.Hue.Core\Mutey.Hue.Core.csproj"/>
     </ItemGroup>
 </Project>

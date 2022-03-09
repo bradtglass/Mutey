@@ -1,21 +1,20 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Threading;
-using NLog;
-
-namespace Mutey.Popup
+﻿namespace Mutey.Popup
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Interop;
+    using NLog;
+
     internal partial class MicStatePopup
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly MicStatePopupViewModel viewModel;
 
-        public MicStatePopup(MicStatePopupViewModel viewModel)
+        public MicStatePopup( MicStatePopupViewModel viewModel )
         {
             this.viewModel = viewModel;
             DataContext = viewModel;
@@ -25,33 +24,33 @@ namespace Mutey.Popup
             InitializeComponent();
         }
 
-        private void OnContentRendered(object? sender, EventArgs e)
+        private void OnContentRendered( object? sender, EventArgs e )
         {
             MoveToStartupPosition();
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private void OnLoaded( object sender, RoutedEventArgs e )
         {
             // Taken from https://stackoverflow.com/a/56648366/9766035
             // Variable to hold the handle for the form
-            IntPtr helper = new WindowInteropHelper(this).Handle;
+            var helper = new WindowInteropHelper( this ).Handle;
             // Performing some magic to hide the form from Alt+Tab
-            SetWindowLong(helper, GWL_EX_STYLE,
-                (GetWindowLong(helper, GWL_EX_STYLE) | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW);
+            SetWindowLong( helper, GWL_EX_STYLE,
+                           ( GetWindowLong( helper, GWL_EX_STYLE ) | WS_EX_TOOLWINDOW ) & ~WS_EX_APPWINDOW );
         }
 
         private void MoveToStartupPosition()
         {
             const int margin = 40;
 
-            Point topRight = SystemParameters.WorkArea.TopRight;
+            var topRight = SystemParameters.WorkArea.TopRight;
             Left = topRight.X - Width - margin;
             Top = topRight.Y + margin;
         }
 
-        private void MuteStateControl_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        private void MuteStateControl_OnSizeChanged( object sender, SizeChangedEventArgs e )
         {
-            using DispatcherProcessingDisabled _ = Dispatcher.DisableProcessing();
+            using var _ = Dispatcher.DisableProcessing();
 
             // Store current centre
             double xMiddle = Left + ActualWidth * 0.5;
@@ -59,7 +58,7 @@ namespace Mutey.Popup
 
             // Resize to content
             // (Assuming no margin here)
-            Control control = (Control) sender;
+            var control = (Control) sender;
             Height = control.ActualHeight;
             Width = control.ActualWidth;
 
@@ -70,11 +69,11 @@ namespace Mutey.Popup
 
         #region ToolWindow
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [ DllImport( "user32.dll", SetLastError = true ) ]
+        private static extern int GetWindowLong( IntPtr hWnd, int nIndex );
 
-        [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        [ DllImport( "user32.dll" ) ]
+        private static extern int SetWindowLong( IntPtr hWnd, int nIndex, int dwNewLong );
 
         // ReSharper disable InconsistentNaming
         // ReSharper disable IdentifierTypo
@@ -92,43 +91,51 @@ namespace Mutey.Popup
         private bool isPrimaryMouseDown;
         private Point mouseDownPosition;
 
-        private void MicStatePopup_OnMouseDown(object sender, MouseButtonEventArgs e)
+        private void MicStatePopup_OnMouseDown( object sender, MouseButtonEventArgs e )
         {
-            if (e.ChangedButton != MouseButton.Left)
+            if ( e.ChangedButton != MouseButton.Left )
+            {
                 return;
+            }
 
             isPrimaryMouseDown = true;
             isDragging = false;
-            mouseDownPosition = e.GetPosition(this);
+            mouseDownPosition = e.GetPosition( this );
         }
 
-        private void MicStatePopup_OnMouseUp(object sender, MouseButtonEventArgs e)
+        private void MicStatePopup_OnMouseUp( object sender, MouseButtonEventArgs e )
         {
-            if (e.ChangedButton != MouseButton.Left)
+            if ( e.ChangedButton != MouseButton.Left )
+            {
                 return;
+            }
 
             isPrimaryMouseDown = false;
-            if (!isDragging && viewModel.PopupPressedCommand.CanExecute(null))
-                viewModel.PopupPressedCommand.Execute(null);
+            if ( !isDragging && viewModel.PopupPressedCommand.CanExecute( null ) )
+            {
+                viewModel.PopupPressedCommand.Execute( null );
+            }
         }
 
-        private void MicStatePopup_OnMouseMove(object sender, MouseEventArgs e)
+        private void MicStatePopup_OnMouseMove( object sender, MouseEventArgs e )
         {
-            if (!isPrimaryMouseDown || isDragging)
+            if ( !isPrimaryMouseDown || isDragging )
+            {
                 return;
+            }
 
-            Point position = e.GetPosition(this);
-            if (Math.Abs(position.X - mouseDownPosition.X) > SystemParameters.MinimumHorizontalDragDistance ||
-                Math.Abs(position.Y - mouseDownPosition.Y) > SystemParameters.MinimumVerticalDragDistance)
+            var position = e.GetPosition( this );
+            if ( Math.Abs( position.X - mouseDownPosition.X ) > SystemParameters.MinimumHorizontalDragDistance ||
+                 Math.Abs( position.Y - mouseDownPosition.Y ) > SystemParameters.MinimumVerticalDragDistance )
             {
                 isDragging = true;
                 try
                 {
                     DragMove();
                 }
-                catch (Exception ex)
+                catch ( Exception ex )
                 {
-                    logger.Error(ex, "Error activating DragMove");
+                    logger.Error( ex, "Error activating DragMove" );
                 }
             }
         }

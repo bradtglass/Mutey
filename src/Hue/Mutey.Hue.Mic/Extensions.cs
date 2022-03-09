@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
-using NAudio.CoreAudioApi;
-
-namespace Mutey.Hue.Mic;
-
-internal static class Extensions
+﻿namespace Mutey.Hue.Mic
 {
-    public static IEnumerable<AudioSessionControl> Enumerate(this SessionCollection collection)
+    using System.Collections.Generic;
+    using NAudio.CoreAudioApi;
+
+    internal static class Extensions
     {
-        for (var i = 0; i < collection.Count; i++)
-            yield return collection[i];
+        public static IEnumerable<AudioSessionControl> Enumerate( this SessionCollection collection )
+        {
+            for ( var i = 0; i < collection.Count; i++ )
+            {
+                yield return collection[ i ];
+            }
+        }
     }
 }

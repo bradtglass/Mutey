@@ -1,28 +1,32 @@
-using Q42.HueApi;
-
-namespace Mutey.Hue.Client.State;
-
-using Mutey.Hue.Client.State.Color;
-
-public record HueLightSetting(bool? On, byte? Brightness, HueColor? Color, bool ResetFirst) : IModifiesLightCommand
+namespace Mutey.Hue.Client.State
 {
-    public void Apply(LightCommand command)
+    using Mutey.Hue.Client.State.Color;
+    using Q42.HueApi;
+
+    public record HueLightSetting( bool? On, byte? Brightness, HueColor? Color, bool ResetFirst ) : IModifiesLightCommand
     {
-        if (Color != null)
+        public void Apply( LightCommand command )
         {
-            // Clear any existing color settings to prevent conflicts
-            command.ColorCoordinates = null!;
-            command.ColorTemperature = null;
-            command.Hue = null;
-            command.Saturation = null;
+            if ( Color != null )
+            {
+                // Clear any existing color settings to prevent conflicts
+                command.ColorCoordinates = null!;
+                command.ColorTemperature = null;
+                command.Hue = null;
+                command.Saturation = null;
 
-            Color?.Apply(command);
+                Color?.Apply( command );
+            }
+
+            if ( On.HasValue )
+            {
+                command.On = On;
+            }
+
+            if ( Brightness.HasValue )
+            {
+                command.Brightness = Brightness;
+            }
         }
-
-        if (On.HasValue)
-            command.On = On;
-
-        if (Brightness.HasValue)
-            command.Brightness = Brightness;
     }
 }

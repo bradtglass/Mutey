@@ -60,7 +60,7 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        
+
                         <TextBlock Grid.Column="0" HorizontalAlignment="Right" Margin="5"
                                    FontWeight="Light">
                             Preview :

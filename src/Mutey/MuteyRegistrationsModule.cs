@@ -1,17 +1,17 @@
-﻿using Mutey.Input;
-using Prism.Ioc;
-using Prism.Modularity;
-
-namespace Mutey
+﻿namespace Mutey
 {
+    using Mutey.Input;
+    using Prism.Ioc;
+    using Prism.Modularity;
+
     public class MuteyRegistrationsModule : IModule
     {
-        public void RegisterTypes(IContainerRegistry containerRegistry) { }
+        public void RegisterTypes( IContainerRegistry containerRegistry ) { }
 
-        public void OnInitialized(IContainerProvider containerProvider)
+        public void OnInitialized( IContainerProvider containerProvider )
         {
-            IMutey mutey = containerProvider.Resolve<IMutey>();
-            mutey.RegisterHardware(new SerialHardwareDetector());
+            var mutey = containerProvider.Resolve<IMutey>();
+            mutey.RegisterHardware( new SerialHardwareDetector() );
             mutey.RefreshHardware();
         }
     }

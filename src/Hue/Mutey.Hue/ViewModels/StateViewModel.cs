@@ -1,74 +1,81 @@
-﻿using System;
-using System.Windows.Threading;
-using Mutey.Hue.Client;
-using Mutey.Hue.Mic;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Nito.AsyncEx;
-
-namespace Mutey.Hue.ViewModels;
-
-public sealed class StateViewModel : ObservableObject, IDisposable
+﻿namespace Mutey.Hue.ViewModels
 {
-    private readonly AsyncLock changeLock = new();
-    private readonly HueContext context;
-    private readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-    private readonly MicrophoneActivityWatcher microphoneWatcher;
+    using System;
+    using System.Windows.Threading;
+    using Microsoft.Toolkit.Mvvm.ComponentModel;
+    using Mutey.Hue.Client;
+    using Mutey.Hue.Mic;
+    using Nito.AsyncEx;
 
-    private bool isActive;
-
-    private bool setActiveOverride;
-
-    public StateViewModel(HueContext context)
+    public sealed class StateViewModel : ObservableObject, IDisposable
     {
-        this.context = context;
-        microphoneWatcher = MicrophoneActivityWatcher.Create();
-        microphoneWatcher.Notify += OnStateChange;
+        private readonly AsyncLock changeLock = new();
+        private readonly HueContext context;
+        private readonly Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+        private readonly MicrophoneActivityWatcher microphoneWatcher;
 
-        RefreshState();
-    }
+        private bool isActive;
 
-    public bool IsActive
-    {
-        get => isActive;
-        private set
+        private bool setActiveOverride;
+
+        public bool IsActive
         {
-            if (SetProperty(ref isActive, value))
-                PropagateState(value);
+            get => isActive;
+            private set
+            {
+                if ( SetProperty( ref isActive, value ) )
+                {
+                    PropagateState( value );
+                }
+            }
         }
-    }
 
-    public bool SetActiveOverride
-    {
-        get => setActiveOverride;
-        set
+        public bool SetActiveOverride
         {
-            if (SetProperty(ref setActiveOverride, value)) RefreshState();
+            get => setActiveOverride;
+            set
+            {
+                if ( SetProperty( ref setActiveOverride, value ) ) RefreshState();
+            }
         }
-    }
 
-    public void Dispose()
-    {
-        microphoneWatcher.Dispose();
-    }
-
-    private void OnStateChange(object? sender, MicrophoneActivityEventArgs e)
-        => RefreshState();
-
-    private void RefreshState()
-        => dispatcher.InvokeAsync(() => IsActive = SetActiveOverride || microphoneWatcher.IsActive);
-
-    private async void PropagateState(bool value)
-    {
-        using var _ = await changeLock.LockAsync();
-
-        try
+        public StateViewModel( HueContext context )
         {
-            await context.SetStateAsync(value);
+            this.context = context;
+            microphoneWatcher = MicrophoneActivityWatcher.Create();
+            microphoneWatcher.Notify += OnStateChange;
+
+            RefreshState();
         }
-        catch (Exception exception)
+
+        public void Dispose()
         {
-            // TODO Log exception properly
-            Console.WriteLine(exception);
+            microphoneWatcher.Dispose();
+        }
+
+        private void OnStateChange( object? sender, MicrophoneActivityEventArgs e )
+        {
+            RefreshState();
+        }
+
+        private void RefreshState()
+        {
+            dispatcher.InvokeAsync( () => IsActive = SetActiveOverride || microphoneWatcher.IsActive );
+        }
+
+        private async void PropagateState( bool value )
+        {
+            using var _ = await changeLock.LockAsync();
+
+            try
+            {
+                await context.SetStateAsync( value );
+            }
+            catch ( Exception exception )
+            {
+                // TODO Log exception properly
+                Console.WriteLine( exception );
+            }
         }
     }
 }

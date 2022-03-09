@@ -1,18 +1,23 @@
-﻿using Mutey.Hue.Client.State.Color;
-
-namespace Mutey.Hue.ViewModels.Setup;
-
-public abstract class LightColorSetupViewModelBase : LightFieldSetupViewModel, IAffectsColor
+﻿namespace Mutey.Hue.ViewModels.Setup
 {
-    protected LightColorSetupViewModelBase(LightField field) : base(field) { }
+    using Mutey.Hue.Client.State.Color;
 
-    public override bool ConflictsWith(LightFieldSetupViewModel other)
-        => other is LightColorSetupViewModelBase;
+    public abstract class LightColorSetupViewModelBase : LightFieldSetupViewModel, IAffectsColor
+    {
+        protected LightColorSetupViewModelBase( LightField field ) : base( field ) { }
 
-    public abstract HueColor GetHueColor();
+        public (byte? a, (byte r, byte g, byte b)?) GetColorComponents()
+        {
+            return ( null, GetRgb() );
+        }
 
-    protected abstract (byte r, byte g, byte b) GetRgb();
+        public override bool ConflictsWith( LightFieldSetupViewModel other )
+        {
+            return other is LightColorSetupViewModelBase;
+        }
 
-    public (byte? a, (byte r, byte g, byte b)?) GetColorComponents()
-        => (null, GetRgb());
+        public abstract HueColor GetHueColor();
+
+        protected abstract (byte r, byte g, byte b) GetRgb();
+    }
 }

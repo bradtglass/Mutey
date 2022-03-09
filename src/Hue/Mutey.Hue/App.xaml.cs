@@ -1,18 +1,18 @@
-﻿using System;
-using System.Windows;
-
-namespace Mutey.Hue
+﻿namespace Mutey.Hue
 {
+    using System;
+    using System.Windows;
+
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App
     {
-        protected override void OnExit(ExitEventArgs e)
+        protected override void OnExit( ExitEventArgs e )
         {
-            (Resources["AppViewModel"] as IDisposable)?.Dispose();
+            ( Resources[ "AppViewModel" ] as IDisposable )?.Dispose();
 
-            base.OnExit(e);
+            base.OnExit( e );
         }
     }
 }

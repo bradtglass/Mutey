@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Mutey.Input
+﻿namespace Mutey.Input
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     internal class MuteHardwareManager : IMuteHardwareManager
     {
         private readonly List<KeyValuePair<IMuteHardwareDetector, PossibleMuteHardware>> devices = new();
 
         public event EventHandler<CurrentDeviceChangedEventArgs>? CurrentDeviceChanged;
-        
+
         public event EventHandler<EventArgs>? AvailableDevicesChanged;
         public IMuteHardware? CurrentDevice { get; private set; }
 
@@ -17,80 +17,89 @@ namespace Mutey.Input
         {
             get
             {
-                lock (devices)
+                lock ( devices )
                 {
-                    return devices.Select(d => d.Value).ToList();
+                    return devices.Select( d => d.Value ).ToList();
                 }
             }
         }
 
-        public void ChangeDevice(PossibleMuteHardware? newDevice)
+        public void ChangeDevice( PossibleMuteHardware? newDevice )
         {
-            if (CurrentDevice == null && newDevice == null)
+            if ( CurrentDevice == null && newDevice == null )
+            {
                 return;
+            }
 
-            IMuteHardware? oldHardware = CurrentDevice;
-            if (oldHardware is IDisposable disposable) 
+            var oldHardware = CurrentDevice;
+            if ( oldHardware is IDisposable disposable )
+            {
                 disposable.Dispose();
-            IMuteHardware? newHardware = newDevice?.Connect();
+            }
+
+            var newHardware = newDevice?.Connect();
 
             CurrentDevice = newHardware;
 
-            CurrentDeviceChanged?.Invoke(this, new CurrentDeviceChangedEventArgs(oldHardware, newHardware));
+            CurrentDeviceChanged?.Invoke( this, new CurrentDeviceChangedEventArgs( oldHardware, newHardware ) );
         }
 
-        public void RegisterHardwareDetector(IMuteHardwareDetector detector)
+        public void RegisterHardwareDetector( IMuteHardwareDetector detector )
         {
-            detector.HardwareChanged += (sender, _) => RegisterChangedDevices((IMuteHardwareDetector) sender!);
-            RegisterChangedDevices(detector);
+            detector.HardwareChanged += ( sender, _ ) => RegisterChangedDevices( (IMuteHardwareDetector) sender! );
+            RegisterChangedDevices( detector );
         }
 
-        private void RegisterChangedDevices(IMuteHardwareDetector detector)
+        private void RegisterChangedDevices( IMuteHardwareDetector detector )
         {
             List<PossibleMuteHardware> oldDevices = new();
-            bool changed = false;
-            lock (devices)
+            var changed = false;
+            lock ( devices )
             {
-                for (int i = devices.Count - 1; i >= 0; i--)
+                for ( int i = devices.Count - 1; i >= 0; i-- )
                 {
-                    if (ReferenceEquals(devices[i].Key, detector))
+                    if ( ReferenceEquals( devices[ i ].Key, detector ) )
                     {
-                        oldDevices.Add(devices[i].Value);
-                        devices.RemoveAt(i);
+                        oldDevices.Add( devices[ i ].Value );
+                        devices.RemoveAt( i );
                     }
                 }
-                
-                foreach (PossibleMuteHardware device in detector.Find())
+
+                foreach ( var device in detector.Find() )
                 {
-                    int existingIndex = oldDevices.FindIndex(d
-                        => PossibleMuteHardware.Comparer.Equals(d, device));
+                    int existingIndex = oldDevices.FindIndex( d
+                                                                  => PossibleMuteHardware.Comparer.Equals( d, device ) );
 
                     KeyValuePair<IMuteHardwareDetector, PossibleMuteHardware> newItem = new(detector, device);
 
-                    if (existingIndex < 0)
+                    if ( existingIndex < 0 )
                     {
                         changed = true;
-                        devices.Add(newItem);
+                        devices.Add( newItem );
                     }
                     else
                     {
-                        oldDevices.RemoveAt(existingIndex);
-                        devices.Add(newItem);
+                        oldDevices.RemoveAt( existingIndex );
+                        devices.Add( newItem );
                     }
                 }
 
-                if (oldDevices.Count > 0)
+                if ( oldDevices.Count > 0 )
                 {
                     changed = true;
 
-                    if (CurrentDevice != null &&
-                        oldDevices.Any(d => PossibleMuteHardware.Comparer.Equals(d, CurrentDevice.Source)))
-                        ChangeDevice(null);
+                    if ( CurrentDevice != null &&
+                         oldDevices.Any( d => PossibleMuteHardware.Comparer.Equals( d, CurrentDevice.Source ) ) )
+                    {
+                        ChangeDevice( null );
+                    }
                 }
             }
 
-            if (changed)
-                AvailableDevicesChanged?.Invoke(this, EventArgs.Empty);
+            if ( changed )
+            {
+                AvailableDevicesChanged?.Invoke( this, EventArgs.Empty );
+            }
         }
     }
 }

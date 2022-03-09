@@ -1,8 +1,9 @@
-﻿using Q42.HueApi;
-
-namespace Mutey.Hue.Client.State.Color;
-
-public interface IModifiesLightCommand
+﻿namespace Mutey.Hue.Client.State.Color
 {
-    void Apply(LightCommand command);
+    using Q42.HueApi;
+
+    public interface IModifiesLightCommand
+    {
+        void Apply( LightCommand command );
+    }
 }

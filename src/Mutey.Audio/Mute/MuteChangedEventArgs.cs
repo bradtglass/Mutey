@@ -1,14 +1,14 @@
-﻿using System;
-
-namespace Mutey.Audio.Mute
+﻿namespace Mutey.Audio.Mute
 {
+    using System;
+
     public class MuteChangedEventArgs : EventArgs
     {
-        public MuteChangedEventArgs(MuteState newState)
+        public MuteState NewState { get; }
+
+        public MuteChangedEventArgs( MuteState newState )
         {
             NewState = newState;
         }
-
-        public MuteState NewState { get; }
     }
 }

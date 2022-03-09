@@ -1,82 +1,88 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using Mutey.Hue.Client;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-
-namespace Mutey.Hue.ViewModels;
-
-using Mutey.Hue.ViewModels.Setup;
-using Mutey.Hue.Views;
-
-public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInteractiveLoginHelper
+﻿namespace Mutey.Hue.ViewModels
 {
-    private readonly HueContext context = new();
+    using System;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Input;
+    using Microsoft.Toolkit.Mvvm.ComponentModel;
+    using Microsoft.Toolkit.Mvvm.Input;
+    using Mutey.Hue.Client;
+    using Mutey.Hue.ViewModels.Setup;
+    using Mutey.Hue.Views;
 
-    private bool isConfigured;
-
-    public ApplicationViewModel()
+    public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInteractiveLoginHelper
     {
-        State = new StateViewModel(context);
+        private readonly HueContext context = new();
 
-        RefreshIsConfigured();
-        ConfigureCommand = new AsyncRelayCommand(ConfigureAsync);
-        LaunchSetupCommand = new RelayCommand(LaunchSetup);
-    }
+        private bool isConfigured;
 
-    private void LaunchSetup()
-    {
-        SetupWindow window = new(new HueSetupViewModel(context));
-        window.ShowDialog();
-    }
+        public StateViewModel State { get; }
 
-    private void RefreshIsConfigured()
-        => IsConfigured = context.IsConfigured();
+        public ICommand ConfigureCommand { get; }
 
-    private async Task ConfigureAsync()
-    {
-        if(IsConfigured)
+        public ICommand LaunchSetupCommand { get; }
+
+        public bool IsConfigured
         {
-            var result = MessageBox.Show("Would you like to reset the current configuration? This cannot be undone.", "Reset", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
-                return;
-
-            context.Reset();
-            RefreshIsConfigured();
+            get => isConfigured;
+            private set => SetProperty( ref isConfigured, value );
         }
 
-        await context.LoginInteractiveAsync(this);
-        RefreshIsConfigured();
-        
-        if(IsConfigured)
-            LaunchSetup();
-    }
+        public ApplicationViewModel()
+        {
+            State = new StateViewModel( context );
 
-    public StateViewModel State { get; }
+            RefreshIsConfigured();
+            ConfigureCommand = new AsyncRelayCommand( ConfigureAsync );
+            LaunchSetupCommand = new RelayCommand( LaunchSetup );
+        }
 
-    public ICommand ConfigureCommand { get; }
-    
-    public ICommand LaunchSetupCommand { get; }
+        public void Dispose()
+        {
+            State.Dispose();
+        }
 
-    public bool IsConfigured
-    {
-        get => isConfigured;
-        private set => SetProperty(ref isConfigured, value);
-    }
+        public Task<bool> RequestButtonPressAsync()
+        {
+            var result = MessageBox.Show( "Press the button on your Hue hub and the press OK to continue connecting.", "Hue",
+                                          MessageBoxButton.OKCancel );
 
-    public void Dispose()
-    {
-        State.Dispose();
-    }
+            return Task.FromResult( result == MessageBoxResult.OK );
+        }
 
-    public Task<bool> RequestButtonPressAsync()
-    {
-        var result = MessageBox.Show("Press the button on your Hue hub and the press OK to continue connecting.", "Hue",
-            MessageBoxButton.OKCancel);
+        private void LaunchSetup()
+        {
+            SetupWindow window = new(new HueSetupViewModel( context ));
+            window.ShowDialog();
+        }
 
-        return Task.FromResult(result == MessageBoxResult.OK);
+        private void RefreshIsConfigured()
+        {
+            IsConfigured = context.IsConfigured();
+        }
+
+        private async Task ConfigureAsync()
+        {
+            if ( IsConfigured )
+            {
+                var result = MessageBox.Show( "Would you like to reset the current configuration? This cannot be undone.", "Reset", MessageBoxButton.YesNo, MessageBoxImage.Warning );
+
+                if ( result != MessageBoxResult.Yes )
+                {
+                    return;
+                }
+
+                context.Reset();
+                RefreshIsConfigured();
+            }
+
+            await context.LoginInteractiveAsync( this );
+            RefreshIsConfigured();
+
+            if ( IsConfigured )
+            {
+                LaunchSetup();
+            }
+        }
     }
 }

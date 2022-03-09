@@ -1,8 +1,9 @@
-using System.Threading.Tasks;
-
-namespace Mutey.Hue.Client;
-
-public interface IInteractiveLoginHelper
+namespace Mutey.Hue.Client
 {
-    Task<bool> RequestButtonPressAsync();
+    using System.Threading.Tasks;
+
+    public interface IInteractiveLoginHelper
+    {
+        Task<bool> RequestButtonPressAsync();
+    }
 }

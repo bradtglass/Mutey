@@ -6,9 +6,9 @@
 
         <Version>0.6.0</Version>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
-        <PackageReference Include="NLog" Version="4.7.7" />
+        <PackageReference Include="JetBrains.Annotations" Version="2020.3.0"/>
+        <PackageReference Include="NLog" Version="4.7.7"/>
     </ItemGroup>
 </Project>

@@ -1,21 +1,22 @@
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-
-namespace Mutey.Hue.ViewModels;
-
-public class SelectableViewModel<T> : ObservableObject
+namespace Mutey.Hue.ViewModels
 {
-    private bool isSelected;
+    using Microsoft.Toolkit.Mvvm.ComponentModel;
 
-    public SelectableViewModel(T value)
+    public class SelectableViewModel<T> : ObservableObject
     {
-        Value = value;
-    }
+        private bool isSelected;
 
-    public T Value { get; }
+        public T Value { get; }
 
-    public bool IsSelected
-    {
-        get => isSelected;
-        set => SetProperty(ref isSelected, value);
+        public bool IsSelected
+        {
+            get => isSelected;
+            set => SetProperty( ref isSelected, value );
+        }
+
+        public SelectableViewModel( T value )
+        {
+            Value = value;
+        }
     }
 }

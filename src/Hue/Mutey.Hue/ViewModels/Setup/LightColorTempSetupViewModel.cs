@@ -1,26 +1,29 @@
-﻿using Mutey.Hue.Client.State.Color;
-
-namespace Mutey.Hue.ViewModels.Setup;
-
-public class LightColorTempSetupViewModel : LightColorSetupViewModelBase
+﻿namespace Mutey.Hue.ViewModels.Setup
 {
-    private double temperature = 2500;
-    
-    public LightColorTempSetupViewModel() : base(LightField.ColorTemperature) { }
+    using Mutey.Hue.Client.State.Color;
 
-    public double Temperature
+    public class LightColorTempSetupViewModel : LightColorSetupViewModelBase
     {
-        get => temperature;
-        set => SetProperty(ref temperature, value);
-    }
+        private double temperature = 2500;
 
-    public override HueColor GetHueColor()
-        => new TemperatureHueColor(Temperature);
+        public double Temperature
+        {
+            get => temperature;
+            set => SetProperty( ref temperature, value );
+        }
 
-    protected override (byte r, byte g, byte b) GetRgb()
-    {
-        var color = ColorUtility.TempToColor(Temperature);
+        public LightColorTempSetupViewModel() : base( LightField.ColorTemperature ) { }
 
-        return (color.R, color.G, color.B);
+        public override HueColor GetHueColor()
+        {
+            return new TemperatureHueColor( Temperature );
+        }
+
+        protected override (byte r, byte g, byte b) GetRgb()
+        {
+            var color = ColorUtility.TempToColor( Temperature );
+
+            return ( color.R, color.G, color.B );
+        }
     }
 }

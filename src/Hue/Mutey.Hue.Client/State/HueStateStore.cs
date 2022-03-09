@@ -1,44 +1,48 @@
-﻿using System.Collections.Immutable;
-using System.Threading.Tasks;
-using Mutey.Hue.Core.Settings;
-
-namespace Mutey.Hue.Client.State;
-
-public class HueStateStore
+﻿namespace Mutey.Hue.Client.State
 {
-    private readonly HueContext context;
+    using System.Threading.Tasks;
+    using Mutey.Hue.Core.Settings;
 
-    internal HueStateStore(HueContext context)
+    public class HueStateStore
     {
-        this.context = context;
-    }
+        private readonly HueContext context;
 
-    public HueStateSetting Get(bool isActive)
-    {
-        var key = GetStateKey(isActive);
-        ImmutableDictionary<string, HueStateSetting> settings = SettingsStore.Get<HueSettings>(HueSettings.Sub).States;
-        if (settings.TryGetValue(key, out var setting))
-            return setting;
-
-        return HueStateSetting.Empty;
-    }
-
-    public async ValueTask<IHueState> GetStateAsync(bool isActive)
-    {
-        var setting = Get(isActive);
-
-        return await HueState.CreateAsync(setting, context);
-    }
-
-    public void Set(bool isActive, HueStateSetting setting)
-    {
-        var key = GetStateKey(isActive);
-        SettingsStore.Set<HueSettings>(HueSettings.Sub, s => s with
+        internal HueStateStore( HueContext context )
         {
-            States = s.States.SetItem(key, setting)
-        });
-    }
+            this.context = context;
+        }
 
-    private static string GetStateKey(bool isActive)
-        => isActive ? "Active" : "Inactive";
+        public HueStateSetting Get( bool isActive )
+        {
+            string key = GetStateKey( isActive );
+            var settings = SettingsStore.Get<HueSettings>( HueSettings.Sub ).States;
+            if ( settings.TryGetValue( key, out var setting ) )
+            {
+                return setting;
+            }
+
+            return HueStateSetting.Empty;
+        }
+
+        public async ValueTask<IHueState> GetStateAsync( bool isActive )
+        {
+            var setting = Get( isActive );
+
+            return await HueState.CreateAsync( setting, context );
+        }
+
+        public void Set( bool isActive, HueStateSetting setting )
+        {
+            string key = GetStateKey( isActive );
+            SettingsStore.Set<HueSettings>( HueSettings.Sub, s => s with
+            {
+                States = s.States.SetItem( key, setting )
+            } );
+        }
+
+        private static string GetStateKey( bool isActive )
+        {
+            return isActive ? "Active" : "Inactive";
+        }
+    }
 }

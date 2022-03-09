@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Mutey.Hue.Client.State;
-
-public interface IHueState
+﻿namespace Mutey.Hue.Client.State
 {
-    Task ApplyAsync(HueContext context);
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-    IEnumerable<string> GetAffectedLights();
+    public interface IHueState
+    {
+        Task ApplyAsync( HueContext context );
+
+        IEnumerable<string> GetAffectedLights();
+    }
 }

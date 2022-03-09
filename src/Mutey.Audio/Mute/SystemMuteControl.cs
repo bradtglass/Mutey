@@ -7,7 +7,7 @@
     using Nito.AsyncEx;
     using NLog;
 
-    [UsedImplicitly]
+    [ UsedImplicitly ]
     public class SystemMuteControl : ISystemMuteControl, IDisposable
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
@@ -18,67 +18,73 @@
 
         public void Dispose()
         {
-            if (disposed)
+            if ( disposed )
+            {
                 return;
+            }
 
             disposed = true;
-            syncThread.Context.SynchronizationContext.Send(() => current?.Dispose());
+            syncThread.Context.SynchronizationContext.Send( () => current?.Dispose() );
             syncThread.Dispose();
         }
 
         public void Mute()
-            => SetMuteState(MuteState.Muted);
+        {
+            SetMuteState( MuteState.Muted );
+        }
 
         public void Unmute()
-            => SetMuteState(MuteState.Unmuted);
+        {
+            SetMuteState( MuteState.Unmuted );
+        }
 
         public MuteState GetState()
         {
             AssertNotDisposed();
 
-            var state = syncThread.Context.SynchronizationContext.Send(GetStateSync);
+            var state = syncThread.Context.SynchronizationContext.Send( GetStateSync );
 
             return state;
         }
 
         public event EventHandler<MuteChangedEventArgs>? StateChanged;
 
-        private void SetMuteState(MuteState state)
+        private void SetMuteState( MuteState state )
         {
             AssertNotDisposed();
 
-            syncThread.Context.SynchronizationContext.Send(() => SetMuteStateSync(state));
+            syncThread.Context.SynchronizationContext.Send( () => SetMuteStateSync( state ) );
         }
 
         /// <remarks>
         ///     This method must only be called from the synchronised <see cref="syncThread" /> because the
         ///     <see cref="MMDevice" /> COM interface does not appear to behave when accessed from multiple threads..
         /// </remarks>
-        private void SetMuteStateSync(MuteState state)
+        private void SetMuteStateSync( MuteState state )
         {
             AssertSync();
 
             using var activeMicrophone = GetActiveMicrophoneSync();
 
-            if (activeMicrophone == null)
+            if ( activeMicrophone == null )
             {
-                logger.Warn("Cannot set state, active mic not found");
+                logger.Warn( "Cannot set state, active mic not found" );
                 return;
             }
 
-            var newMuteValue = state == MuteState.Muted;
+            bool newMuteValue = state == MuteState.Muted;
 
-            if (activeMicrophone.AudioEndpointVolume.Mute == newMuteValue)
+            if ( activeMicrophone.AudioEndpointVolume.Mute == newMuteValue )
             {
-                logger.Trace("Skipping setting mute state, mic is already in correct state");
+                logger.Trace( "Skipping setting mute state, mic is already in correct state" );
                 return;
             }
 
-            logger.Trace("Setting mute state of active mic ({Mic}) to {State}", activeMicrophone.FriendlyName,
-                newMuteValue);
+            logger.Trace( "Setting mute state of active mic ({Mic}) to {State}", activeMicrophone.FriendlyName,
+                          newMuteValue );
             activeMicrophone.AudioEndpointVolume.Mute = newMuteValue;
 
-            InvokeStateChanged(state);
+            InvokeStateChanged( state );
         }
 
         /// <remarks>
@@ -90,35 +96,37 @@
             AssertSync();
 
             using var device = GetActiveMicrophoneSync();
-            if (device == null)
+            if ( device == null )
             {
-                logger.Debug("Cannot get state, no active mic");
+                logger.Debug( "Cannot get state, no active mic" );
                 return MuteState.Unknown;
             }
 
-            if (device.State != DeviceState.Active)
+            if ( device.State != DeviceState.Active )
             {
-                logger.Debug("Cannot get state, the default mic is not active");
+                logger.Debug( "Cannot get state, the default mic is not active" );
                 return MuteState.Unknown;
             }
 
             var muteState = device.AudioEndpointVolume.Mute ? MuteState.Muted : MuteState.Unmuted;
-            logger.Trace("Retrieved current state of {Mic}: {State}", device.FriendlyName, muteState);
+            logger.Trace( "Retrieved current state of {Mic}: {State}", device.FriendlyName, muteState );
 
             return muteState;
         }
 
-        private void CurrentVolumeChanged(AudioVolumeNotificationData data)
+        private void CurrentVolumeChanged( AudioVolumeNotificationData data )
         {
             var state = data.Muted ? MuteState.Muted : MuteState.Unmuted;
-            logger.Trace("Receieved a notification that the default mic state had changed, new state is {State}",
-                state);
+            logger.Trace( "Receieved a notification that the default mic state had changed, new state is {State}",
+                          state );
 
-            InvokeStateChanged(state);
+            InvokeStateChanged( state );
         }
 
-        private void InvokeStateChanged(MuteState state)
-            => StateChanged?.Invoke(this, new MuteChangedEventArgs(state));
+        private void InvokeStateChanged( MuteState state )
+        {
+            StateChanged?.Invoke( this, new MuteChangedEventArgs( state ) );
+        }
 
         /// <remarks>
         ///     This method must only be called from the synchronised <see cref="syncThread" /> because the
@@ -130,25 +138,31 @@
 
             EnsureCurrentIsSetSync();
 
-            if (current == null)
+            if ( current == null )
+            {
                 return null;
+            }
 
             using MMDeviceEnumerator enumerator = new();
-            return enumerator.GetDevice(current.ID);
+            return enumerator.GetDevice( current.ID );
         }
 
         private void AssertNotDisposed()
         {
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SystemMuteControl));
+            if ( disposed )
+            {
+                throw new ObjectDisposedException( nameof( SystemMuteControl ) );
+            }
         }
 
         private void AssertSync()
         {
             AssertNotDisposed();
 
-            if (SynchronizationContext.Current != syncThread.Context.SynchronizationContext)
+            if ( SynchronizationContext.Current != syncThread.Context.SynchronizationContext )
+            {
                 throw new SynchronizationLockException();
+            }
         }
 
         /// <remarks>
@@ -161,12 +175,12 @@
 
             using MMDeviceEnumerator mmDeviceEnumerator = new();
 
-            var defaultMic = mmDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
+            var defaultMic = mmDeviceEnumerator.GetDefaultAudioEndpoint( DataFlow.Capture, Role.Communications );
 
             var suppressDispose = false;
             try
             {
-                if (current == null)
+                if ( current == null )
                 {
                     current = defaultMic;
                     defaultMic.AudioEndpointVolume.OnVolumeNotification += CurrentVolumeChanged;
@@ -174,7 +188,7 @@
                 }
                 else
                 {
-                    if (current.ID != defaultMic.ID)
+                    if ( current.ID != defaultMic.ID )
                     {
                         current.AudioEndpointVolume.OnVolumeNotification -= CurrentVolumeChanged;
                         current.Dispose();
@@ -187,8 +201,10 @@
             }
             finally
             {
-                if (!suppressDispose)
+                if ( !suppressDispose )
+                {
                     defaultMic.Dispose();
+                }
             }
         }
     }

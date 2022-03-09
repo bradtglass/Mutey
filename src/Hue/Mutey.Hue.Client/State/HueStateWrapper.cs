@@ -1,23 +1,28 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Mutey.Hue.Client.State;
-
-internal class HueStateWrapper : IHueState
+﻿namespace Mutey.Hue.Client.State
 {
-    private readonly IReadOnlyCollection<IHueState> states;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
-    public HueStateWrapper(IReadOnlyCollection<IHueState> states)
+    internal class HueStateWrapper : IHueState
     {
-        this.states = states;
+        private readonly IReadOnlyCollection<IHueState> states;
+
+        public HueStateWrapper( IReadOnlyCollection<IHueState> states )
+        {
+            this.states = states;
+        }
+
+        public async Task ApplyAsync( HueContext context )
+        {
+            await Parallel.ForEachAsync( states,
+                                         new ParallelOptions {MaxDegreeOfParallelism = 4},
+                                         async ( state, _ ) => await state.ApplyAsync( context ) );
+        }
+
+        public IEnumerable<string> GetAffectedLights()
+        {
+            return states.SelectMany( s => s.GetAffectedLights() );
+        }
     }
-
-    public async Task ApplyAsync(HueContext context)
-        => await Parallel.ForEachAsync(states,
-            new ParallelOptions { MaxDegreeOfParallelism = 4 },
-            async (state, _) => await state.ApplyAsync(context));
-
-    public IEnumerable<string> GetAffectedLights()
-        => states.SelectMany(s => s.GetAffectedLights());
 }

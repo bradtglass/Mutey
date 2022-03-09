@@ -1,23 +1,30 @@
-﻿namespace Mutey.Hue.ViewModels.Setup;
-
-public class LightBrightnessSetupViewModel : LightFieldSetupViewModel, IAffectsColor
+﻿namespace Mutey.Hue.ViewModels.Setup
 {
-    private double brightness = 1;
-
-    public LightBrightnessSetupViewModel() : base(LightField.Brightness) { }
-
-    public double Brightness
+    public class LightBrightnessSetupViewModel : LightFieldSetupViewModel, IAffectsColor
     {
-        get => brightness;
-        set => SetProperty(ref brightness, value);
+        private double brightness = 1;
+
+        public double Brightness
+        {
+            get => brightness;
+            set => SetProperty( ref brightness, value );
+        }
+
+        public LightBrightnessSetupViewModel() : base( LightField.Brightness ) { }
+
+        public (byte? a, (byte r, byte g, byte b)?) GetColorComponents()
+        {
+            return ( GetBrightness(), null );
+        }
+
+        public void SetBrightness( byte value )
+        {
+            Brightness = (double) value / byte.MaxValue;
+        }
+
+        public byte GetBrightness()
+        {
+            return (byte) ( Brightness * byte.MaxValue );
+        }
     }
-
-    public void SetBrightness(byte value)
-        => Brightness = (double)value / byte.MaxValue;
-
-    public byte GetBrightness()
-        => (byte)(Brightness * byte.MaxValue);
-
-    public (byte? a, (byte r, byte g, byte b)?) GetColorComponents()
-        => (GetBrightness(), null);
 }

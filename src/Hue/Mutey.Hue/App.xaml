@@ -8,7 +8,7 @@
         <viewModels:ApplicationViewModel x:Key="AppViewModel" />
         <converters:BoolVisibilityConverter x:Key="TrueToVisibleConverter"
                                             TrueValue="Visible"
-                                            FalseValue="Collapsed"/>
+                                            FalseValue="Collapsed" />
         <converters:BoolVisibilityConverter x:Key="TrueToCollapsedConverter"
                                             TrueValue="Collapsed"
                                             FalseValue="Visible" />
@@ -18,7 +18,7 @@
         <converters:NullableVisibilityConverter x:Key="NullToVisibleConverter"
                                                 NullValue="Visible"
                                                 NotNullValue="Collapsed" />
-        
+
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Padding" Value="5 3" />
         </Style>

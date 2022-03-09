@@ -27,7 +27,7 @@
                     </Style>
                 </Ellipse.Style>
             </Ellipse>
-            
+
             <StackPanel Orientation="Horizontal"
                         Margin="5"
                         VerticalAlignment="Top">
@@ -35,18 +35,18 @@
                     Override
                 </ToggleButton>
                 <Border BorderBrush="Orange"
-                        BorderThickness="1" 
+                        BorderThickness="1"
                         Visibility="{Binding State.SetActiveOverride, Converter={StaticResource TrueToVisibleConverter}}"
                         VerticalAlignment="Center"
                         Margin="10 0 0 0">
-                    <TextBlock Margin="2" 
+                    <TextBlock Margin="2"
                                FontWeight="Bold"
                                Foreground="DarkRed">
                         Overriding!
                     </TextBlock>
                 </Border>
             </StackPanel>
-            
+
             <Button HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Command="{Binding LaunchSetupCommand}">

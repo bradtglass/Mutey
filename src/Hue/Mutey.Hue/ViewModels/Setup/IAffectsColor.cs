@@ -1,6 +1,7 @@
-﻿namespace Mutey.Hue.ViewModels.Setup;
-
-public interface IAffectsColor
+﻿namespace Mutey.Hue.ViewModels.Setup
 {
-    (byte? a, (byte r, byte g, byte b)?) GetColorComponents();
+    public interface IAffectsColor
+    {
+        (byte? a, (byte r, byte g, byte b)?) GetColorComponents();
+    }
 }

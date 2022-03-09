@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Mutey.Input
+﻿namespace Mutey.Input
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     ///     Interface for a class that controls mute button hardware.
     /// </summary>
     public interface IMuteHardwareManager
     {
         IMuteHardware? CurrentDevice { get; }
-        
+
         IEnumerable<PossibleMuteHardware> AvailableDevices { get; }
 
-        void ChangeDevice(PossibleMuteHardware? newDevice);
+        void ChangeDevice( PossibleMuteHardware? newDevice );
 
         event EventHandler<CurrentDeviceChangedEventArgs>? CurrentDeviceChanged;
 
         event EventHandler<EventArgs>? AvailableDevicesChanged;
 
-        public void RegisterHardwareDetector(IMuteHardwareDetector detector);
+        public void RegisterHardwareDetector( IMuteHardwareDetector detector );
     }
 }

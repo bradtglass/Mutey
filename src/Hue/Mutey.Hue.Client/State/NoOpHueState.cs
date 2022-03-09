@@ -1,18 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Mutey.Hue.Client.State;
-
-internal class NoOpHueState : IHueState
+namespace Mutey.Hue.Client.State
 {
-    private NoOpHueState() { }
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-    public static NoOpHueState Instance { get; } = new();
+    internal class NoOpHueState : IHueState
+    {
+        public static NoOpHueState Instance { get; } = new();
+        private NoOpHueState() { }
 
-    public Task ApplyAsync(HueContext _)
-        => Task.CompletedTask;
+        public Task ApplyAsync( HueContext _ )
+        {
+            return Task.CompletedTask;
+        }
 
-    public IEnumerable<string> GetAffectedLights()
-        => Array.Empty<string>();
+        public IEnumerable<string> GetAffectedLights()
+        {
+            return Array.Empty<string>();
+        }
+    }
 }

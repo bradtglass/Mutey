@@ -1,19 +1,24 @@
-using System;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
-
-namespace Mutey.Hue.Converters;
-
-public class NullableVisibilityConverter : IValueConverter
+namespace Mutey.Hue.Converters
 {
-    public Visibility NullValue { get; set; } = Visibility.Collapsed;
+    using System;
+    using System.Globalization;
+    using System.Windows;
+    using System.Windows.Data;
 
-    public Visibility NotNullValue { get; set; } = Visibility.Visible;
+    public class NullableVisibilityConverter : IValueConverter
+    {
+        public Visibility NullValue { get; set; } = Visibility.Collapsed;
 
-    public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
-        => value is null ? NullValue : NotNullValue;
+        public Visibility NotNullValue { get; set; } = Visibility.Visible;
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => throw new NotSupportedException();
+        public object Convert( object? value, Type targetType, object parameter, CultureInfo culture )
+        {
+            return value is null ? NullValue : NotNullValue;
+        }
+
+        public object ConvertBack( object value, Type targetType, object parameter, CultureInfo culture )
+        {
+            throw new NotSupportedException();
+        }
+    }
 }

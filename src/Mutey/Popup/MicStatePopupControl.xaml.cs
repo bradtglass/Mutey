@@ -1,51 +1,49 @@
-﻿using System.Windows;
-using System.Windows.Threading;
-
-namespace Mutey.Popup
+﻿namespace Mutey.Popup
 {
+    using System.Windows;
     using Mutey.Audio;
 
     public partial class MicStatePopupControl
     {
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register(
-            "State",
-            typeof(MuteState),
-            typeof(MicStatePopupControl),
-            new PropertyMetadata(default(MuteState)));
+                                                                                              "State",
+                                                                                              typeof( MuteState ),
+                                                                                              typeof( MicStatePopupControl ),
+                                                                                              new PropertyMetadata( default( MuteState ) ) );
 
         public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
-            "Size",
-            typeof(int),
-            typeof(MicStatePopupControl),
-            new PropertyMetadata(default(int), OnSizeChanged));
+                                                                                             "Size",
+                                                                                             typeof( int ),
+                                                                                             typeof( MicStatePopupControl ),
+                                                                                             new PropertyMetadata( default( int ), OnSizeChanged ) );
+
+        public MuteState State
+        {
+            get => (MuteState) GetValue( StateProperty );
+            set => SetValue( StateProperty, value );
+        }
+
+        public int Size
+        {
+            get => (int) GetValue( SizeProperty );
+            set => SetValue( SizeProperty, value );
+        }
 
         public MicStatePopupControl()
         {
             InitializeComponent();
         }
 
-        public MuteState State
+        private static void OnSizeChanged( DependencyObject d, DependencyPropertyChangedEventArgs e )
         {
-            get => (MuteState) GetValue(StateProperty);
-            set => SetValue(StateProperty, value);
-        }
+            var control = (MicStatePopupControl) d;
+            var size = (int) e.NewValue;
 
-        public int Size
-        {
-            get => (int) GetValue(SizeProperty);
-            set => SetValue(SizeProperty, value);
-        }
-
-        private static void OnSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            MicStatePopupControl control = (MicStatePopupControl) d;
-            int size = (int) e.NewValue;
-
-            using DispatcherProcessingDisabled _ = control.Dispatcher.DisableProcessing();
+            using var _ = control.Dispatcher.DisableProcessing();
             control.Width = size;
             control.Height = size;
-            control.ContainerBorder.CornerRadius = new CornerRadius((double) size / 2);
-            control.Image.Margin = new Thickness((double) size / 5);
+            control.ContainerBorder.CornerRadius = new CornerRadius( (double) size / 2 );
+            control.Image.Margin = new Thickness( (double) size / 5 );
         }
     }
 }

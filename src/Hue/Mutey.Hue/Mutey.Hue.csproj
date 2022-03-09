@@ -4,11 +4,11 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
-        <PackageReference Include="PixiEditor.ColorPicker" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2"/>
+        <PackageReference Include="PixiEditor.ColorPicker" Version="3.1.0"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Mutey.Hue.Client\Mutey.Hue.Client.csproj" />
-        <ProjectReference Include="..\Mutey.Hue.Mic\Mutey.Hue.Mic.csproj" />
+        <ProjectReference Include="..\Mutey.Hue.Client\Mutey.Hue.Client.csproj"/>
+        <ProjectReference Include="..\Mutey.Hue.Mic\Mutey.Hue.Mic.csproj"/>
     </ItemGroup>
 </Project>

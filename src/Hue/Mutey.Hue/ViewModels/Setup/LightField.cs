@@ -1,9 +1,10 @@
-﻿namespace Mutey.Hue.ViewModels.Setup;
-
-public enum LightField
+﻿namespace Mutey.Hue.ViewModels.Setup
 {
-    On,
-    Brightness,
-    Color,
-    ColorTemperature
+    public enum LightField
+    {
+        On,
+        Brightness,
+        Color,
+        ColorTemperature
+    }
 }

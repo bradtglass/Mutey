@@ -1,13 +1,14 @@
-﻿using System;
-
-namespace Mutey.Hue.Mic;
-
-public class MicrophoneActivityEventArgs : EventArgs
+﻿namespace Mutey.Hue.Mic
 {
-    public MicrophoneActivityEventArgs(bool isActive)
-    {
-        IsActive = isActive;
-    }
+    using System;
 
-    public bool IsActive { get; }
+    public class MicrophoneActivityEventArgs : EventArgs
+    {
+        public bool IsActive { get; }
+
+        public MicrophoneActivityEventArgs( bool isActive )
+        {
+            IsActive = isActive;
+        }
+    }
 }

@@ -1,51 +1,62 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Q42.HueApi;
-
-namespace Mutey.Hue.Client.State;
-
-internal class HueLightState : IHueState
+﻿namespace Mutey.Hue.Client.State
 {
-    private readonly IReadOnlyCollection<string> lights;
-    private readonly HueLightSetting setting;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Q42.HueApi;
 
-    public HueLightState(HueLightSetting setting, IReadOnlyCollection<string> lights)
+    internal class HueLightState : IHueState
     {
-        this.setting = setting;
-        this.lights = lights;
-    }
+        private readonly IReadOnlyCollection<string> lights;
+        private readonly HueLightSetting setting;
 
-    public async Task ApplyAsync(HueContext context)
-    {
-        if (setting.ResetFirst)
-            await ApplyWithResetAsync(context);
-        else
-            await ApplyWithoutResetAsync(context);
-    }
-
-
-    public IEnumerable<string> GetAffectedLights()
-        => lights;
-
-    private async ValueTask ApplyWithoutResetAsync(HueContext context)
-        => await ApplyCoreAsync(context, lights, setting);
-
-    private static async ValueTask ApplyCoreAsync(HueContext context, IEnumerable<string> lights,
-        params HueLightSetting?[] settings)
-    {
-        var command = new LightCommand();
-        foreach (var setting in settings) 
-            setting?.Apply(command);
-
-        await context.SendCommandAsync(command, lights);
-    }
-
-    private async ValueTask ApplyWithResetAsync(HueContext context)
-    {
-        foreach (var light in lights)
+        public HueLightState( HueLightSetting setting, IReadOnlyCollection<string> lights )
         {
-            var lastState = context.GetLastLightState(light);
-            await ApplyCoreAsync(context, new[] { light }, lastState, setting);
+            this.setting = setting;
+            this.lights = lights;
+        }
+
+        public async Task ApplyAsync( HueContext context )
+        {
+            if ( setting.ResetFirst )
+            {
+                await ApplyWithResetAsync( context );
+            }
+            else
+            {
+                await ApplyWithoutResetAsync( context );
+            }
+        }
+
+
+        public IEnumerable<string> GetAffectedLights()
+        {
+            return lights;
+        }
+
+        private async ValueTask ApplyWithoutResetAsync( HueContext context )
+        {
+            await ApplyCoreAsync( context, lights, setting );
+        }
+
+        private static async ValueTask ApplyCoreAsync( HueContext context, IEnumerable<string> lights,
+                                                       params HueLightSetting?[] settings )
+        {
+            var command = new LightCommand();
+            foreach ( var setting in settings )
+            {
+                setting?.Apply( command );
+            }
+
+            await context.SendCommandAsync( command, lights );
+        }
+
+        private async ValueTask ApplyWithResetAsync( HueContext context )
+        {
+            foreach ( string light in lights )
+            {
+                var lastState = context.GetLastLightState( light );
+                await ApplyCoreAsync( context, new[] {light}, lastState, setting );
+            }
         }
     }
 }

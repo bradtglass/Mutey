@@ -1,15 +1,15 @@
-﻿using System.Collections.Immutable;
-
-namespace Mutey.Hue.Client;
-
-using Mutey.Hue.Client.State;
-
-public record HueSettings
+﻿namespace Mutey.Hue.Client
 {
-    internal const string Sub = "hue";
+    using System.Collections.Immutable;
+    using Mutey.Hue.Client.State;
 
-    public string? AppKey { get; init; }
+    public record HueSettings
+    {
+        internal const string Sub = "hue";
 
-    public ImmutableDictionary<string, HueStateSetting> States { get; set; } =
-        ImmutableDictionary<string, HueStateSetting>.Empty;
+        public string? AppKey { get; init; }
+
+        public ImmutableDictionary<string, HueStateSetting> States { get; set; } =
+            ImmutableDictionary<string, HueStateSetting>.Empty;
+    }
 }

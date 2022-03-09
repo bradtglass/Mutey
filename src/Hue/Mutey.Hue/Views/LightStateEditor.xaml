@@ -56,10 +56,10 @@
                                    Text="{Binding Temperature, StringFormat={}{0:F0}K}" />
                     </Grid>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type setup:LightColorSetupViewModel}" >
+                <DataTemplate DataType="{x:Type setup:LightColorSetupViewModel}">
                     <colorPicker:ColorSliders SelectedColor="{Binding Color, Mode=TwoWay}"
                                               ShowAlpha="False"
-                                              Margin="0"/>
+                                              Margin="0" />
                 </DataTemplate>
             </DockPanel.Resources>
 
@@ -69,7 +69,7 @@
                        FontWeight="Bold"
                        Content="{Binding Info.Name}"
                        Target="{Binding ElementName=NextSelector}" />
-                
+
                 <Grid DockPanel.Dock="Bottom"
                       HorizontalAlignment="Stretch"
                       Margin="0 5">
@@ -88,22 +88,22 @@
                               ItemsSource="{Binding AvailableFields}"
                               SelectedItem="{Binding NextField, Mode=TwoWay}" />
                 </Grid>
-                
+
                 <CheckBox IsChecked="{Binding ResetFirst}">
                     Reset First
                 </CheckBox>
             </DockPanel>
-            
+
             <Border DockPanel.Dock="Bottom"
                     MinHeight="80">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0 1" EndPoint="0 0">
-                        <GradientStop Color="Black" Offset="0"/>
-                        <GradientStop Color="Black" Offset="0.7"/>
-                        <GradientStop Color="White" Offset="1"/>
+                        <GradientStop Color="Black" Offset="0" />
+                        <GradientStop Color="Black" Offset="0.7" />
+                        <GradientStop Color="White" Offset="1" />
                     </LinearGradientBrush>
                 </Border.Background>
-                
+
                 <Border HorizontalAlignment="Stretch"
                         VerticalAlignment="Bottom"
                         BorderThickness="1"
@@ -116,7 +116,7 @@
                     </Border.Background>
                 </Border>
             </Border>
-            
+
             <ItemsControl ItemsSource="{Binding Fields}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -143,7 +143,7 @@
                                     </Button>
                                 </Grid>
 
-                                <ContentPresenter Content="{Binding}"/>
+                                <ContentPresenter Content="{Binding}" />
                             </DockPanel>
                         </Border>
                     </DataTemplate>

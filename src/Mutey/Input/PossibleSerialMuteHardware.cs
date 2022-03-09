@@ -1,18 +1,10 @@
-﻿using System.Diagnostics;
-
-namespace Mutey.Input
+﻿namespace Mutey.Input
 {
-    [DebuggerDisplay("{Port}: {Description}")]
+    using System.Diagnostics;
+
+    [ DebuggerDisplay( "{Port}: {Description}" ) ]
     public class PossibleSerialMuteHardware : PossibleMuteHardware
     {
-        public PossibleSerialMuteHardware(string port, string description, string manufacturer, string deviceId)
-        {
-            Port = port;
-            Description = description;
-
-            LocalIdentifier = $"{Port}:{manufacturer}:{deviceId}";
-        }
-
         public int BaudRate { get; } = 57600;
 
         public string Port { get; }
@@ -27,7 +19,17 @@ namespace Mutey.Input
 
         public override string LocalIdentifier { get; }
 
+        public PossibleSerialMuteHardware( string port, string description, string manufacturer, string deviceId )
+        {
+            Port = port;
+            Description = description;
+
+            LocalIdentifier = $"{Port}:{manufacturer}:{deviceId}";
+        }
+
         public override IMuteHardware Connect()
-            => new SerialMuteHardware(this);
+        {
+            return new SerialMuteHardware( this );
+        }
     }
 }

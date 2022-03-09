@@ -1,14 +1,15 @@
-﻿namespace Mutey.Hue.ViewModels.Setup;
-
-public class LightOnSetupViewModel : LightFieldSetupViewModel
+﻿namespace Mutey.Hue.ViewModels.Setup
 {
-    private bool on;
-
-    public LightOnSetupViewModel() : base(LightField.On) { }
-
-    public bool On
+    public class LightOnSetupViewModel : LightFieldSetupViewModel
     {
-        get => on;
-        set => SetProperty(ref on, value);
+        private bool on;
+
+        public bool On
+        {
+            get => on;
+            set => SetProperty( ref on, value );
+        }
+
+        public LightOnSetupViewModel() : base( LightField.On ) { }
     }
 }

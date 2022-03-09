@@ -1,29 +1,36 @@
-﻿using System;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
-
-namespace Mutey.Hue.Converters;
-
-public class BoolVisibilityConverter : IValueConverter
+﻿namespace Mutey.Hue.Converters
 {
-    public Visibility TrueValue { get; set; } = Visibility.Visible;
+    using System;
+    using System.Globalization;
+    using System.Windows;
+    using System.Windows.Data;
 
-    public Visibility FalseValue { get; set; } = Visibility.Collapsed;
-
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => (bool)value ? TrueValue : FalseValue;
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public class BoolVisibilityConverter : IValueConverter
     {
-        var visibility = (Visibility)value;
+        public Visibility TrueValue { get; set; } = Visibility.Visible;
 
-        if (visibility == TrueValue)
-            return true;
+        public Visibility FalseValue { get; set; } = Visibility.Collapsed;
 
-        if (visibility == FalseValue)
-            return false;
+        public object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+        {
+            return (bool) value ? TrueValue : FalseValue;
+        }
 
-        return Binding.DoNothing;
+        public object ConvertBack( object value, Type targetType, object parameter, CultureInfo culture )
+        {
+            var visibility = (Visibility) value;
+
+            if ( visibility == TrueValue )
+            {
+                return true;
+            }
+
+            if ( visibility == FalseValue )
+            {
+                return false;
+            }
+
+            return Binding.DoNothing;
+        }
     }
 }

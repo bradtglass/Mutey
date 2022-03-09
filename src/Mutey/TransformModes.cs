@@ -1,8 +1,8 @@
-﻿using System;
-
-namespace Mutey
+﻿namespace Mutey
 {
-    [Flags]
+    using System;
+
+    [ Flags ]
     public enum TransformModes
     {
         Ptt = 1 << 0,

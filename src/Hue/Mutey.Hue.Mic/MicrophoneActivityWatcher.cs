@@ -1,21 +1,21 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NAudio.CoreAudioApi;
-using NAudio.CoreAudioApi.Interfaces;
-
-namespace Mutey.Hue.Mic
+﻿namespace Mutey.Hue.Mic
 {
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using NAudio.CoreAudioApi;
+    using NAudio.CoreAudioApi.Interfaces;
+
     public class MicrophoneActivityWatcher : IDisposable
     {
-        private static readonly uint processId = (uint)Process.GetCurrentProcess().Id;
+        private static readonly uint processId = (uint) Process.GetCurrentProcess().Id;
         private readonly CancellationTokenSource cts = new();
 
-        private MicrophoneActivityWatcher() { }
-
         public bool IsActive { get; private set; }
+
+        private MicrophoneActivityWatcher() { }
 
         public void Dispose()
         {
@@ -28,7 +28,7 @@ namespace Mutey.Hue.Mic
         {
             MicrophoneActivityWatcher watcher = new();
 
-            Task.Factory.StartNew(watcher.WatchLoop, watcher.cts.Token);
+            Task.Factory.StartNew( watcher.WatchLoop, watcher.cts.Token );
 
             return watcher;
         }
@@ -36,38 +36,38 @@ namespace Mutey.Hue.Mic
         private static bool GetIsActive()
         {
             using MMDeviceEnumerator mmDeviceEnumerator = new();
-            using var defaultMic = mmDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
+            using var defaultMic = mmDeviceEnumerator.GetDefaultAudioEndpoint( DataFlow.Capture, Role.Communications );
             var sessionManager = defaultMic.AudioSessionManager;
 
             return sessionManager.Sessions.Enumerate()
-                .Where(s => !s.IsSystemSoundsSession)
-                .Where(s => s.GetProcessID != processId)
-                .Any(s => s.State == AudioSessionState.AudioSessionStateActive);
+                                 .Where( s => !s.IsSystemSoundsSession )
+                                 .Where( s => s.GetProcessID != processId )
+                                 .Any( s => s.State == AudioSessionState.AudioSessionStateActive );
         }
 
         private async Task WatchLoop()
         {
-            while (true)
+            while ( true )
             {
                 try
                 {
-                    var isNowActive = GetIsActive();
-                    if (isNowActive != IsActive)
+                    bool isNowActive = GetIsActive();
+                    if ( isNowActive != IsActive )
                     {
                         IsActive = isNowActive;
-                        Notify?.Invoke(this, new MicrophoneActivityEventArgs(isNowActive));
+                        Notify?.Invoke( this, new MicrophoneActivityEventArgs( isNowActive ) );
                     }
                 }
-                catch (OperationCanceledException)
+                catch ( OperationCanceledException )
                 {
                     return;
                 }
-                catch (Exception e)
+                catch ( Exception e )
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine( e );
                 }
 
-                await Task.Delay(1000, cts.Token);
+                await Task.Delay( 1000, cts.Token );
             }
         }
     }

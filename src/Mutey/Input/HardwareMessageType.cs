@@ -6,7 +6,7 @@
     public enum HardwareMessageType
     {
         Unknown,
-        
+
         /// <summary>
         ///     Begin toggling the mute state.
         /// </summary>
