@@ -47,10 +47,10 @@ public class LightSetupViewModel : ObservableObject
 
     public ObservableCollection<LightFieldSetupViewModel> Fields { get; } = new();
 
-    // ReSharper disable once ConstantConditionalAccessQualifier
+    // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     public double MinTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Max ?? 500);
 
-    // ReSharper disable once ConstantConditionalAccessQualifier
+    // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     public double MaxTemp => 1e6 / (Info.Capabilities.Control.ColorTemperature?.Min ?? 153);
 
     public Color Color
@@ -107,7 +107,7 @@ public class LightSetupViewModel : ObservableObject
             if (Info.Capabilities.Control.ColorGamut.HasValue)
                 AvailableFields.Add(LightField.Color);
 
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (Info.Capabilities.Control.ColorTemperature != null)
                 AvailableFields.Add(LightField.ColorTemperature);
         }

@@ -1,4 +1,3 @@
-using Mutey.Hue.Client.State.Color;
 using Q42.HueApi;
 
 namespace Mutey.Hue.Client.State;

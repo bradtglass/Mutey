@@ -1,6 +1,4 @@
-﻿using Mutey.Hue.ViewModels.Setup;
-
-namespace Mutey.Hue.Views;
+﻿namespace Mutey.Hue.Views;
 
 using Mutey.Hue.ViewModels.Setup;
 

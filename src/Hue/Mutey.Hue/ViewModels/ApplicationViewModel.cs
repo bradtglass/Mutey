@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Mutey.Hue.Client;
-using Mutey.Hue.ViewModels.Setup;
-using Mutey.Hue.Views;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 

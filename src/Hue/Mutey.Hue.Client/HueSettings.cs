@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Mutey.Hue.Client.State;
 
 namespace Mutey.Hue.Client;
 

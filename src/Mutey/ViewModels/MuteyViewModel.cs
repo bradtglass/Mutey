@@ -103,7 +103,7 @@ namespace Mutey.ViewModels
             }
         }
 
-        private void OnTransformedActionRequired(object sender, TransformedMuteOutputEventArgs e)
+        private void OnTransformedActionRequired(object? sender, TransformedMuteOutputEventArgs e)
         {
             switch (e.Action)
             {

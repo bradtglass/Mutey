@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using Mutey.Hue.ViewModels.Setup;
 
 namespace Mutey.Hue.Views;
 

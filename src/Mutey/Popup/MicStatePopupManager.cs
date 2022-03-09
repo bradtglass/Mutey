@@ -51,7 +51,7 @@ namespace Mutey.Popup
         private void OnPopupPressed()
             => PopupPressed?.Invoke(this, EventArgs.Empty);
 
-        private void SettingsChanged(object sender, PropertyChangedEventArgs e)
+        private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName != nameof(Settings.MuteStatePopupMode))
                 return;
@@ -106,9 +106,9 @@ namespace Mutey.Popup
             timer.Start();
         }
 
-        private static void EndFlashTick(object sender, EventArgs e)
+        private static void EndFlashTick(object? sender, EventArgs e)
         {
-            DispatcherTimer timer = (DispatcherTimer) sender;
+            DispatcherTimer timer = (DispatcherTimer) sender!;
             timer.Stop();
             timer.Tick -= EndFlashTick;
 

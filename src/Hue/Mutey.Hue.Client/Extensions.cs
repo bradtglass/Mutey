@@ -1,6 +1,4 @@
 ﻿using System;
-using Mutey.Hue.Client.State;
-using Mutey.Hue.Client.State.Color;
 
 namespace Mutey.Hue.Client;
 
@@ -13,7 +11,7 @@ public static class Extensions
     {
         HueColor? color;
 
-        // ReSharper disable once ConstantConditionalAccessQualifier
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         switch (state.ColorMode?.ToLower())
         {
             case "xy":

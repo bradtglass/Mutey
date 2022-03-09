@@ -24,7 +24,7 @@ namespace Mutey.Views
                 Assembly assembly = GetType().Assembly;
 
                 return assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
-                       assembly.GetCustomAttribute<AssemblyVersionAttribute>().Version;
+                       assembly.GetName().Version!.ToString();
             }
         }
 

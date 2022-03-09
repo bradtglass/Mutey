@@ -25,7 +25,7 @@ namespace Mutey.Popup
             InitializeComponent();
         }
 
-        private void OnContentRendered(object sender, EventArgs e)
+        private void OnContentRendered(object? sender, EventArgs e)
         {
             MoveToStartupPosition();
         }

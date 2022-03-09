@@ -4,8 +4,6 @@ using Mutey.Hue.Client.State;
 
 namespace Mutey.Hue.Client;
 
-using Mutey.Hue.Client.State;
-
 public sealed class StateReset : IAsyncDisposable
 {
     private readonly HueContext context;

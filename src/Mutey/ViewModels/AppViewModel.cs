@@ -80,7 +80,7 @@ namespace Mutey.ViewModels
             }
         }
 
-        private void OnUpdateStateChanged(object sender, EventArgs e)
+        private void OnUpdateStateChanged(object? sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke(() => UpdateState = updateService.State);
         }

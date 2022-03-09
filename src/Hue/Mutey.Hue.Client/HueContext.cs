@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ComposableAsync;
 using Mutey.Hue.Core.Settings;
-using Mutey.Hue.Client.State;
 using Microsoft.Extensions.Caching.Memory;
 using Nito.AsyncEx;
 using Q42.HueApi;
