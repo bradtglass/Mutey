@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using Mutey.Core.Settings;
     using Mutey.Hardware;
     using NLog;
 
@@ -23,16 +24,16 @@
 
         public InputTransformer()
         {
-            inputCooldown = Settings.Default.InputCooldownDuration;
+            inputCooldown = SettingsStore.Get<MuteySettings>().InputCooldownDuration;
 
-            Settings.Default.PropertyChanged += ( _, _ ) => RefreshUserSettings();
-            RefreshUserSettings();
+            SettingsStore.RegisterForNotifications<MuteySettings>( RefreshUserSettings );
+            RefreshUserSettings( SettingsStore.Get<MuteySettings>() );
         }
 
-        private void RefreshUserSettings()
+        private void RefreshUserSettings( MuteySettings settings )
         {
-            smartPttActivationDuration = Settings.Default.SmartPttActivationDuration;
-            modes = Settings.Default.DefaultTransformMode;
+            smartPttActivationDuration = settings.SmartPttActivationDuration;
+            modes = settings.DefaultTransformMode;
         }
 
         public event EventHandler<TransformedMuteOutputEventArgs>? Transformed;

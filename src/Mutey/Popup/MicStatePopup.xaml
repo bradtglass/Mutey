@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:popup="clr-namespace:Mutey.Popup"
-        xmlns:mutey="clr-namespace:Mutey"
         mc:Ignorable="d"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -23,8 +22,8 @@
         ToolTip="Toggle Mute">
     <popup:MicStatePopupControl State="{Binding State}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Size="{Binding Source={x:Static mutey:Settings.Default}, Path=MuteStatePopupSize}"
-                                SizeChanged="MuteStateControl_OnSizeChanged">
+                                SizeChanged="MuteStateControl_OnSizeChanged"
+                                x:Name="StatePopupControl">
         <popup:MicStatePopupControl.Style>
             <Style TargetType="{x:Type popup:MicStatePopupControl}">
                 <Setter Property="Opacity" Value="0" />

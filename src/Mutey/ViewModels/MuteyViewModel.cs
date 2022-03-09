@@ -8,6 +8,7 @@
     using Microsoft.Xaml.Behaviors.Core;
     using Mutey.Audio;
     using Mutey.Audio.Mute;
+    using Mutey.Core.Settings;
     using Mutey.Hardware;
     using Mutey.Popup;
     using NLog;
@@ -79,7 +80,7 @@
         public void RefreshHardware()
         {
             string? previousSelection = PossibleHardware.FirstOrDefault( h => h.IsActive )?.Id ??
-                                        Settings.Default.LastDeviceId;
+                                        SettingsStore.Get<MuteySettings>().LastDeviceId;
 
             PossibleHardware.Clear();
             foreach ( var device in hardwareManager.AvailableDevices )
@@ -224,19 +225,14 @@
                 logger.Debug( "Activating new device: {Device}", hardware.LocalIdentifier );
                 hardwareManager.ChangeDevice( hardware );
 
-                Settings.Default.LastDeviceId = viewModel.Id;
-                Settings.Default.Save();
+                SettingsStore.Set<MuteySettings>( s => s with {LastDeviceId = viewModel.Id} );
             }
             else
             {
                 logger.Debug( "Deactivating current device" );
                 hardwareManager.ChangeDevice( null );
-
-                if ( viewModel.Id == Settings.Default.LastDeviceId )
-                {
-                    Settings.Default.LastDeviceId = null;
-                    Settings.Default.Save();
-                }
+                
+                SettingsStore.Set<MuteySettings>( s => s with {LastDeviceId = null} );
             }
         }
     }

@@ -1,12 +1,12 @@
 ﻿namespace Mutey.Popup
 {
     using System;
-    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Threading;
     using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors.Core;
     using Mutey.Audio;
+    using Mutey.Core.Settings;
     using NLog;
 
     [ UsedImplicitly ]
@@ -23,7 +23,7 @@
 
         public MicStatePopupManager()
         {
-            Settings.Default.PropertyChanged += SettingsChanged;
+            SettingsStore.RegisterForNotifications<MuteySettings>( SettingsChanged );
 
             logger.Info( "Creating new popup window" );
 
@@ -32,7 +32,7 @@
 
             popup.Show();
 
-            switch ( Settings.Default.MuteStatePopupMode )
+            switch ( SettingsStore.Get<MuteySettings>().MuteStatePopupMode )
             {
                 case PopupMode.Temporary:
                     break;
@@ -58,18 +58,19 @@
             PopupPressed?.Invoke( this, EventArgs.Empty );
         }
 
-        private void SettingsChanged( object? sender, PropertyChangedEventArgs e )
+        private void SettingsChanged( MuteySettings settings )          
         {
-            if ( e.PropertyName != nameof( Settings.MuteStatePopupMode ) )
-            {
-                return;
-            }
+            // TODO Add a previous value so we only update when necessary
+            // if ( e.PropertyName != nameof( Settings.MuteStatePopupMode ) )
+            // {
+            //     return;
+            // }
 
             logger.Debug( "Popup mode setting updated, changing popup visibility" );
             // Lock to prevent any actions occurring on the popup until we've finished changing the state
             lock ( currentLifetimeLock )
             {
-                switch ( Settings.Default.MuteStatePopupMode )
+                switch ( settings.MuteStatePopupMode )
                 {
                     /*Technically we should probably keep the requested state separately from the actual state so we
                      can restore it when going back to temporary mode but this seems like overkill for this 
@@ -122,7 +123,7 @@
 
         private bool ShowPopup( Lifetime lifetime )
         {
-            if ( Settings.Default.MuteStatePopupMode != PopupMode.Temporary )
+            if ( SettingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
             {
                 logger.Debug( "Skipping hiding mute state popup" );
                 return true;
@@ -134,7 +135,7 @@
 
         private bool HidePopup( Lifetime lifetime )
         {
-            if ( Settings.Default.MuteStatePopupMode != PopupMode.Temporary )
+            if ( SettingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
             {
                 logger.Debug( "Skipping hiding mute state popup" );
                 return true;

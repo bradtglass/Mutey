@@ -7,8 +7,8 @@
     using System.Threading.Tasks;
     using ComposableAsync;
     using Microsoft.Extensions.Caching.Memory;
+    using Mutey.Core.Settings;
     using Mutey.Hue.Client.State;
-    using Mutey.Hue.Core.Settings;
     using Nito.AsyncEx;
     using Q42.HueApi;
     using Q42.HueApi.Interfaces;
@@ -35,12 +35,12 @@
 
         private static HueSettings GetSettings()
         {
-            return SettingsStore.Get<HueSettings>( HueSettings.Sub );
+            return SettingsStore.Get<HueSettings>();
         }
 
         public void Reset()
         {
-            SettingsStore.Reset( HueSettings.Sub );
+            SettingsStore.Reset<HueSettings>();
         }
 
         private static async Task<string> GetBridgeIpAsync()
@@ -91,7 +91,7 @@
                         continue;
                     }
 
-                    SettingsStore.Set<HueSettings>( HueSettings.Sub, s => s with {AppKey = appKey} );
+                    SettingsStore.Set<HueSettings>( s => s with {AppKey = appKey} );
                     await PostLoginAsyncSync( new LocalHueClient( ip, appKey ) );
 
                     return;

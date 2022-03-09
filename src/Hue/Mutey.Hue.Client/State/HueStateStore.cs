@@ -1,7 +1,7 @@
 ﻿namespace Mutey.Hue.Client.State
 {
     using System.Threading.Tasks;
-    using Mutey.Hue.Core.Settings;
+    using Mutey.Core.Settings;
 
     public class HueStateStore
     {
@@ -15,7 +15,7 @@
         public HueStateSetting Get( bool isActive )
         {
             string key = GetStateKey( isActive );
-            var settings = SettingsStore.Get<HueSettings>( HueSettings.Sub ).States;
+            var settings = SettingsStore.Get<HueSettings>().States;
             if ( settings.TryGetValue( key, out var setting ) )
             {
                 return setting;
@@ -34,7 +34,7 @@
         public void Set( bool isActive, HueStateSetting setting )
         {
             string key = GetStateKey( isActive );
-            SettingsStore.Set<HueSettings>( HueSettings.Sub, s => s with
+            SettingsStore.Set<HueSettings>( s => s with
             {
                 States = s.States.SetItem( key, setting )
             } );

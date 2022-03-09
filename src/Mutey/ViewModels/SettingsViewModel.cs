@@ -3,6 +3,7 @@
     using System;
     using System.Windows.Input;
     using Microsoft.Xaml.Behaviors.Core;
+    using Mutey.Core.Settings;
     using Mutey.Popup;
     using Prism.Mvvm;
 
@@ -51,17 +52,32 @@
         {
             SaveCommand = new ActionCommand( Save );
 
-            isPttEnabled = Settings.Default.DefaultTransformMode.HasFlag( TransformModes.Ptt );
-            isToggleEnabled = Settings.Default.DefaultTransformMode.HasFlag( TransformModes.Toggle );
-            smartPttActivationMilliSeconds = (int) Settings.Default.SmartPttActivationDuration.TotalMilliseconds;
-            popupMode = Settings.Default.MuteStatePopupMode;
-            popupSize = Settings.Default.MuteStatePopupSize;
+            var current = SettingsStore.Get<MuteySettings>();
+            isPttEnabled = current.DefaultTransformMode.HasFlag( TransformModes.Ptt );
+            isToggleEnabled = current.DefaultTransformMode.HasFlag( TransformModes.Toggle );
+            smartPttActivationMilliSeconds = (int) current.SmartPttActivationDuration.TotalMilliseconds;
+            popupMode = current.MuteStatePopupMode;
+            popupSize = current.MuteStatePopupSize;
         }
 
         private void Save()
         {
-            Settings.Default.SmartPttActivationDuration = TimeSpan.FromMilliseconds( SmartPttActivationMilliSeconds );
+            SettingsStore.Set<MuteySettings>( Save );
+        }
 
+        private MuteySettings Save( MuteySettings settings )
+        {
+            return settings with
+            {
+                SmartPttActivationDuration = TimeSpan.FromMilliseconds( SmartPttActivationMilliSeconds ),
+                DefaultTransformMode = GetTransformModes(),
+                MuteStatePopupMode = PopupMode,
+                MuteStatePopupSize = PopupSize
+            };
+        }
+
+        private TransformModes GetTransformModes()
+        {
             TransformModes modes = 0;
             if ( IsPttEnabled )
             {
@@ -73,11 +89,7 @@
                 modes |= TransformModes.Toggle;
             }
 
-            Settings.Default.DefaultTransformMode = modes;
-            Settings.Default.MuteStatePopupMode = PopupMode;
-            Settings.Default.MuteStatePopupSize = PopupSize;
-
-            Settings.Default.Save();
+            return modes;
         }
     }
 }

@@ -6,6 +6,7 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Interop;
+    using Mutey.Core.Settings;
     using NLog;
 
     internal partial class MicStatePopup
@@ -22,8 +23,16 @@
             Loaded += OnLoaded;
             ContentRendered += OnContentRendered;
             InitializeComponent();
+
+            SettingsStore.RegisterForNotifications<MuteySettings>(SettingsChanged);
+            SettingsChanged(SettingsStore.Get<MuteySettings>());
         }
 
+        private void SettingsChanged( MuteySettings settings )
+        {
+            StatePopupControl.Size = settings.MuteStatePopupSize;
+        }
+        
         private void OnContentRendered( object? sender, EventArgs e )
         {
             MoveToStartupPosition();
