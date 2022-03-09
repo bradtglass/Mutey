@@ -7,22 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0"/>
-        <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.8.0"/>
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0"/>
-        <PackageReference Include="Prism.DryIoc" Version="8.0.0.1909"/>
-        <PackageReference Include="System.IO.Ports" Version="5.0.0"/>
-        <PackageReference Include="System.Management" Version="5.0.0"/>
+        <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+        <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.8.0" />
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
+        <PackageReference Include="Prism.DryIoc" Version="8.0.0.1909" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Resources\mic.svg"/>
-        <None Remove="Properties\launchSettings.json"/>
+        <None Remove="Resources\mic.svg" />
+        <None Remove="Properties\launchSettings.json" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Icons\*"/>
-        <Resource Include="Icons\*"/>
+        <None Remove="Icons\*" />
+        <Resource Include="Icons\*" />
     </ItemGroup>
 
     <ItemGroup>
@@ -41,11 +39,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Properties"/>
+        <Folder Include="Properties" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mutey.Audio\Mutey.Audio.csproj"/>
+        <ProjectReference Include="..\Mutey.Audio\Mutey.Audio.csproj" />
+        <ProjectReference Include="..\Mutey.Hardware\Mutey.Hardware.csproj" />
     </ItemGroup>
 
 </Project>

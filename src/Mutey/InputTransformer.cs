@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading;
-    using Mutey.Input;
+    using Mutey.Hardware;
     using NLog;
 
     /// <summary>

@@ -3,14 +3,15 @@
     using System.Diagnostics;
     using System.Windows;
     using Hardcodet.Wpf.TaskbarNotification;
-    using Mutey.Audio.Mute;
-    using Mutey.Input;
+    using Mutey.Audio.Ioc;
+    using Mutey.Hardware.Ioc;
     using Mutey.Popup;
     using Mutey.ViewModels;
     using Mutey.Views;
     using NLog;
     using NLog.Config;
     using NLog.Targets;
+    using Prism.DryIoc;
     using Prism.Ioc;
     using Prism.Modularity;
     using Prism.Mvvm;
@@ -79,8 +80,10 @@
             ViewModelLocationProvider.Register<TaskbarIcon, AppViewModel>();
             ViewModelLocationProvider.Register<SettingsWindow, AppViewModel>();
 
-            containerRegistry.RegisterSingleton<IMuteHardwareManager, MuteHardwareManager>();
-            containerRegistry.RegisterSingleton<ISystemMuteControl, SystemMuteControl>();
+            containerRegistry.GetContainer()
+                             .RegisterHardwareManagement()
+                             .RegisterAudioManagement();
+            
             containerRegistry.RegisterSingleton<AppViewModel>();
             containerRegistry.RegisterManySingleton<MuteyViewModel>( typeof( MuteyViewModel ), typeof( IMutey ) );
             containerRegistry.RegisterSingleton<SettingsWindow>();

@@ -8,7 +8,7 @@
     using Microsoft.Xaml.Behaviors.Core;
     using Mutey.Audio;
     using Mutey.Audio.Mute;
-    using Mutey.Input;
+    using Mutey.Hardware;
     using Mutey.Popup;
     using NLog;
     using Prism.Mvvm;

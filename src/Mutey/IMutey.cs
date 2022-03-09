@@ -1,6 +1,6 @@
 ﻿namespace Mutey
 {
-    using Mutey.Input;
+    using Mutey.Hardware;
 
     public interface IMutey
     {

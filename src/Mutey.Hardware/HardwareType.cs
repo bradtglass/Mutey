@@ -1,4 +1,4 @@
-﻿namespace Mutey.Input
+﻿namespace Mutey.Hardware
 {
     public enum HardwareType
     {
