@@ -1,6 +1,2 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <ItemGroup>
-        <PackageReference Include="System.IO.Ports" Version="5.0.0" />
-        <PackageReference Include="System.Management" Version="5.0.0" />
-    </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@
     ///     This is the primary place that all of the business logic is pulled together, input devices, software inputs, popups
     ///     and input transformation.
     /// </summary>
-    internal class MuteyViewModel : BindableBase, IMutey
+    internal class MuteyViewModel : BindableBase
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
@@ -69,11 +69,6 @@
             ToggleCommand = new ActionCommand( ToggleMuteByCommand );
             RefreshHardwareCommand = new ActionCommand( RefreshHardwareByCommand );
             ToggleHardwareCommand = new ActionCommand( ToggleHardwareByCommand );
-        }
-
-        public void RegisterHardware( IMuteHardwareDetector detector )
-        {
-            hardwareManager.RegisterHardwareDetector( detector );
         }
 
         /// <summary>

@@ -5,6 +5,7 @@
     using Hardcodet.Wpf.TaskbarNotification;
     using Mutey.Core.Ioc;
     using Mutey.Hardware.Ioc;
+    using Mutey.Hardware.Serial.Ioc;
     using Mutey.Popup;
     using Mutey.ViewModels;
     using Mutey.Views;
@@ -68,8 +69,7 @@
         {
             return new ModuleCatalog( new[]
             {
-                new ModuleInfo( typeof( TaskBarModule ) ),
-                new ModuleInfo( typeof( MuteyRegistrationsModule ) )
+                new ModuleInfo( typeof( TaskBarModule ) )
             } );
         }
 
@@ -83,10 +83,11 @@
             containerRegistry.GetContainer()
                              .RegisterSettingsStore()
                              .RegisterHardwareManagement()
+                             .RegisterSerialHardware()
                              .RegisterAudioManagement();
             
             containerRegistry.RegisterSingleton<AppViewModel>();
-            containerRegistry.RegisterManySingleton<MuteyViewModel>( typeof( MuteyViewModel ), typeof( IMutey ) );
+            containerRegistry.RegisterSingleton<MuteyViewModel>();
             containerRegistry.RegisterSingleton<SettingsWindow>();
             containerRegistry.RegisterSingleton<AboutWindow>();
             containerRegistry.RegisterSingleton<MicStatePopupManager>();

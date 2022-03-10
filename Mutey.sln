@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Core", "src\Mutey.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Core.Test", "test\Mutey.Core.Test\Mutey.Core.Test.csproj", "{03C57675-5C92-41BD-A920-2D85CAA53510}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hardware.Serial", "src\Hardware\Mutey.Hardware.Serial\Mutey.Hardware.Serial.csproj", "{58ABB688-48A7-4F12-874A-34288F1B27DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,7 @@ Global
 		{B611742C-FD08-4A36-BA0C-E35CCEA146EC} = {837D403C-6ADA-4D4D-B8B5-AB2CE3DACABA}
 		{AD75FC3D-3288-4BDD-BE0C-20479957C490} = {BFD0C49B-6EDC-4A53-A6E9-583A71720FEC}
 		{03C57675-5C92-41BD-A920-2D85CAA53510} = {B2BF2FEE-319E-4E29-BFB6-1D4CE1BB2331}
+		{58ABB688-48A7-4F12-874A-34288F1B27DF} = {837D403C-6ADA-4D4D-B8B5-AB2CE3DACABA}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C4C9587F-321D-4EF2-8B27-594AA7F51049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,5 +89,9 @@ Global
 		{03C57675-5C92-41BD-A920-2D85CAA53510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03C57675-5C92-41BD-A920-2D85CAA53510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03C57675-5C92-41BD-A920-2D85CAA53510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58ABB688-48A7-4F12-874A-34288F1B27DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58ABB688-48A7-4F12-874A-34288F1B27DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58ABB688-48A7-4F12-874A-34288F1B27DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58ABB688-48A7-4F12-874A-34288F1B27DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

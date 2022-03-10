@@ -1,4 +1,4 @@
-﻿namespace Mutey.Hardware
+﻿namespace Mutey.Hardware.Serial
 {
     using System;
     using System.Collections.Generic;
