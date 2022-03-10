@@ -3,6 +3,7 @@
         <TargetFramework>net6.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>10</LangVersion>
+        <UseWPF>true</UseWPF>
 
         <Version>0.6.0</Version>
     </PropertyGroup>
