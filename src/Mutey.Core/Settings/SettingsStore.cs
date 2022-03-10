@@ -2,97 +2,147 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Text.Json;
 
-    public static class SettingsStore
+    internal class SettingsStore : ISettingsStore
     {
-        private static readonly object IoLock = new();
-        private static readonly Lazy<DirectoryInfo> SettingsDirectory = new(DirectoryFactory);
-        private static readonly ConcurrentDictionary<Type, string> CachedFileNames = new();
-        
-        private static DirectoryInfo DirectoryFactory()
+        private readonly ConcurrentDictionary<Type, string> cachedFileNames = new();
+        private readonly IFileSystem fileSystem;
+        private readonly object ioLock = new();
+        private readonly ConcurrentDictionary<Type, List<Action<SettingsChangedEventArgs>>> notificationRegistrations = new();
+        private readonly Lazy<IDirectoryInfo> settingsDirectory;
+
+        public SettingsStore( IFileSystem fileSystem )
+        {
+            this.fileSystem = fileSystem;
+            settingsDirectory = new Lazy<IDirectoryInfo>( DirectoryFactory );
+        }
+
+        private IDirectoryInfo DirectoryFactory()
         {
             string localAppData = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData );
             string path = Path.Combine( localAppData, "Mutey", "settings" );
 
-            return new DirectoryInfo( path );
+            return fileSystem.DirectoryInfo.FromDirectoryName( path );
         }
 
-        private static string GetFilename<T>()
+        private string GetFilename<T>()
             where T : SettingsBase, new()
         {
-            return CachedFileNames.GetOrAdd( typeof( T ), _ => new T().Filename );
+            return cachedFileNames.GetOrAdd( typeof( T ), _ => new T().Filename );
         }
 
-        private static FileInfo GetSubFile( string filename )
+        private IFileInfo GetFile<T>()
+            where T : SettingsBase, new()
         {
-            var directory = SettingsDirectory.Value;
+            string filename = GetFilename<T>();
+
+            var directory = settingsDirectory.Value;
             directory.Create();
 
             string path = Path.Combine( directory.FullName, filename );
 
-            return new FileInfo( path );
+            return fileSystem.FileInfo.FromFileName( path );
         }
 
-        public static T Get<T>()
+        public T Get<T>()
             where T : SettingsBase, new()
         {
-            lock ( IoLock )
+            lock ( ioLock )
             {
-                string filename = GetFilename<T>();
-                return GetSync<T>( filename, out _ );
+                return GetSync<T>( out _ );
             }
         }
 
-        private static T GetSync<T>( string sub, out FileInfo file )
-            where T : new()
+        private T GetSync<T>( out IFileInfo file )
+            where T : SettingsBase, new()
         {
-            file = GetSubFile( sub );
+            file = GetFile<T>();
 
             if ( !file.Exists )
             {
                 return new T();
             }
 
-            using Stream stream = file.OpenRead();
+            using var stream = file.OpenRead();
             return JsonSerializer.Deserialize<T>( stream ) ?? new T();
         }
 
-        public static T Set<T>( Func<T, T> update )
+        public T Set<T>( Func<T, T> update )
             where T : SettingsBase, new()
         {
-            lock ( IoLock )
-            {
-                string fileName = GetFilename<T>();
-                var initial = GetSync<T>( fileName, out var file );
-                var updated = update( initial );
+            T updated;
+            T initial;
 
-                using Stream stream = file.Create();
+            lock ( ioLock )
+            {
+                initial = GetSync<T>( out var file );
+                updated = update( initial );
+
+                using var stream = file.Create();
                 JsonSerializer.Serialize( stream, updated );
-
-                return updated;
             }
+
+            NotifyChange( typeof( T ), initial, updated );
+
+            return updated;
         }
 
-        public static void Reset<T>()
+        public void Reset<T>()
             where T : SettingsBase, new()
         {
-            lock ( IoLock )
-            {
-                string filename = GetFilename<T>();
-                var file = GetSubFile( filename );
+            T oldValue;
+            T newValue;
 
-                if ( file.Exists )
+            lock ( ioLock )
+            {
+                var file = GetFile<T>();
+
+                if ( !file.Exists )
                 {
-                    file.Delete();
+                    return;
                 }
+
+                oldValue = GetSync<T>( out _ );
+                newValue = new T();
+
+                file.Delete();
+            }
+
+            NotifyChange( typeof( T ), oldValue, newValue );
+        }
+
+        private void NotifyChange( Type settingType, object oldValue, object newValue )
+        {
+            var registrations = GetRegistrationList( settingType );
+
+            if ( registrations.Count == 0 )
+            {
+                return;
+            }
+
+            var args = SettingsChangedEventArgs.Create( settingType, oldValue, newValue );
+
+            foreach ( var registration in registrations )
+            {
+                registration( args );
             }
         }
 
-        public static void RegisterForNotifications<T>( Action<T> callback )
+        public void RegisterForNotifications<T>( Action<SettingsChangedEventArgs<T>> callback )
+            where T : SettingsBase, new()
         {
-            throw new NotImplementedException();
+            // BG There are some bad implications for memory leaks here which I'm not fixing right now but I'll try to come back to
+            var registrationList = GetRegistrationList( typeof( T ) );
+            registrationList.Add( o => callback( (SettingsChangedEventArgs<T>) o ) );
+        }
+
+        private List<Action<SettingsChangedEventArgs>> GetRegistrationList( Type settingType )
+        {
+            return notificationRegistrations.GetOrAdd( settingType, _ => new List<Action<SettingsChangedEventArgs>>() );
         }
     }
 }

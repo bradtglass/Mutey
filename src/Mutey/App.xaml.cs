@@ -4,6 +4,7 @@
     using System.Windows;
     using Hardcodet.Wpf.TaskbarNotification;
     using Mutey.Audio.Ioc;
+    using Mutey.Core.Ioc;
     using Mutey.Hardware.Ioc;
     using Mutey.Popup;
     using Mutey.ViewModels;
@@ -81,6 +82,7 @@
             ViewModelLocationProvider.Register<SettingsWindow, AppViewModel>();
 
             containerRegistry.GetContainer()
+                             .RegisterSettingsStore()
                              .RegisterHardwareManagement()
                              .RegisterAudioManagement();
             

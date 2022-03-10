@@ -1,11 +1,10 @@
 ﻿<Application x:Class="Mutey.Hue.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewModels="clr-namespace:Mutey.Hue.ViewModels"
              xmlns:converters="clr-namespace:Mutey.Hue.Converters"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-        <viewModels:ApplicationViewModel x:Key="AppViewModel" />
+        <!-- <viewModels:ApplicationViewModel x:Key="AppViewModel" /> -->
         <converters:BoolVisibilityConverter x:Key="TrueToVisibleConverter"
                                             TrueValue="Visible"
                                             FalseValue="Collapsed" />

@@ -6,13 +6,14 @@
     using System.Windows.Input;
     using Microsoft.Toolkit.Mvvm.ComponentModel;
     using Microsoft.Toolkit.Mvvm.Input;
+    using Mutey.Core.Settings;
     using Mutey.Hue.Client;
     using Mutey.Hue.ViewModels.Setup;
     using Mutey.Hue.Views;
 
     public sealed class ApplicationViewModel : ObservableObject, IDisposable, IInteractiveLoginHelper
     {
-        private readonly HueContext context = new();
+        private readonly HueContext context;
 
         private bool isConfigured;
 
@@ -28,8 +29,9 @@
             private set => SetProperty( ref isConfigured, value );
         }
 
-        public ApplicationViewModel()
+        public ApplicationViewModel( ISettingsStore settingsStore )
         {
+            context = new HueContext( settingsStore );
             State = new StateViewModel( context );
 
             RefreshIsConfigured();

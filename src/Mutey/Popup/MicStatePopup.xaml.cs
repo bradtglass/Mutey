@@ -15,7 +15,7 @@
 
         private readonly MicStatePopupViewModel viewModel;
 
-        public MicStatePopup( MicStatePopupViewModel viewModel )
+        public MicStatePopup( ISettingsStore settingsStore, MicStatePopupViewModel viewModel )
         {
             this.viewModel = viewModel;
             DataContext = viewModel;
@@ -24,10 +24,13 @@
             ContentRendered += OnContentRendered;
             InitializeComponent();
 
-            SettingsStore.RegisterForNotifications<MuteySettings>(SettingsChanged);
-            SettingsChanged(SettingsStore.Get<MuteySettings>());
+            settingsStore.RegisterForNotifications<MuteySettings>(SettingsChanged);
+            SettingsChanged(settingsStore.Get<MuteySettings>());
         }
 
+        private void SettingsChanged( SettingsChangedEventArgs<MuteySettings> args )
+            => SettingsChanged( args.NewValue );
+        
         private void SettingsChanged( MuteySettings settings )
         {
             StatePopupControl.Size = settings.MuteStatePopupSize;

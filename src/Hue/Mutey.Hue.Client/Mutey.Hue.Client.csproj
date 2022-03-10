@@ -11,6 +11,5 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Mutey.Core\Mutey.Core.csproj" />
-        <ProjectReference Include="..\Mutey.Hue.Core\Mutey.Hue.Core.csproj" />
     </ItemGroup>
 </Project>

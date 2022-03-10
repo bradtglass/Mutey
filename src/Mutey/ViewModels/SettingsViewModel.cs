@@ -9,6 +9,7 @@
 
     internal class SettingsViewModel : BindableBase
     {
+        private readonly ISettingsStore settingsStore;
         private bool isPttEnabled;
         private bool isToggleEnabled;
         private PopupMode popupMode;
@@ -48,11 +49,13 @@
         public ICommand SaveCommand { get; }
 
 
-        public SettingsViewModel()
+        public SettingsViewModel( ISettingsStore settingsStore )
         {
+            this.settingsStore = settingsStore;
+            
             SaveCommand = new ActionCommand( Save );
 
-            var current = SettingsStore.Get<MuteySettings>();
+            var current = settingsStore.Get<MuteySettings>();
             isPttEnabled = current.DefaultTransformMode.HasFlag( TransformModes.Ptt );
             isToggleEnabled = current.DefaultTransformMode.HasFlag( TransformModes.Toggle );
             smartPttActivationMilliSeconds = (int) current.SmartPttActivationDuration.TotalMilliseconds;
@@ -62,7 +65,7 @@
 
         private void Save()
         {
-            SettingsStore.Set<MuteySettings>( Save );
+            settingsStore.Set<MuteySettings>( Save );
         }
 
         private MuteySettings Save( MuteySettings settings )

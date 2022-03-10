@@ -22,17 +22,21 @@
         private Timer? pttActivationTimer;
         private TimeSpan smartPttActivationDuration;
 
-        public InputTransformer()
+        public InputTransformer( ISettingsStore settingsStore )
         {
-            inputCooldown = SettingsStore.Get<MuteySettings>().InputCooldownDuration;
+            inputCooldown = settingsStore.Get<MuteySettings>().InputCooldownDuration;
 
-            SettingsStore.RegisterForNotifications<MuteySettings>( RefreshUserSettings );
-            RefreshUserSettings( SettingsStore.Get<MuteySettings>() );
+            settingsStore.RegisterForNotifications<MuteySettings>( SettingsChanged );
+            RefreshUserSettings( settingsStore.Get<MuteySettings>() );
         }
 
+        private void SettingsChanged( SettingsChangedEventArgs<MuteySettings> args )
+            => RefreshUserSettings( args.NewValue );
+        
         private void RefreshUserSettings( MuteySettings settings )
         {
             smartPttActivationDuration = settings.SmartPttActivationDuration;
+            // ReSharper disable once InconsistentlySynchronizedField
             modes = settings.DefaultTransformMode;
         }
 

@@ -5,17 +5,19 @@
 
     public class HueStateStore
     {
+        private readonly ISettingsStore settingsStore;
         private readonly HueContext context;
 
-        internal HueStateStore( HueContext context )
+        internal HueStateStore( ISettingsStore settingsStore, HueContext context )
         {
+            this.settingsStore = settingsStore;
             this.context = context;
         }
 
         public HueStateSetting Get( bool isActive )
         {
             string key = GetStateKey( isActive );
-            var settings = SettingsStore.Get<HueSettings>().States;
+            var settings = settingsStore.Get<HueSettings>().States;
             if ( settings.TryGetValue( key, out var setting ) )
             {
                 return setting;
@@ -34,7 +36,7 @@
         public void Set( bool isActive, HueStateSetting setting )
         {
             string key = GetStateKey( isActive );
-            SettingsStore.Set<HueSettings>( s => s with
+            settingsStore.Set<HueSettings>( s => s with
             {
                 States = s.States.SetItem( key, setting )
             } );

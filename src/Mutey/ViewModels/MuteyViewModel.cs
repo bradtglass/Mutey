@@ -22,11 +22,12 @@
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
+        private readonly ISettingsStore settingsStore;
         private readonly IMuteHardwareManager hardwareManager;
         private readonly MicStatePopupManager popupManager;
         private readonly SynchronizationContext synchronizationContext;
         private readonly ISystemMuteControl systemMuteControl;
-        private readonly InputTransformer transformer = new();
+        private readonly InputTransformer transformer;
 
         private MuteState muteState;
 
@@ -44,11 +45,13 @@
 
         public ICommand ToggleCommand { get; }
 
-        public MuteyViewModel( IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager )
+        public MuteyViewModel( ISettingsStore settingsStore, IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager )
         {
+            this.settingsStore = settingsStore;
             this.hardwareManager = hardwareManager;
             this.systemMuteControl = systemMuteControl;
             this.popupManager = popupManager;
+            transformer = new InputTransformer( settingsStore );
 
             synchronizationContext = SynchronizationContext.Current ??
                                      throw new InvalidOperationException( "Failed to get synchronization context" );
@@ -80,7 +83,7 @@
         public void RefreshHardware()
         {
             string? previousSelection = PossibleHardware.FirstOrDefault( h => h.IsActive )?.Id ??
-                                        SettingsStore.Get<MuteySettings>().LastDeviceId;
+                                        settingsStore.Get<MuteySettings>().LastDeviceId;
 
             PossibleHardware.Clear();
             foreach ( var device in hardwareManager.AvailableDevices )
@@ -225,14 +228,14 @@
                 logger.Debug( "Activating new device: {Device}", hardware.LocalIdentifier );
                 hardwareManager.ChangeDevice( hardware );
 
-                SettingsStore.Set<MuteySettings>( s => s with {LastDeviceId = viewModel.Id} );
+                settingsStore.Set<MuteySettings>( s => s with {LastDeviceId = viewModel.Id} );
             }
             else
             {
                 logger.Debug( "Deactivating current device" );
                 hardwareManager.ChangeDevice( null );
                 
-                SettingsStore.Set<MuteySettings>( s => s with {LastDeviceId = null} );
+                settingsStore.Set<MuteySettings>( s => s with {LastDeviceId = null} );
             }
         }
     }

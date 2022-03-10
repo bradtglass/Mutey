@@ -12,6 +12,7 @@
     [ UsedImplicitly ]
     public class MicStatePopupManager : IDisposable
     {
+        private readonly ISettingsStore settingsStore;
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly MicStatePopupViewModel controller;
@@ -21,18 +22,20 @@
 
         private Lifetime? currentLifetime;
 
-        public MicStatePopupManager()
+        public MicStatePopupManager( ISettingsStore settingsStore )
         {
-            SettingsStore.RegisterForNotifications<MuteySettings>( SettingsChanged );
+            this.settingsStore = settingsStore;
+            
+            settingsStore.RegisterForNotifications<MuteySettings>( SettingsChanged );
 
             logger.Info( "Creating new popup window" );
 
             controller = new MicStatePopupViewModel( new ActionCommand( OnPopupPressed ) );
-            popup = new MicStatePopup( controller );
+            popup = new MicStatePopup( settingsStore, controller );
 
             popup.Show();
 
-            switch ( SettingsStore.Get<MuteySettings>().MuteStatePopupMode )
+            switch ( settingsStore.Get<MuteySettings>().MuteStatePopupMode )
             {
                 case PopupMode.Temporary:
                     break;
@@ -58,19 +61,18 @@
             PopupPressed?.Invoke( this, EventArgs.Empty );
         }
 
-        private void SettingsChanged( MuteySettings settings )          
+        private void SettingsChanged( SettingsChangedEventArgs<MuteySettings> args )          
         {
-            // TODO Add a previous value so we only update when necessary
-            // if ( e.PropertyName != nameof( Settings.MuteStatePopupMode ) )
-            // {
-            //     return;
-            // }
+            if ( args.OldValue.MuteStatePopupMode != args.NewValue.MuteStatePopupMode )
+            {
+                return;
+            }
 
             logger.Debug( "Popup mode setting updated, changing popup visibility" );
             // Lock to prevent any actions occurring on the popup until we've finished changing the state
             lock ( currentLifetimeLock )
             {
-                switch ( settings.MuteStatePopupMode )
+                switch ( args.NewValue.MuteStatePopupMode )
                 {
                     /*Technically we should probably keep the requested state separately from the actual state so we
                      can restore it when going back to temporary mode but this seems like overkill for this 
@@ -123,7 +125,7 @@
 
         private bool ShowPopup( Lifetime lifetime )
         {
-            if ( SettingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
+            if ( settingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
             {
                 logger.Debug( "Skipping hiding mute state popup" );
                 return true;
@@ -135,7 +137,7 @@
 
         private bool HidePopup( Lifetime lifetime )
         {
-            if ( SettingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
+            if ( settingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
             {
                 logger.Debug( "Skipping hiding mute state popup" );
                 return true;

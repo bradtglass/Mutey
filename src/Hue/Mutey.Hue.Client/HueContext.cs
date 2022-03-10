@@ -16,6 +16,7 @@
 
     public class HueContext
     {
+        private readonly ISettingsStore settingsStore;
         private readonly MemoryCache cache = new(new MemoryCacheOptions());
         private readonly AsyncLock loginLock = new();
         private readonly TimeLimiter rateLimiter = TimeLimiter.GetFromMaxCountByInterval( 10, TimeSpan.FromSeconds( 1 ) );
@@ -23,9 +24,10 @@
 
         public HueStateStore StateStore { get; }
 
-        public HueContext()
+        public HueContext( ISettingsStore settingsStore )
         {
-            StateStore = new HueStateStore( this );
+            this.settingsStore = settingsStore;
+            StateStore = new HueStateStore( settingsStore, this );
         }
 
         public bool IsConfigured()
@@ -33,14 +35,14 @@
             return GetSettings().AppKey != null;
         }
 
-        private static HueSettings GetSettings()
+        private HueSettings GetSettings()
         {
-            return SettingsStore.Get<HueSettings>();
+            return settingsStore.Get<HueSettings>();
         }
 
         public void Reset()
         {
-            SettingsStore.Reset<HueSettings>();
+            settingsStore.Reset<HueSettings>();
         }
 
         private static async Task<string> GetBridgeIpAsync()
@@ -91,7 +93,7 @@
                         continue;
                     }
 
-                    SettingsStore.Set<HueSettings>( s => s with {AppKey = appKey} );
+                    settingsStore.Set<HueSettings>( s => s with {AppKey = appKey} );
                     await PostLoginAsyncSync( new LocalHueClient( ip, appKey ) );
 
                     return;
