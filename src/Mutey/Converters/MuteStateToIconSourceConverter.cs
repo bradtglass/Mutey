@@ -5,7 +5,7 @@
     using System.Windows.Data;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
-    using Mutey.Audio;
+    using Mutey.Core.Audio;
 
     public class MuteStateToIconSourceConverter : IValueConverter
     {

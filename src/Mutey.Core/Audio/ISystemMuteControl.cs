@@ -1,4 +1,4 @@
-﻿namespace Mutey.Audio.Mute
+﻿namespace Mutey.Core.Audio
 {
     using System;
 

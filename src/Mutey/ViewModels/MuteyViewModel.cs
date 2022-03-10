@@ -6,8 +6,7 @@
     using System.Threading;
     using System.Windows.Input;
     using Microsoft.Xaml.Behaviors.Core;
-    using Mutey.Audio;
-    using Mutey.Audio.Mute;
+    using Mutey.Core.Audio;
     using Mutey.Core.Settings;
     using Mutey.Hardware;
     using Mutey.Popup;

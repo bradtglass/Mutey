@@ -5,7 +5,7 @@
     using System.Windows.Threading;
     using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors.Core;
-    using Mutey.Audio;
+    using Mutey.Core.Audio;
     using Mutey.Core.Settings;
     using NLog;
 

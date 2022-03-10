@@ -1,7 +1,7 @@
 ﻿namespace Mutey.Popup
 {
     using System.Windows.Input;
-    using Mutey.Audio;
+    using Mutey.Core.Audio;
     using Prism.Mvvm;
 
     internal class MicStatePopupViewModel : BindableBase

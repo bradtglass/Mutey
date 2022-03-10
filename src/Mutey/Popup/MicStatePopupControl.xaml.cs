@@ -1,7 +1,7 @@
 ﻿namespace Mutey.Popup
 {
     using System.Windows;
-    using Mutey.Audio;
+    using Mutey.Core.Audio;
 
     public partial class MicStatePopupControl
     {
