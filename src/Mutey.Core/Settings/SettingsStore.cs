@@ -6,12 +6,15 @@
     using System.IO;
     using System.IO.Abstractions;
     using System.Text.Json;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Options;
 
     internal class SettingsStore : ISettingsStore
     {
         private readonly ConcurrentDictionary<Type, string> cachedFileNames = new();
         private readonly IFileSystem fileSystem;
         private readonly object ioLock = new();
+        private readonly MemoryCache cachedSettings = new(new OptionsWrapper<MemoryCacheOptions>( new MemoryCacheOptions() ));
         private readonly ConcurrentDictionary<Type, List<Action<SettingsChangedEventArgs>>> notificationRegistrations = new();
         private readonly Lazy<IDirectoryInfo> settingsDirectory;
 
@@ -57,11 +60,29 @@
             }
         }
 
+        private static object GetCacheKey( IFileInfo file )
+            => file.FullName;
+
+        private void SetCachedSync( IFileInfo file, object value )
+        {
+            object cacheKey = GetCacheKey( file );
+            cachedSettings.Set( cacheKey, value );
+        }
+
         private T GetSync<T>( out IFileInfo file )
             where T : SettingsBase, new()
         {
             file = GetFile<T>();
+            object cacheKey = GetCacheKey( file );
 
+            var fileCore = file;
+
+            return cachedSettings.GetOrCreate( cacheKey, _ => LoadFromFileSync<T>( fileCore ) );
+        }
+
+        private static T LoadFromFileSync<T>( IFileInfo file )
+            where T : SettingsBase, new()
+        {
             if ( !file.Exists )
             {
                 return new T();
@@ -81,6 +102,8 @@
             {
                 initial = GetSync<T>( out var file );
                 updated = update( initial );
+
+                SetCachedSync( file, updated );
 
                 using var stream = file.Create();
                 JsonSerializer.Serialize( stream, updated );
@@ -108,6 +131,8 @@
 
                 oldValue = GetSync<T>( out _ );
                 newValue = new T();
+
+                SetCachedSync( file, newValue );
 
                 file.Delete();
             }
