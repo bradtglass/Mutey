@@ -5,6 +5,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\Mutey.Hardware\Mutey.Hardware.csproj" />
+      <ProjectReference Include="..\Mutey.Hardware\Mutey.Hardware.csproj" />
     </ItemGroup>
 </Project>

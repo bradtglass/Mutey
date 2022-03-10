@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hue.Mic", "src\Hue\Mu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hardware", "Hardware", "{837D403C-6ADA-4D4D-B8B5-AB2CE3DACABA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hardware", "src\Mutey.Hardware\Mutey.Hardware.csproj", "{B611742C-FD08-4A36-BA0C-E35CCEA146EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Hardware", "src\Hardware\Mutey.Hardware\Mutey.Hardware.csproj", "{B611742C-FD08-4A36-BA0C-E35CCEA146EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutey.Core", "src\Mutey.Core\Mutey.Core.csproj", "{AD75FC3D-3288-4BDD-BE0C-20479957C490}"
 EndProject

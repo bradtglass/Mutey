@@ -27,9 +27,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hardware\Mutey.Hardware.Serial\Mutey.Hardware.Serial.csproj" />
         <ProjectReference Include="..\Mutey.Core\Mutey.Core.csproj" />
-        <ProjectReference Include="..\Mutey.Hardware\Mutey.Hardware.csproj" />
+        <ProjectReference Include="..\Hardware\Mutey.Hardware.Serial\Mutey.Hardware.Serial.csproj" />
+        <ProjectReference Include="..\Hardware\Mutey.Hardware\Mutey.Hardware.csproj" />
     </ItemGroup>
 
 </Project>
