@@ -4,16 +4,16 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class MuteHardwareManager : IMuteHardwareManager
+    internal class MuteDeviceManager : IMuteDeviceManager
     {
-        private readonly List<KeyValuePair<IMuteHardwareDetector, PossibleMuteHardware>> devices = new();
+        private readonly List<KeyValuePair<IMuteDeviceDetector, PossibleMuteDevice>> devices = new();
 
         public event EventHandler<CurrentDeviceChangedEventArgs>? CurrentDeviceChanged;
 
         public event EventHandler<EventArgs>? AvailableDevicesChanged;
-        public IMuteHardware? CurrentDevice { get; private set; }
+        public IMuteDevice? CurrentDevice { get; private set; }
 
-        public IEnumerable<PossibleMuteHardware> AvailableDevices
+        public IEnumerable<PossibleMuteDevice> AvailableDevices
         {
             get
             {
@@ -24,7 +24,7 @@
             }
         }
 
-        public void ChangeDevice( PossibleMuteHardware? newDevice )
+        public void ChangeDevice( PossibleMuteDevice? newDevice )
         {
             if ( CurrentDevice == null && newDevice == null )
             {
@@ -44,15 +44,15 @@
             CurrentDeviceChanged?.Invoke( this, new CurrentDeviceChangedEventArgs( oldHardware, newHardware ) );
         }
 
-        public void RegisterHardwareDetector( IMuteHardwareDetector detector )
+        public void RegisterDeviceDetector( IMuteDeviceDetector detector )
         {
-            detector.HardwareChanged += ( sender, _ ) => RegisterChangedDevices( (IMuteHardwareDetector) sender! );
+            detector.DevicesChanged += ( sender, _ ) => RegisterChangedDevices( (IMuteDeviceDetector) sender! );
             RegisterChangedDevices( detector );
         }
 
-        private void RegisterChangedDevices( IMuteHardwareDetector detector )
+        private void RegisterChangedDevices( IMuteDeviceDetector detector )
         {
-            List<PossibleMuteHardware> oldDevices = new();
+            List<PossibleMuteDevice> oldDevices = new();
             var changed = false;
             lock ( devices )
             {
@@ -68,9 +68,9 @@
                 foreach ( var device in detector.Find() )
                 {
                     int existingIndex = oldDevices.FindIndex( d
-                                                                  => PossibleMuteHardware.Comparer.Equals( d, device ) );
+                                                                  => PossibleMuteDevice.Comparer.Equals( d, device ) );
 
-                    KeyValuePair<IMuteHardwareDetector, PossibleMuteHardware> newItem = new(detector, device);
+                    KeyValuePair<IMuteDeviceDetector, PossibleMuteDevice> newItem = new(detector, device);
 
                     if ( existingIndex < 0 )
                     {
@@ -89,7 +89,7 @@
                     changed = true;
 
                     if ( CurrentDevice != null &&
-                         oldDevices.Any( d => PossibleMuteHardware.Comparer.Equals( d, CurrentDevice.Source ) ) )
+                         oldDevices.Any( d => PossibleMuteDevice.Comparer.Equals( d, CurrentDevice.Source ) ) )
                     {
                         ChangeDevice( null );
                     }

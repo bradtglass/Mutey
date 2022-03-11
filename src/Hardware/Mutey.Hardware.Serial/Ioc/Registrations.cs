@@ -8,7 +8,7 @@ namespace Mutey.Hardware.Serial.Ioc
     {
         public static IRegistrator RegisterSerialHardware( this IRegistrator registrator )
         {
-            registrator.Register<IMuteHardwareDetector, SerialHardwareDetector>();
+            registrator.Register<IMuteDeviceDetector, SerialDeviceDetector>();
 
             return registrator;
         }

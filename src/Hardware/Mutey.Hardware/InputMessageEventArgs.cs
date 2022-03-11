@@ -5,19 +5,19 @@
     /// <summary>
     ///     Event args for user input of a mute button.
     /// </summary>
-    public class HardwareMessageReceivedEventArgs : EventArgs
+    public class InputMessageEventArgs : EventArgs
     {
         /// <summary>
         ///     The requested message type.
         /// </summary>
-        public HardwareMessageType Message { get; }
+        public InputMessageKind Message { get; }
 
-        public HardwareType Hardware { get; }
+        public DeviceKind Device { get; }
 
-        public HardwareMessageReceivedEventArgs( HardwareMessageType message, HardwareType hardware )
+        public InputMessageEventArgs( InputMessageKind message, DeviceKind device )
         {
             Message = message;
-            Hardware = hardware;
+            Device = device;
         }
     }
 }

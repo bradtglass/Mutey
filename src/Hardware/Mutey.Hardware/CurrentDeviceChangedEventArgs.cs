@@ -4,10 +4,11 @@
 
     public class CurrentDeviceChangedEventArgs : EventArgs
     {
-        public IMuteHardware? OldDevice { get; }
-        public IMuteHardware? NewDevice { get; }
+        public IMuteDevice? OldDevice { get; }
+        
+        public IMuteDevice? NewDevice { get; }
 
-        public CurrentDeviceChangedEventArgs( IMuteHardware? oldDevice, IMuteHardware? newDevice )
+        public CurrentDeviceChangedEventArgs( IMuteDevice? oldDevice, IMuteDevice? newDevice )
         {
             OldDevice = oldDevice;
             NewDevice = newDevice;

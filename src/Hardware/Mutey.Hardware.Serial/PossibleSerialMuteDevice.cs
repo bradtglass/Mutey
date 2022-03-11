@@ -3,7 +3,7 @@
     using System.Diagnostics;
 
     [ DebuggerDisplay( "{Port}: {Description}" ) ]
-    public class PossibleSerialMuteHardware : PossibleMuteHardware
+    public class PossibleSerialMuteDevice : PossibleMuteDevice
     {
         public int BaudRate { get; } = 57600;
 
@@ -19,7 +19,7 @@
 
         public override string LocalIdentifier { get; }
 
-        public PossibleSerialMuteHardware( string port, string description, string manufacturer, string deviceId )
+        public PossibleSerialMuteDevice( string port, string description, string manufacturer, string deviceId )
         {
             Port = port;
             Description = description;
@@ -27,9 +27,9 @@
             LocalIdentifier = $"{Port}:{manufacturer}:{deviceId}";
         }
 
-        public override IMuteHardware Connect()
+        public override IMuteDevice Connect()
         {
-            return new SerialMuteHardware( this );
+            return new SerialMuteDevice( this );
         }
     }
 }

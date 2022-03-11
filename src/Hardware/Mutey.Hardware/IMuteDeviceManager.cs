@@ -6,18 +6,18 @@
     /// <summary>
     ///     Interface for a class that controls mute button hardware.
     /// </summary>
-    public interface IMuteHardwareManager
+    public interface IMuteDeviceManager
     {
-        IMuteHardware? CurrentDevice { get; }
+        IMuteDevice? CurrentDevice { get; }
 
-        IEnumerable<PossibleMuteHardware> AvailableDevices { get; }
+        IEnumerable<PossibleMuteDevice> AvailableDevices { get; }
 
-        void ChangeDevice( PossibleMuteHardware? newDevice );
+        void ChangeDevice( PossibleMuteDevice? newDevice );
 
         event EventHandler<CurrentDeviceChangedEventArgs>? CurrentDeviceChanged;
 
         event EventHandler<EventArgs>? AvailableDevicesChanged;
 
-        public void RegisterHardwareDetector( IMuteHardwareDetector detector );
+        public void RegisterDeviceDetector( IMuteDeviceDetector detector );
     }
 }

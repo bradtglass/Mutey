@@ -6,12 +6,12 @@
     using System.Management;
     using Microsoft.Win32;
 
-    public sealed class SerialHardwareDetector : IMuteHardwareDetector, IDisposable
+    public sealed class SerialDeviceDetector : IMuteDeviceDetector, IDisposable
     {
         private readonly ManagementEventWatcher watcher =
             new(new WqlEventQuery( "SELECT * FROM Win32_DeviceChangeEvent" ));
 
-        public SerialHardwareDetector()
+        public SerialDeviceDetector()
         {
             watcher.EventArrived += DeviceChanged;
             watcher.Start();
@@ -22,7 +22,7 @@
             watcher.Dispose();
         }
 
-        public IEnumerable<PossibleMuteHardware> Find()
+        public IEnumerable<PossibleMuteDevice> Find()
         {
             // Modified from https://stackoverflow.com/a/64541160/9766035
             using ManagementClass entity = new("Win32_PnPEntity");
@@ -51,16 +51,16 @@
                     description = description.Substring( 0, comPosition );
                 }
 
-                yield return new PossibleSerialMuteHardware( portName, description, manufacturer, deviceId );
+                yield return new PossibleSerialMuteDevice( portName, description, manufacturer, deviceId );
             }
         }
 
-        public event EventHandler? HardwareChanged;
+        public event EventHandler? DevicesChanged;
 
         private void DeviceChanged( object sender, EventArrivedEventArgs args )
         {
             // It may be possible to determine the scope of the change and if it effects our hardware but for now just always assume it does
-            HardwareChanged?.Invoke( this, EventArgs.Empty );
+            DevicesChanged?.Invoke( this, EventArgs.Empty );
         }
     }
 }

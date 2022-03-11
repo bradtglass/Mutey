@@ -8,15 +8,15 @@ namespace Mutey.Hardware.Ioc
     {
         public static IRegistrator RegisterHardwareManagement( this IRegistrator registrator )
         {
-            registrator.Register<IMuteHardwareManager, MuteHardwareManager>( Reuse.Singleton );
+            registrator.Register<IMuteDeviceManager, MuteDeviceManager>( Reuse.Singleton );
 
-            registrator.RegisterInitializer<IMuteHardwareManager>( ( manager, context ) =>
+            registrator.RegisterInitializer<IMuteDeviceManager>( ( manager, context ) =>
                                                                    {
-                                                                       var detectors = context.ResolveMany<IMuteHardwareDetector>();
+                                                                       var detectors = context.ResolveMany<IMuteDeviceDetector>();
 
                                                                        foreach ( var detector in detectors )
                                                                        {
-                                                                           manager.RegisterHardwareDetector( detector );
+                                                                           manager.RegisterDeviceDetector( detector );
                                                                        }
                                                                    } );
             return registrator;

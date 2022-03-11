@@ -3,16 +3,16 @@
     using System;
     using System.Collections.Generic;
 
-    public interface IMuteHardwareDetector
+    public interface IMuteDeviceDetector
     {
         /// <summary>
         ///     Attempts to detect possible mute hardware devices.
         /// </summary>
-        IEnumerable<PossibleMuteHardware> Find();
+        IEnumerable<PossibleMuteDevice> Find();
 
         /// <summary>
         ///     Occurs when the hardware changes.
         /// </summary>
-        event EventHandler? HardwareChanged;
+        event EventHandler? DevicesChanged;
     }
 }

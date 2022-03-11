@@ -14,9 +14,9 @@
     /// <summary>
     ///     A mute button that communicates changes over serial communication.
     /// </summary>
-    public sealed class SerialMuteHardware : IMuteHardware, IDisposable
+    public sealed class SerialMuteDevice : IMuteDevice, IDisposable
     {
-        private const int hardwareTypeLength = 6;
+        private const int deviceTypeLength = 6;
         private static readonly byte[] toggleButton = {210, 196, 183, 121, 141, 28};
         private static readonly byte[] startType = {57};
         private static readonly byte[] endType = {184};
@@ -26,11 +26,11 @@
 
         private readonly SerialPort port;
 
-        public SerialMuteHardware( PossibleSerialMuteHardware possibleHardware )
+        public SerialMuteDevice( PossibleSerialMuteDevice possibleDevice )
         {
-            Source = possibleHardware;
+            Source = possibleDevice;
 
-            port = new SerialPort( possibleHardware.Port, possibleHardware.BaudRate );
+            port = new SerialPort( possibleDevice.Port, possibleDevice.BaudRate );
 
             logger.Info( "Opening connection on serial port {Name}", port.PortName );
             port.Open();
@@ -49,9 +49,9 @@
             port.Dispose();
         }
 
-        public PossibleMuteHardware Source { get; }
+        public PossibleMuteDevice Source { get; }
 
-        public event EventHandler<HardwareMessageReceivedEventArgs>? MessageReceived;
+        public event EventHandler<InputMessageEventArgs>? MessageReceived;
 
         private async void WatchPort()
         {
@@ -67,7 +67,7 @@
                     }
 
                     var (hardwareType, messageType) = ProcessMessage( message );
-                    MessageReceived( this, new HardwareMessageReceivedEventArgs( messageType, hardwareType ) );
+                    MessageReceived( this, new InputMessageEventArgs( messageType, hardwareType ) );
                 }
             }
             catch ( IOException e )
@@ -81,54 +81,54 @@
             }
         }
 
-        private (HardwareType, HardwareMessageType) ProcessMessage( byte[] message )
+        private (DeviceKind, InputMessageKind) ProcessMessage( byte[] message )
         {
             if ( GetHardwareTypeBytes( message ) is not { } hardwareTypeBytes )
             {
                 logger.Error( "No hardware type bytes detected" );
 
-                return ( HardwareType.Unknown, HardwareMessageType.Unknown );
+                return ( DeviceKind.Unknown, InputMessageKind.Unknown );
             }
 
-            var hardwareType = GetHardwareType( hardwareTypeBytes );
+            var hardwareType = GetDeviceKind( hardwareTypeBytes );
 
             if ( GetMessageTypeBytes( message ) is not { } messageTypeBytes )
             {
                 logger.Error( "No message types bytes detected" );
 
-                return ( hardwareType, HardwareMessageType.Unknown );
+                return ( hardwareType, InputMessageKind.Unknown );
             }
 
-            return ( hardwareType, GetMessageType( messageTypeBytes ) );
+            return ( hardwareType, GetMessageKind( messageTypeBytes ) );
         }
 
-        private static HardwareType GetHardwareType( byte[] bytes )
+        private static DeviceKind GetDeviceKind( byte[] bytes )
         {
             if ( bytes.SequenceEqual( toggleButton ) )
             {
-                return HardwareType.Toggle;
+                return DeviceKind.Toggle;
             }
 
             logger.Error( "Unknown hardware byte sequence: {Bytes}", bytes );
 
-            return HardwareType.Unknown;
+            return DeviceKind.Unknown;
         }
 
-        private static HardwareMessageType GetMessageType( byte[] bytes )
+        private static InputMessageKind GetMessageKind( byte[] bytes )
         {
             if ( bytes.SequenceEqual( startType ) )
             {
-                return HardwareMessageType.StartToggle;
+                return InputMessageKind.StartToggle;
             }
 
             if ( bytes.SequenceEqual( endType ) )
             {
-                return HardwareMessageType.EndToggle;
+                return InputMessageKind.EndToggle;
             }
 
             logger.Error( "Unknown message byte sequence: {Bytes}", bytes );
 
-            return HardwareMessageType.Unknown;
+            return InputMessageKind.Unknown;
         }
 
         /// <summary>
@@ -136,13 +136,13 @@
         /// </summary>
         private byte[]? GetHardwareTypeBytes( byte[] message )
         {
-            if ( message.Length < hardwareTypeLength )
+            if ( message.Length < deviceTypeLength )
             {
                 return null;
             }
 
-            var result = new byte[ hardwareTypeLength ];
-            Array.Copy( message, result, hardwareTypeLength );
+            var result = new byte[ deviceTypeLength ];
+            Array.Copy( message, result, deviceTypeLength );
 
             return result;
         }
@@ -152,12 +152,12 @@
         /// </summary>
         private byte[]? GetMessageTypeBytes( byte[] message )
         {
-            if ( message.Length <= hardwareTypeLength )
+            if ( message.Length <= deviceTypeLength )
             {
                 return null;
             }
 
-            int messageTypeLength = message.Length - hardwareTypeLength;
+            int messageTypeLength = message.Length - deviceTypeLength;
             var result = new byte[ messageTypeLength ];
             Buffer.BlockCopy( message, 6, result, 0, messageTypeLength );
 

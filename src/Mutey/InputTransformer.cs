@@ -42,16 +42,16 @@
 
         public event EventHandler<TransformedMuteOutputEventArgs>? Transformed;
 
-        public void Transform( HardwareType hardwareType, HardwareMessageType messageType )
+        public void Transform( DeviceKind deviceKind, InputMessageKind messageKind )
         {
             var now = DateTime.Now;
 
             lock ( transformLock )
             {
-                logger.Trace( "Received input '{Input}' at '{Timetamp}'", messageType, now );
+                logger.Trace( "Received input '{Input}' at '{Timetamp}'", messageKind, now );
                 if ( lastInput is not { } validLastInput )
                 {
-                    DefaultProcessInput( hardwareType, messageType, now );
+                    DefaultProcessInput( deviceKind, messageKind, now );
                 }
                 else
                 {
@@ -66,7 +66,7 @@
                     }
 
                     if ( isInPttState &&
-                         messageType == HardwareMessageType.EndToggle )
+                         messageKind == InputMessageKind.EndToggle )
                     {
                         logger.Trace( "End of PTT detected, raising mute action" );
                         isInPttState = false;
@@ -74,7 +74,7 @@
                     }
                     else
                     {
-                        DefaultProcessInput( hardwareType, messageType, now );
+                        DefaultProcessInput( deviceKind, messageKind, now );
                     }
                 }
 
@@ -125,24 +125,24 @@
             Transformed?.Invoke( this, new TransformedMuteOutputEventArgs( action, ptt ) );
         }
 
-        private void DefaultProcessInput( HardwareType hardwareType, HardwareMessageType messageType, DateTime inputTime )
+        private void DefaultProcessInput( DeviceKind deviceKind, InputMessageKind messageKind, DateTime inputTime )
         {
-            if ( hardwareType == HardwareType.Unknown )
+            if ( deviceKind == DeviceKind.Unknown )
             {
                 logger.Warn( "Cannot process input for unknown hardware" );
                 return;
             }
 
-            if ( messageType == HardwareMessageType.Unknown )
+            if ( messageKind == InputMessageKind.Unknown )
             {
                 logger.Warn( "Cannot process input for unknown message type" );
                 return;
             }
 
             isInPttState = false;
-            switch ( messageType )
+            switch ( messageKind )
             {
-                case HardwareMessageType.StartToggle:
+                case InputMessageKind.StartToggle:
                     if ( modes == TransformModes.Ptt )
                     {
                         logger.Trace( "Mode is only PTT, activating PTT directly from start toggle" );
@@ -162,14 +162,14 @@
                     }
 
                     return;
-                case HardwareMessageType.EndToggle:
+                case InputMessageKind.EndToggle:
                     pttActivationTimer?.Dispose();
                     pttActivationTimer = null;
                     logger.Trace( "Message of end toggle requires no action" );
 
                     return;
                 default:
-                    throw new ArgumentOutOfRangeException( nameof( messageType ), messageType, null );
+                    throw new ArgumentOutOfRangeException( nameof( messageKind ), messageKind, null );
             }
         }
     }

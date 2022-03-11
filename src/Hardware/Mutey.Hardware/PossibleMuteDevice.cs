@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public abstract class PossibleMuteHardware
+    public abstract class PossibleMuteDevice
     {
-        public static IEqualityComparer<PossibleMuteHardware> Comparer { get; } = new PossibleMuteHardwareComparer();
+        public static IEqualityComparer<PossibleMuteDevice> Comparer { get; } = new PossibleMuteDeviceComparer();
 
         public abstract string FriendlyName { get; }
 
@@ -17,11 +17,11 @@
         /// </summary>
         public abstract bool IsPresumptive { get; }
 
-        public abstract IMuteHardware Connect();
+        public abstract IMuteDevice Connect();
 
-        private sealed class PossibleMuteHardwareComparer : IEqualityComparer<PossibleMuteHardware>
+        private sealed class PossibleMuteDeviceComparer : IEqualityComparer<PossibleMuteDevice>
         {
-            public bool Equals( PossibleMuteHardware? x, PossibleMuteHardware? y )
+            public bool Equals( PossibleMuteDevice? x, PossibleMuteDevice? y )
             {
                 if ( ReferenceEquals( x, y ) ) return true;
                 if ( ReferenceEquals( x, null ) ) return false;
@@ -30,7 +30,7 @@
                 return x.FriendlyName == y.FriendlyName && x.Type == y.Type && x.IsPresumptive == y.IsPresumptive;
             }
 
-            public int GetHashCode( PossibleMuteHardware obj )
+            public int GetHashCode( PossibleMuteDevice obj )
             {
                 unchecked
                 {

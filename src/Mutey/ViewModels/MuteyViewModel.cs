@@ -22,7 +22,7 @@
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private readonly ISettingsStore settingsStore;
-        private readonly IMuteHardwareManager hardwareManager;
+        private readonly IMuteDeviceManager deviceManager;
         private readonly MicStatePopupManager popupManager;
         private readonly SynchronizationContext synchronizationContext;
         private readonly ISystemMuteControl systemMuteControl;
@@ -34,7 +34,7 @@
 
         public ICommand RefreshHardwareCommand { get; }
 
-        public ObservableCollection<PossibleHardwareViewModel> PossibleHardware { get; } = new();
+        public ObservableCollection<PossibleHardwareViewModel> PossibleDevices { get; } = new();
 
         public MuteState MuteState
         {
@@ -44,10 +44,10 @@
 
         public ICommand ToggleCommand { get; }
 
-        public MuteyViewModel( ISettingsStore settingsStore, IMuteHardwareManager hardwareManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager )
+        public MuteyViewModel( ISettingsStore settingsStore, IMuteDeviceManager deviceManager, ISystemMuteControl systemMuteControl, MicStatePopupManager popupManager )
         {
             this.settingsStore = settingsStore;
-            this.hardwareManager = hardwareManager;
+            this.deviceManager = deviceManager;
             this.systemMuteControl = systemMuteControl;
             this.popupManager = popupManager;
             transformer = new InputTransformer( settingsStore );
@@ -62,9 +62,9 @@
             popupManager.PopupPressed += ( _, _ ) => ToggleMuteByCommand();
             popupManager.BeginLifetime().ChangeState( MuteState );
 
-            hardwareManager.AvailableDevicesChanged +=
-                ( _, _ ) => synchronizationContext.Post( _ => RefreshHardware(), null );
-            hardwareManager.CurrentDeviceChanged += CurrentInputDeviceChanged;
+            deviceManager.AvailableDevicesChanged +=
+                ( _, _ ) => synchronizationContext.Post( _ => RefreshDevices(), null );
+            deviceManager.CurrentDeviceChanged += CurrentInputDeviceChanged;
 
             ToggleCommand = new ActionCommand( ToggleMuteByCommand );
             RefreshHardwareCommand = new ActionCommand( RefreshHardwareByCommand );
@@ -74,21 +74,21 @@
         /// <summary>
         ///     Checks all available hardware.
         /// </summary>
-        public void RefreshHardware()
+        public void RefreshDevices()
         {
-            string? previousSelection = PossibleHardware.FirstOrDefault( h => h.IsActive )?.Id ??
+            string? previousSelection = PossibleDevices.FirstOrDefault( h => h.IsActive )?.Id ??
                                         settingsStore.Get<MuteySettings>().LastDeviceId;
 
-            PossibleHardware.Clear();
-            foreach ( var device in hardwareManager.AvailableDevices )
+            PossibleDevices.Clear();
+            foreach ( var device in deviceManager.AvailableDevices )
             {
-                PossibleHardware.Add( new PossibleHardwareViewModel( device.FriendlyName, device.Type, device.LocalIdentifier ) );
+                PossibleDevices.Add( new PossibleHardwareViewModel( device.FriendlyName, device.Type, device.LocalIdentifier ) );
             }
 
             if ( previousSelection != null )
             {
                 var
-                    viewModel = PossibleHardware.FirstOrDefault( h => h.Id == previousSelection );
+                    viewModel = PossibleDevices.FirstOrDefault( h => h.Id == previousSelection );
 
                 if ( viewModel != null )
                 {
@@ -96,7 +96,7 @@
                 }
                 else
                 {
-                    hardwareManager.ChangeDevice( null );
+                    deviceManager.ChangeDevice( null );
                 }
             }
         }
@@ -104,7 +104,7 @@
         private void RefreshHardwareByCommand()
         {
             logger.Debug( "User began a manual hardware refresh" );
-            RefreshHardware();
+            RefreshDevices();
         }
 
         private void OnTransformedActionRequired( object? sender, TransformedMuteOutputEventArgs e )
@@ -148,9 +148,9 @@
             }
         }
 
-        private void InputDeviceOnMessageReceived( object? sender, HardwareMessageReceivedEventArgs e )
+        private void InputDeviceOnMessageReceived( object? sender, InputMessageEventArgs e )
         {
-            transformer.Transform( e.Hardware, e.Message );
+            transformer.Transform( e.Device, e.Message );
         }
 
         private void ToggleMute()
@@ -203,13 +203,13 @@
             }
 
             viewModel.IsActive = newState;
-            foreach ( var hardwareViewModel in PossibleHardware.Where( h => !ReferenceEquals( h, viewModel ) ) )
+            foreach ( var hardwareViewModel in PossibleDevices.Where( h => !ReferenceEquals( h, viewModel ) ) )
             {
                 hardwareViewModel.IsActive = false;
             }
 
             var hardware =
-                hardwareManager.AvailableDevices.FirstOrDefault( d => d.FriendlyName == viewModel.Name );
+                deviceManager.AvailableDevices.FirstOrDefault( d => d.FriendlyName == viewModel.Name );
 
             if ( hardware == null )
             {
@@ -220,14 +220,14 @@
             if ( newState )
             {
                 logger.Debug( "Activating new device: {Device}", hardware.LocalIdentifier );
-                hardwareManager.ChangeDevice( hardware );
+                deviceManager.ChangeDevice( hardware );
 
                 settingsStore.Set<MuteySettings>( s => s with {LastDeviceId = viewModel.Id} );
             }
             else
             {
                 logger.Debug( "Deactivating current device" );
-                hardwareManager.ChangeDevice( null );
+                deviceManager.ChangeDevice( null );
                 
                 settingsStore.Set<MuteySettings>( s => s with {LastDeviceId = null} );
             }

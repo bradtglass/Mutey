@@ -3,7 +3,7 @@
     /// <summary>
     ///     The type of change to apply, not all values are supported in all contexts.
     /// </summary>
-    public enum HardwareMessageType
+    public enum InputMessageKind
     {
         Unknown,
 

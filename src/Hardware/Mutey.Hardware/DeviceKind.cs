@@ -1,6 +1,6 @@
 ﻿namespace Mutey.Hardware
 {
-    public enum HardwareType
+    public enum DeviceKind
     {
         Unknown,
         Toggle
