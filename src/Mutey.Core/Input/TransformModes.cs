@@ -1,4 +1,4 @@
-﻿namespace Mutey
+﻿namespace Mutey.Core.Input
 {
     using System;
 

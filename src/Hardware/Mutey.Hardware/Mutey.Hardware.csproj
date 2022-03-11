@@ -1,2 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mutey.Core\Mutey.Core.csproj" />
+  </ItemGroup>
 </Project>

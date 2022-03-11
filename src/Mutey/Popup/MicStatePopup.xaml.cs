@@ -24,14 +24,11 @@
             ContentRendered += OnContentRendered;
             InitializeComponent();
 
-            settingsStore.RegisterForNotifications<MuteySettings>(SettingsChanged);
-            SettingsChanged(settingsStore.Get<MuteySettings>());
+            settingsStore.RegisterForNotifications<ViewSettings>(SettingsChanged);
+            SettingsChanged(settingsStore.Get<ViewSettings>());
         }
 
-        private void SettingsChanged( SettingsChangedEventArgs<MuteySettings> args )
-            => SettingsChanged( args.NewValue );
-        
-        private void SettingsChanged( MuteySettings settings )
+        private void SettingsChanged( ViewSettings settings )
         {
             StatePopupControl.Size = settings.MuteStatePopupSize;
         }

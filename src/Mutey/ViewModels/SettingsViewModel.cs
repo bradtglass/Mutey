@@ -3,6 +3,7 @@
     using System;
     using System.Windows.Input;
     using Microsoft.Xaml.Behaviors.Core;
+    using Mutey.Core.Input;
     using Mutey.Core.Settings;
     using Mutey.Popup;
     using Prism.Mvvm;
@@ -55,27 +56,36 @@
             
             SaveCommand = new ActionCommand( Save );
 
-            var current = settingsStore.Get<MuteySettings>();
-            isPttEnabled = current.DefaultTransformMode.HasFlag( TransformModes.Ptt );
-            isToggleEnabled = current.DefaultTransformMode.HasFlag( TransformModes.Toggle );
-            smartPttActivationMilliSeconds = (int) current.SmartPttActivationDuration.TotalMilliseconds;
-            popupMode = current.MuteStatePopupMode;
-            popupSize = current.MuteStatePopupSize;
+            var input = settingsStore.Get<InputSettings>();
+            var view = settingsStore.Get<ViewSettings>();
+            isPttEnabled = input.DefaultTransformMode.HasFlag( TransformModes.Ptt );
+            isToggleEnabled = input.DefaultTransformMode.HasFlag( TransformModes.Toggle );
+            smartPttActivationMilliSeconds = (int) input.SmartPttActivationDuration.TotalMilliseconds;
+            popupMode = view.MuteStatePopupMode;
+            popupSize = view.MuteStatePopupSize;
         }
 
         private void Save()
         {
-            settingsStore.Set<MuteySettings>( Save );
+            settingsStore.Set<InputSettings>( Save );
+            settingsStore.Set<ViewSettings>( Save );
         }
 
-        private MuteySettings Save( MuteySettings settings )
+        private ViewSettings Save( ViewSettings settings )
+        {
+            return settings with
+            {
+                MuteStatePopupMode = PopupMode,
+                MuteStatePopupSize = PopupSize
+            };
+        }
+
+        private InputSettings Save( InputSettings settings )
         {
             return settings with
             {
                 SmartPttActivationDuration = TimeSpan.FromMilliseconds( SmartPttActivationMilliSeconds ),
                 DefaultTransformMode = GetTransformModes(),
-                MuteStatePopupMode = PopupMode,
-                MuteStatePopupSize = PopupSize
             };
         }
 

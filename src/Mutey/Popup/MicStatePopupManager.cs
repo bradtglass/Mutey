@@ -26,7 +26,7 @@
         {
             this.settingsStore = settingsStore;
             
-            settingsStore.RegisterForNotifications<MuteySettings>( SettingsChanged );
+            settingsStore.RegisterForNotifications<ViewSettings>( SettingsChanged );
 
             logger.Info( "Creating new popup window" );
 
@@ -35,7 +35,7 @@
 
             popup.Show();
 
-            switch ( settingsStore.Get<MuteySettings>().MuteStatePopupMode )
+            switch ( settingsStore.Get<ViewSettings>().MuteStatePopupMode )
             {
                 case PopupMode.Temporary:
                     break;
@@ -61,7 +61,7 @@
             PopupPressed?.Invoke( this, EventArgs.Empty );
         }
 
-        private void SettingsChanged( SettingsChangedEventArgs<MuteySettings> args )          
+        private void SettingsChanged( SettingsChangedEventArgs<ViewSettings> args )          
         {
             if ( args.OldValue.MuteStatePopupMode != args.NewValue.MuteStatePopupMode )
             {
@@ -125,7 +125,7 @@
 
         private bool ShowPopup( Lifetime lifetime )
         {
-            if ( settingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
+            if ( settingsStore.Get<ViewSettings>().MuteStatePopupMode != PopupMode.Temporary )
             {
                 logger.Debug( "Skipping hiding mute state popup" );
                 return true;
@@ -137,7 +137,7 @@
 
         private bool HidePopup( Lifetime lifetime )
         {
-            if ( settingsStore.Get<MuteySettings>().MuteStatePopupMode != PopupMode.Temporary )
+            if ( settingsStore.Get<ViewSettings>().MuteStatePopupMode != PopupMode.Temporary )
             {
                 logger.Debug( "Skipping hiding mute state popup" );
                 return true;

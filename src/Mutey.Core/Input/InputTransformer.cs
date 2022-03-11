@@ -1,9 +1,9 @@
-﻿namespace Mutey
+﻿namespace Mutey.Core.Input
 {
     using System;
     using System.Threading;
+    using Mutey.Core.Audio;
     using Mutey.Core.Settings;
-    using Mutey.Hardware;
     using NLog;
 
     /// <summary>
@@ -24,25 +24,20 @@
 
         public InputTransformer( ISettingsStore settingsStore )
         {
-            inputCooldown = settingsStore.Get<MuteySettings>().InputCooldownDuration;
+            inputCooldown = settingsStore.Get<InputSettings>().InputCooldownDuration;
 
-            settingsStore.RegisterForNotifications<MuteySettings>( SettingsChanged );
-            RefreshUserSettings( settingsStore.Get<MuteySettings>() );
+            settingsStore.RegisterForNotifications<InputSettings>( RefreshUserSettings );
+            RefreshUserSettings( settingsStore.Get<InputSettings>() );
         }
 
-        private void SettingsChanged( SettingsChangedEventArgs<MuteySettings> args )
-            => RefreshUserSettings( args.NewValue );
-        
-        private void RefreshUserSettings( MuteySettings settings )
+        private void RefreshUserSettings( InputSettings settings )
         {
             smartPttActivationDuration = settings.SmartPttActivationDuration;
             // ReSharper disable once InconsistentlySynchronizedField
             modes = settings.DefaultTransformMode;
         }
 
-        public event EventHandler<TransformedMuteOutputEventArgs>? Transformed;
-
-        public void Transform( DeviceKind deviceKind, InputMessageKind messageKind )
+        public TransformedInput Transform( InputMessageKind messageKind )
         {
             var now = DateTime.Now;
 
@@ -51,34 +46,33 @@
                 logger.Trace( "Received input '{Input}' at '{Timetamp}'", messageKind, now );
                 if ( lastInput is not { } validLastInput )
                 {
-                    DefaultProcessInput( deviceKind, messageKind, now );
-                }
-                else
-                {
-                    var duration = now - validLastInput;
+                    lastInput = now;
 
-                    if ( duration < inputCooldown )
-                    {
-                        logger.Trace(
-                                     "Input ignored because duration since last previous was {Duration} (cooldown is {Cooldown})",
-                                     duration, inputCooldown );
-                        return;
-                    }
-
-                    if ( isInPttState &&
-                         messageKind == InputMessageKind.EndToggle )
-                    {
-                        logger.Trace( "End of PTT detected, raising mute action" );
-                        isInPttState = false;
-                        RaiseTransformed( MuteAction.Mute, false );
-                    }
-                    else
-                    {
-                        DefaultProcessInput( deviceKind, messageKind, now );
-                    }
+                    return DefaultProcessInput( messageKind, now );
                 }
 
                 lastInput = now;
+                var duration = now - validLastInput;
+
+                if ( duration < inputCooldown )
+                {
+                    logger.Trace(
+                                 "Input ignored because duration since last previous was {Duration} (cooldown is {Cooldown})",
+                                 duration, inputCooldown );
+
+                    return TransformedInput.None;
+                }
+
+                if ( isInPttState &&
+                     messageKind == InputMessageKind.EndToggle )
+                {
+                    logger.Trace( "End of PTT detected, raising mute action" );
+                    isInPttState = false;
+
+                    return new TransformedInput( MuteAction.Mute, false );
+                }
+
+                return DefaultProcessInput( messageKind, now );
             }
         }
 
@@ -113,30 +107,21 @@
             }
         }
 
-        private void ActivatePtt()
+        private TransformedInput ActivatePtt()
         {
             logger.Trace( "Activating PTT" );
             isInPttState = true;
-            RaiseTransformed( MuteAction.Unmute, true );
+            
+            return new TransformedInput( MuteAction.Unmute, true );
         }
 
-        private void RaiseTransformed( MuteAction action, bool ptt )
+        private TransformedInput DefaultProcessInput( InputMessageKind messageKind, DateTime inputTime )
         {
-            Transformed?.Invoke( this, new TransformedMuteOutputEventArgs( action, ptt ) );
-        }
-
-        private void DefaultProcessInput( DeviceKind deviceKind, InputMessageKind messageKind, DateTime inputTime )
-        {
-            if ( deviceKind == DeviceKind.Unknown )
-            {
-                logger.Warn( "Cannot process input for unknown hardware" );
-                return;
-            }
-
             if ( messageKind == InputMessageKind.Unknown )
             {
                 logger.Warn( "Cannot process input for unknown message type" );
-                return;
+                
+                return TransformedInput.None;
             }
 
             isInPttState = false;
@@ -146,8 +131,8 @@
                     if ( modes == TransformModes.Ptt )
                     {
                         logger.Trace( "Mode is only PTT, activating PTT directly from start toggle" );
-                        ActivatePtt();
-                        return;
+                        
+                        return ActivatePtt();
                     }
 
                     if ( modes.HasFlag( TransformModes.Ptt ) )
@@ -158,16 +143,16 @@
                     if ( modes.HasFlag( TransformModes.Toggle ) )
                     {
                         logger.Trace( "Raising toggle action" );
-                        RaiseTransformed( MuteAction.Toggle, false );
+                        return new TransformedInput( MuteAction.Toggle, false );
                     }
 
-                    return;
+                    return TransformedInput.None;
                 case InputMessageKind.EndToggle:
                     pttActivationTimer?.Dispose();
                     pttActivationTimer = null;
                     logger.Trace( "Message of end toggle requires no action" );
 
-                    return;
+                    return TransformedInput.None;
                 default:
                     throw new ArgumentOutOfRangeException( nameof( messageKind ), messageKind, null );
             }

@@ -6,7 +6,9 @@
     using System.Threading;
     using System.Windows.Input;
     using Microsoft.Xaml.Behaviors.Core;
+    using Mutey.Core;
     using Mutey.Core.Audio;
+    using Mutey.Core.Input;
     using Mutey.Core.Settings;
     using Mutey.Hardware;
     using Mutey.Popup;
@@ -17,7 +19,7 @@
     ///     This is the primary place that all of the business logic is pulled together, input devices, software inputs, popups
     ///     and input transformation.
     /// </summary>
-    internal class MuteyViewModel : BindableBase
+    internal class MuteyViewModel : BindableBase, IMutey
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
@@ -54,8 +56,6 @@
 
             synchronizationContext = SynchronizationContext.Current ??
                                      throw new InvalidOperationException( "Failed to get synchronization context" );
-
-            transformer.Transformed += OnTransformedActionRequired;
 
             systemMuteControl.StateChanged += MuteStateChanged;
             MuteState = systemMuteControl.GetState();
@@ -107,10 +107,12 @@
             RefreshDevices();
         }
 
-        private void OnTransformedActionRequired( object? sender, TransformedMuteOutputEventArgs e )
+        private void ApplyTransformedInput( TransformedInput transformedInput )
         {
-            switch ( e.Action )
+            switch ( transformedInput.Action )
             {
+                case MuteAction.None:
+                    return;
                 case MuteAction.Mute:
                     synchronizationContext.Send( _ => systemMuteControl.Mute(), null );
                     break;
@@ -121,11 +123,11 @@
                     synchronizationContext.Send( _ => ToggleMute(), null );
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException( nameof( e ), e, null );
+                    throw new ArgumentOutOfRangeException( nameof( transformedInput ), transformedInput, null );
             }
 
             var currentState = systemMuteControl.GetState();
-            if ( e.IsInPtt )
+            if ( transformedInput.IsInPtt )
             {
                 popupManager.Show( currentState );
             }
@@ -150,7 +152,7 @@
 
         private void InputDeviceOnMessageReceived( object? sender, InputMessageEventArgs e )
         {
-            transformer.Transform( e.Device, e.Message );
+            TransformInput( e.DeviceId, e.Message );
         }
 
         private void ToggleMute()
@@ -231,6 +233,34 @@
                 
                 settingsStore.Set<MuteySettings>( s => s with {LastDeviceId = null} );
             }
+        }
+
+        public void TransformInput( string deviceId, InputMessageKind messageKind )
+        {
+            var transformedInput = transformer.Transform( messageKind );
+            
+            ApplyTransformedInput(transformedInput);
+        }
+
+        public void ChangeMuteState( MuteState state )
+        {
+            switch ( state )
+            {
+                case MuteState.Muted:
+                    systemMuteControl.Mute();
+                    break;
+                case MuteState.Unmuted:
+                    systemMuteControl.Unmute();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException( nameof( state ), state, $"Cannot set state to {state}" );
+            }
+        }
+
+        public event EventHandler<MuteChangedEventArgs>? StateChanged
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
     }
 }

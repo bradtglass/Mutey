@@ -9,6 +9,7 @@
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
+    using Mutey.Core.Input;
     using NLog;
 
     /// <summary>
@@ -66,8 +67,8 @@
                         continue;
                     }
 
-                    var (hardwareType, messageType) = ProcessMessage( message );
-                    MessageReceived( this, new InputMessageEventArgs( messageType, hardwareType ) );
+                    var messageType = ProcessMessage( message );
+                    MessageReceived( this, new InputMessageEventArgs( messageType, Source.LocalIdentifier ) );
                 }
             }
             catch ( IOException e )
@@ -81,25 +82,32 @@
             }
         }
 
-        private (DeviceKind, InputMessageKind) ProcessMessage( byte[] message )
+        private InputMessageKind ProcessMessage( byte[] message )
         {
-            if ( GetHardwareTypeBytes( message ) is not { } hardwareTypeBytes )
+            if ( GetDeviceKindBytes( message ) is not { } deviceKindBytes )
             {
-                logger.Error( "No hardware type bytes detected" );
+                logger.Error( "No device kind bytes detected" );
 
-                return ( DeviceKind.Unknown, InputMessageKind.Unknown );
+                return InputMessageKind.Unknown;
             }
 
-            var hardwareType = GetDeviceKind( hardwareTypeBytes );
+            var deviceKind = GetDeviceKind( deviceKindBytes );
+
+            if ( deviceKind == DeviceKind.Unknown )
+            {
+                logger.Error( "Cannot process a mesaage for an unknown device kind" );
+
+                return InputMessageKind.Unknown;
+            }
 
             if ( GetMessageTypeBytes( message ) is not { } messageTypeBytes )
             {
                 logger.Error( "No message types bytes detected" );
 
-                return ( hardwareType, InputMessageKind.Unknown );
+                return InputMessageKind.Unknown;
             }
 
-            return ( hardwareType, GetMessageKind( messageTypeBytes ) );
+            return GetMessageKind( messageTypeBytes );
         }
 
         private static DeviceKind GetDeviceKind( byte[] bytes )
@@ -134,7 +142,7 @@
         /// <summary>
         ///     Gets the bytes transmitting the hardware type of <see langword="null" /> is no type was transmitted.
         /// </summary>
-        private byte[]? GetHardwareTypeBytes( byte[] message )
+        private byte[]? GetDeviceKindBytes( byte[] message )
         {
             if ( message.Length < deviceTypeLength )
             {

@@ -1,4 +1,4 @@
-﻿namespace Mutey.Hardware
+﻿namespace Mutey.Core.Input
 {
     /// <summary>
     ///     The type of change to apply, not all values are supported in all contexts.

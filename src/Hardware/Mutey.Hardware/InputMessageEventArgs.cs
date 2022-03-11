@@ -1,6 +1,7 @@
 ﻿namespace Mutey.Hardware
 {
     using System;
+    using Mutey.Core.Input;
 
     /// <summary>
     ///     Event args for user input of a mute button.
@@ -12,12 +13,15 @@
         /// </summary>
         public InputMessageKind Message { get; }
 
-        public DeviceKind Device { get; }
+        /// <summary>
+        ///     The unique ID of the device raising the message.
+        /// </summary>
+        public string DeviceId { get; }
 
-        public InputMessageEventArgs( InputMessageKind message, DeviceKind device )
+        public InputMessageEventArgs( InputMessageKind message, string deviceId )
         {
             Message = message;
-            Device = device;
+            DeviceId = deviceId;
         }
     }
 }
