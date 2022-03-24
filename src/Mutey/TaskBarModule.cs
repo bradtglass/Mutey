@@ -19,8 +19,9 @@
             var taskbarIcon = (TaskbarIcon) Application.Current.Resources[ "TaskbarIcon" ];
 
             logger.Info( "Configuring view model for TaskbarIcon" );
-            var appViewModel = containerProvider.Resolve<AppViewModel>();
-            taskbarIcon.DataContext = appViewModel;
+            // TODO
+            // var appViewModel = containerProvider.Resolve<AppViewModel>();
+            // taskbarIcon.DataContext = appViewModel;
         }
     }
 }

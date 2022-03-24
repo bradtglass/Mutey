@@ -5,7 +5,7 @@ namespace Mutey.Core
     using System.Reflection;
     using System.Windows.Controls;
 
-    public abstract class MuteyExtension : IDisposable
+    public abstract class MuteyExtension 
     {
         public abstract string Name { get; }
 
